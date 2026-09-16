@@ -24,22 +24,22 @@ export default function ObjectShowcase({
   return (
     <section
       id="the-plate"
-      className="w-full border-b border-[#e5e5e3] py-16 md:py-24 bg-[#f9f9f7] overflow-hidden"
+      className="w-full border-b border-[#e5e5e3] py-12 sm:py-16 md:py-24 bg-[#f9f9f7] overflow-hidden"
     >
-      <div className="max-w-7xl mx-auto px-6 lg:px-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
         {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 28 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-60px' }}
           transition={{ duration: 0.85, ease: luxuryEase }}
-          className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 pb-12 md:pb-16 border-b border-[#e5e5e3]"
+          className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-16 pb-8 sm:pb-12 md:pb-16 border-b border-[#e5e5e3]"
         >
           <div className="lg:col-span-7">
-            <div className="text-[10px] md:text-[11px] uppercase tracking-[0.2em] font-medium text-[#747878] mb-4">
+            <div className="text-[10px] md:text-[11px] uppercase tracking-[0.2em] font-medium text-[#747878] mb-3 sm:mb-4">
               01 / The Glint Plate
             </div>
-            <h2 className="font-[family-name:var(--font-cormorant)] text-[34px] sm:text-[42px] md:text-[50px] font-light leading-[1.15] text-[#111111]">
+            <h2 className="font-[family-name:var(--font-cormorant)] text-[30px] sm:text-[40px] md:text-[50px] font-light leading-[1.12] text-[#111111]">
               The First Object — One plate. <br className="hidden sm:inline" />
               <span className="italic font-normal">Endless possibilities.</span>
             </h2>
@@ -55,14 +55,14 @@ export default function ObjectShowcase({
         </motion.div>
 
         {/* Section Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 pt-12 md:pt-16 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 pt-8 sm:pt-12 md:pt-16 items-start">
           {/* Left Column: Macro Image + Feature Cards */}
           <motion.div
             initial={{ opacity: 0, y: 32 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-60px' }}
             transition={{ duration: 0.9, ease: luxuryEase, delay: 0.1 }}
-            className="lg:col-span-7 flex flex-col space-y-6"
+            className="lg:col-span-7 flex flex-col space-y-4 sm:space-y-6"
           >
             {/* Macro Close-up Image Container */}
             <div className="relative w-full aspect-[4/3] bg-[#eeeeec] border border-[#e5e5e3] overflow-hidden group">
@@ -75,7 +75,7 @@ export default function ObjectShowcase({
               />
 
               {/* Top-left Pill Badge */}
-              <div className="absolute top-5 left-5 bg-[#f9f9f7]/95 backdrop-blur-sm border border-[#e5e5e3] px-3.5 py-1.5 text-[9px] uppercase tracking-[0.2em] font-medium text-[#111111] shadow-xs">
+              <div className="absolute top-3 left-3 sm:top-5 sm:left-5 bg-[#f9f9f7]/95 backdrop-blur-sm border border-[#e5e5e3] px-2.5 sm:px-3.5 py-1 sm:py-1.5 text-[8px] sm:text-[9px] uppercase tracking-[0.18em] sm:tracking-[0.2em] font-medium text-[#111111] shadow-xs">
                 Optical Rim Bevel · Profile
               </div>
 
@@ -84,24 +84,24 @@ export default function ObjectShowcase({
             </div>
 
             {/* Feature Sub-cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="bg-[#f4f4f2] p-6 border border-[#e5e5e3] transition-all hover:border-[#c5a059]/60">
-                <div className="text-[9px] uppercase tracking-[0.22em] font-semibold text-[#111111] mb-2 flex items-center justify-between">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+              <div className="bg-[#f4f4f2] p-4 sm:p-6 border border-[#e5e5e3] transition-all hover:border-[#c5a059]/60">
+                <div className="text-[9px] uppercase tracking-[0.22em] font-semibold text-[#111111] mb-1.5 sm:mb-2 flex items-center justify-between">
                   <span>Surface Refraction</span>
                   <span className="w-1.5 h-1.5 bg-[#c5a059]" />
                 </div>
-                <p className="text-[13px] text-[#444748] font-light leading-[1.6]">
+                <p className="text-[12px] sm:text-[13px] text-[#444748] font-light leading-[1.6]">
                   Distortion-free hand-buffed alloy mirroring ambient candlelight
                   and tactile ceramics.
                 </p>
               </div>
 
-              <div className="bg-[#f4f4f2] p-6 border border-[#e5e5e3] transition-all hover:border-[#c5a059]/60">
-                <div className="text-[9px] uppercase tracking-[0.22em] font-semibold text-[#111111] mb-2 flex items-center justify-between">
+              <div className="bg-[#f4f4f2] p-4 sm:p-6 border border-[#e5e5e3] transition-all hover:border-[#c5a059]/60">
+                <div className="text-[9px] uppercase tracking-[0.22em] font-semibold text-[#111111] mb-1.5 sm:mb-2 flex items-center justify-between">
                   <span>Ergonomic Lift</span>
                   <span className="w-1.5 h-1.5 bg-[#c5a059]" />
                 </div>
-                <p className="text-[13px] text-[#444748] font-light leading-[1.6]">
+                <p className="text-[12px] sm:text-[13px] text-[#444748] font-light leading-[1.6]">
                   18mm gradual rise engineered for fingertip stability during
                   hospitality courses.
                 </p>
@@ -117,29 +117,29 @@ export default function ObjectShowcase({
             transition={{ duration: 0.9, ease: luxuryEase, delay: 0.2 }}
             className="lg:col-span-5 flex flex-col"
           >
-            <div className="text-[10px] uppercase tracking-[0.25em] font-medium text-[#c5a059] mb-2">
+            <div className="text-[9px] sm:text-[10px] uppercase tracking-[0.25em] font-medium text-[#c5a059] mb-1.5 sm:mb-2">
               Maison Glint / Object 01
             </div>
 
-            <h3 className="font-[family-name:var(--font-cormorant)] text-[36px] sm:text-[44px] font-light text-[#111111] leading-tight mb-3">
+            <h3 className="font-[family-name:var(--font-cormorant)] text-[32px] sm:text-[40px] md:text-[44px] font-light text-[#111111] leading-tight mb-2 sm:mb-3">
               The Glint Plate
             </h3>
 
-            <p className="text-[14px] text-[#444748] font-light leading-[1.6] mb-8">
+            <p className="text-[13px] sm:text-[14px] text-[#444748] font-light leading-[1.6] mb-6 sm:mb-8">
               Stainless steel · Mirror polish. A considered canvas for whatever
               you bring to the table.
             </p>
 
             {/* Status & Priority Request Card */}
-            <div className="bg-[#f4f4f2] border border-[#e5e5e3] p-6 mb-8">
-              <div className="flex items-center justify-between mb-4 text-[10px] uppercase tracking-[0.18em]">
+            <div className="bg-[#f4f4f2] border border-[#e5e5e3] p-4 sm:p-6 mb-6 sm:mb-8">
+              <div className="flex flex-wrap items-center justify-between gap-2 mb-3 sm:mb-4 text-[9px] sm:text-[10px] uppercase tracking-[0.16em] sm:tracking-[0.18em]">
                 <span className="font-semibold text-[#747878]">Status</span>
-                <span className="bg-[#eeeeec] text-[#111111] px-2.5 py-1 border border-[#e0e0de] font-medium">
+                <span className="bg-[#eeeeec] text-[#111111] px-2 sm:px-2.5 py-1 border border-[#e0e0de] font-medium">
                   The First Release — Coming Soon
                 </span>
               </div>
 
-              <p className="text-[13px] text-[#444748] font-light leading-[1.6] mb-6">
+              <p className="text-[12px] sm:text-[13px] text-[#444748] font-light leading-[1.6] mb-4 sm:mb-6">
                 Serialized private batch allocation opens shortly. Edition
                 verification certificate included with each boxed exemplar.
               </p>
@@ -147,7 +147,7 @@ export default function ObjectShowcase({
               <button
                 id="request-priority-access-btn"
                 onClick={onRequestPriorityAccess}
-                className="w-full bg-[#111111] text-[#f9f9f7] py-3.5 px-6 text-[11px] uppercase tracking-[0.2em] font-medium hover:bg-[#2b2b2b] transition-all cursor-pointer text-center border border-[#111111]"
+                className="w-full bg-[#111111] text-[#f9f9f7] py-3.5 px-4 sm:px-6 text-[10px] sm:text-[11px] uppercase tracking-[0.18em] sm:tracking-[0.2em] font-medium hover:bg-[#2b2b2b] transition-all cursor-pointer text-center border border-[#111111]"
               >
                 Request Priority Access
               </button>

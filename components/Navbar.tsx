@@ -34,17 +34,17 @@ export default function Navbar({
 
   return (
     <header className="sticky top-0 z-40 w-full bg-[#f9f9f7]/95 backdrop-blur-md border-b border-[#e5e5e3] transition-all duration-300">
-      <div className="max-w-7xl mx-auto px-6 lg:px-12 h-20 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 h-16 sm:h-20 flex items-center justify-between">
         {/* Brand Lockup */}
         <a
           id="brand-logo"
           href="#"
           className="group flex flex-col items-start focus:outline-none"
         >
-          <span className="font-[family-name:var(--font-cormorant)] text-[22px] tracking-[0.2em] font-light uppercase text-[#111111] group-hover:text-[#c5a059] transition-colors leading-none">
+          <span className="font-[family-name:var(--font-cormorant)] text-[19px] sm:text-[22px] tracking-[0.18em] sm:tracking-[0.2em] font-light uppercase text-[#111111] group-hover:text-[#c5a059] transition-colors leading-none">
             Maison Glint
           </span>
-          <span className="font-[family-name:var(--font-inter)] text-[8px] tracking-[0.3em] font-normal uppercase text-[#8c8c8c] mt-1.5 leading-none">
+          <span className="font-[family-name:var(--font-inter)] text-[7px] sm:text-[8px] tracking-[0.26em] sm:tracking-[0.3em] font-normal uppercase text-[#8c8c8c] mt-1 sm:mt-1.5 leading-none">
             Modernist Chromeware
           </span>
         </a>
@@ -67,7 +67,7 @@ export default function Navbar({
         </nav>
 
         {/* Right Actions */}
-        <div className="flex items-center space-x-4 lg:space-x-6">
+        <div className="flex items-center space-x-2 sm:space-x-4 lg:space-x-6">
           <button
             id="nav-explore-btn"
             onClick={onOpenAllocation}
@@ -122,26 +122,27 @@ export default function Navbar({
       {mobileMenuOpen && (
         <div
           id="mobile-menu-dropdown"
-          className="md:hidden border-t border-[#e5e5e3] bg-[#f9f9f7] px-6 py-8 animate-fadeIn"
+          className="md:hidden border-t border-[#e5e5e3] bg-[#f9f9f7] px-6 py-6 animate-fadeIn shadow-lg"
         >
-          <div className="flex flex-col space-y-6">
+          <div className="flex flex-col space-y-1">
             {navLinks.map((link) => (
               <a
                 key={link.label}
                 href={link.href}
                 onClick={(e) => handleScrollTo(e, link.href)}
-                className="text-[13px] uppercase tracking-[0.18em] font-medium text-[#111111] hover:text-[#c5a059] transition-colors"
+                className="py-3 text-[12px] uppercase tracking-[0.2em] font-medium text-[#111111] hover:text-[#c5a059] transition-colors border-b border-[#e5e5e3]/60 flex items-center justify-between"
               >
-                {link.label}
+                <span>{link.label}</span>
+                <ArrowUpRight className="w-3.5 h-3.5 text-[#8c8c8c]" />
               </a>
             ))}
-            <div className="pt-4 border-t border-[#e5e5e3] flex flex-col space-y-4">
+            <div className="pt-5 flex flex-col space-y-3">
               <button
                 onClick={() => {
                   setMobileMenuOpen(false);
                   onOpenAllocation();
                 }}
-                className="w-full py-3 bg-[#111111] text-[#f9f9f7] text-[11px] uppercase tracking-[0.16em] font-medium flex items-center justify-center space-x-2"
+                className="w-full py-3.5 bg-[#111111] text-[#f9f9f7] text-[10px] uppercase tracking-[0.18em] font-medium flex items-center justify-center space-x-2 border border-[#111111]"
               >
                 <span>Explore Object 01</span>
                 <ArrowUpRight className="w-3.5 h-3.5 text-[#c5a059]" />

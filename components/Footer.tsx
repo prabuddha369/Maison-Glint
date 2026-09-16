@@ -36,16 +36,16 @@ export default function Footer() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: '-60px' }}
         transition={{ duration: 0.85, ease: luxuryEase }}
-        className="max-w-7xl mx-auto px-6 lg:px-12 py-16 md:py-24"
+        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-12 sm:py-16 md:py-24"
       >
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-12 lg:gap-16">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 sm:gap-12 lg:gap-16">
           {/* Column 1: Brand & Atelier Mission */}
           <div className="md:col-span-5 flex flex-col justify-between">
             <div>
-              <h3 className="font-[family-name:var(--font-cormorant)] text-[32px] sm:text-[36px] font-light text-[#111111] mb-4 leading-none">
+              <h3 className="font-[family-name:var(--font-cormorant)] text-[28px] sm:text-[36px] font-light text-[#111111] mb-3 sm:mb-4 leading-none">
                 Maison Glint
               </h3>
-              <p className="text-[14px] text-[#444748] font-light leading-[1.7] max-w-sm mb-8">
+              <p className="text-[13px] sm:text-[14px] text-[#444748] font-light leading-[1.7] max-w-sm mb-6 sm:mb-8">
                 Forging liquid geometry into permanent domestic sculpture.
                 Hand-finished mirror chrome editions produced in restricted
                 serial batches.
@@ -53,10 +53,10 @@ export default function Footer() {
             </div>
 
             <div className="pt-4 border-t border-[#e5e5e3]">
-              <div className="text-[9px] uppercase tracking-[0.25em] font-medium text-[#747878] mb-1.5">
+              <div className="text-[8px] sm:text-[9px] uppercase tracking-[0.25em] font-medium text-[#747878] mb-1">
                 Archive Note
               </div>
-              <div className="font-[family-name:var(--font-cormorant)] text-[15px] italic text-[#111111] font-light">
+              <div className="font-[family-name:var(--font-cormorant)] text-[14px] sm:text-[15px] italic text-[#111111] font-light">
                 Studio Atelier: Zurich — Series 01 Released in 250 Exemplars.
               </div>
             </div>
@@ -64,10 +64,10 @@ export default function Footer() {
 
           {/* Column 2: Navigation Links */}
           <div className="md:col-span-3">
-            <div className="text-[10px] uppercase tracking-[0.22em] font-semibold text-[#111111] mb-6">
+            <div className="text-[9px] sm:text-[10px] uppercase tracking-[0.22em] font-semibold text-[#111111] mb-4 sm:mb-6">
               Navigation
             </div>
-            <ul className="space-y-4 text-[11px] uppercase tracking-[0.18em] font-medium text-[#444748]">
+            <ul className="space-y-3 sm:space-y-4 text-[10px] sm:text-[11px] uppercase tracking-[0.18em] font-medium text-[#444748]">
               <li>
                 <a
                   href="#the-plate"
@@ -118,10 +118,10 @@ export default function Footer() {
 
           {/* Column 3: Private Edition Release */}
           <div className="md:col-span-4">
-            <div className="text-[10px] uppercase tracking-[0.22em] font-semibold text-[#111111] mb-4">
+            <div className="text-[9px] sm:text-[10px] uppercase tracking-[0.22em] font-semibold text-[#111111] mb-2 sm:mb-4">
               Private Edition Release
             </div>
-            <p className="text-[13px] text-[#444748] font-light leading-[1.6] mb-6">
+            <p className="text-[12px] sm:text-[13px] text-[#444748] font-light leading-[1.6] mb-4 sm:mb-6">
               Receive direct notifications prior to unreleased chromeware batch
               allocations.
             </p>
@@ -134,13 +134,13 @@ export default function Footer() {
                   onChange={(e) => setSubEmail(e.target.value)}
                   placeholder="SUBSCRIBER@ATELIER.COM"
                   required
-                  className="w-full bg-transparent text-[#111111] placeholder:text-[#8c8c8c] placeholder:tracking-[0.2em] text-[11px] uppercase tracking-[0.16em] py-2.5 border-b border-[#8c8c8c] focus:outline-none focus:border-[#111111] transition-colors"
+                  className="w-full bg-transparent text-[#111111] placeholder:text-[#8c8c8c] placeholder:tracking-[0.18em] sm:placeholder:tracking-[0.2em] text-[10px] sm:text-[11px] uppercase tracking-[0.16em] py-2.5 border-b border-[#8c8c8c] focus:outline-none focus:border-[#111111] transition-colors"
                 />
               </div>
 
               <button
                 type="submit"
-                className="inline-flex items-center space-x-2 text-[10px] uppercase tracking-[0.2em] font-semibold text-[#111111] hover:text-[#c5a059] transition-colors pt-2 cursor-pointer group"
+                className="inline-flex items-center space-x-2 text-[9px] sm:text-[10px] uppercase tracking-[0.18em] sm:tracking-[0.2em] font-semibold text-[#111111] hover:text-[#c5a059] transition-colors pt-1 sm:pt-2 cursor-pointer group"
               >
                 <span>
                   {subscribed
@@ -159,11 +159,11 @@ export default function Footer() {
       </motion.div>
 
       {/* Bottom Legal & Craft Strip */}
-      <div className="border-t border-[#e5e5e3] py-6 px-6 lg:px-12">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-[9px] md:text-[10px] uppercase tracking-[0.18em] text-[#747878]">
+      <div className="border-t border-[#e5e5e3] py-5 sm:py-6 px-4 sm:px-6 lg:px-12">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3 sm:gap-4 text-[8px] sm:text-[9px] md:text-[10px] uppercase tracking-[0.16em] sm:tracking-[0.18em] text-[#747878] text-center md:text-left">
           <div>© 2026 Maison Glint. All Rights Reserved.</div>
 
-          <div className="flex flex-wrap items-center justify-center gap-3 md:gap-6 text-center">
+          <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 md:gap-6 text-center">
             <span>Grade 316 Stainless Steel</span>
             <span className="text-[#c5a059]">·</span>
             <span>Micro-Buff Mirror Polish</span>

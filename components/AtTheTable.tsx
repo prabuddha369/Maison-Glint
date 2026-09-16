@@ -62,22 +62,22 @@ export default function AtTheTable({ onSelectRitual }: AtTheTableProps) {
   return (
     <section
       id="at-the-table"
-      className="w-full border-b border-[#e5e5e3] py-16 md:py-24 bg-[#f9f9f7] overflow-hidden"
+      className="w-full border-b border-[#e5e5e3] py-12 sm:py-16 md:py-24 bg-[#f9f9f7] overflow-hidden"
     >
-      <div className="max-w-7xl mx-auto px-6 lg:px-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
         {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 28 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-60px' }}
           transition={{ duration: 0.85, ease: luxuryEase }}
-          className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 pb-12 md:pb-16 border-b border-[#e5e5e3]"
+          className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-16 pb-8 sm:pb-12 md:pb-16 border-b border-[#e5e5e3]"
         >
           <div className="lg:col-span-7">
-            <div className="text-[10px] md:text-[11px] uppercase tracking-[0.2em] font-medium text-[#747878] mb-4">
+            <div className="text-[10px] md:text-[11px] uppercase tracking-[0.2em] font-medium text-[#747878] mb-3 sm:mb-4">
               04 / At The Table
             </div>
-            <h2 className="font-[family-name:var(--font-cormorant)] text-[34px] sm:text-[42px] md:text-[50px] font-light leading-[1.15] text-[#111111]">
+            <h2 className="font-[family-name:var(--font-cormorant)] text-[30px] sm:text-[40px] md:text-[50px] font-light leading-[1.12] text-[#111111]">
               The Art of the Everyday.{' '}
               <span className="italic font-normal">Set a different table.</span>
             </h2>
@@ -92,7 +92,7 @@ export default function AtTheTable({ onSelectRitual }: AtTheTableProps) {
         </motion.div>
 
         {/* Gallery Grid: Left Large + Right 2-Stacked */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 pt-10 items-stretch">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 pt-8 sm:pt-10 items-stretch">
           {/* Left Large Card: The Dining Ritual */}
           <motion.div
             initial={{ opacity: 0, y: 32 }}
@@ -113,17 +113,17 @@ export default function AtTheTable({ onSelectRitual }: AtTheTableProps) {
             <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent transition-opacity" />
 
             {/* Hover Prompt */}
-            <div className="absolute top-5 right-5 opacity-0 group-hover:opacity-100 transition-opacity bg-[#111111]/80 backdrop-blur-xs text-[#f9f9f7] px-3 py-1 text-[9px] uppercase tracking-[0.2em] flex items-center space-x-1.5 border border-[#111111]">
+            <div className="absolute top-4 right-4 sm:top-5 sm:right-5 opacity-0 group-hover:opacity-100 transition-opacity bg-[#111111]/80 backdrop-blur-xs text-[#f9f9f7] px-2.5 sm:px-3 py-1 text-[8px] sm:text-[9px] uppercase tracking-[0.2em] flex items-center space-x-1.5 border border-[#111111]">
               <ZoomIn className="w-3 h-3" />
               <span>Inspect Ritual</span>
             </div>
 
             {/* Bottom Caption Overlay */}
-            <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8 text-[#f9f9f7]">
-              <div className="text-[9px] uppercase tracking-[0.25em] font-medium text-[#e5e2e1] mb-1.5">
+            <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-8 text-[#f9f9f7]">
+              <div className="text-[8px] sm:text-[9px] uppercase tracking-[0.25em] font-medium text-[#e5e2e1] mb-1 sm:mb-1.5">
                 The Dining Ritual
               </div>
-              <div className="font-[family-name:var(--font-cormorant)] text-[22px] sm:text-[26px] italic font-light text-white drop-shadow-sm">
+              <div className="font-[family-name:var(--font-cormorant)] text-[19px] sm:text-[26px] italic font-light text-white drop-shadow-sm">
                 Linen, stone, and cool metal.
               </div>
             </div>
@@ -135,12 +135,12 @@ export default function AtTheTable({ onSelectRitual }: AtTheTableProps) {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-60px' }}
             transition={{ duration: 0.9, ease: luxuryEase, delay: 0.2 }}
-            className="lg:col-span-5 flex flex-col space-y-6"
+            className="lg:col-span-5 flex flex-col space-y-4 sm:space-y-6"
           >
             {/* Top Right: Raw Elements */}
             <div
               onClick={() => onSelectRitual(rituals.raw)}
-              className="group relative aspect-[16/9] lg:h-[278px] bg-[#eeeeec] border border-[#e5e5e3] overflow-hidden cursor-pointer"
+              className="group relative aspect-[16/10] lg:h-[278px] bg-[#eeeeec] border border-[#e5e5e3] overflow-hidden cursor-pointer"
             >
               <Image
                 src={rituals.raw.image}
@@ -152,12 +152,12 @@ export default function AtTheTable({ onSelectRitual }: AtTheTableProps) {
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
 
               {/* Tag Badge */}
-              <div className="absolute bottom-5 left-5 bg-[#f9f9f7]/95 backdrop-blur-xs border border-[#e5e5e3] px-3.5 py-1.5 text-[9px] uppercase tracking-[0.22em] font-semibold text-[#111111] shadow-xs">
+              <div className="absolute bottom-3 left-3 sm:bottom-5 sm:left-5 bg-[#f9f9f7]/95 backdrop-blur-xs border border-[#e5e5e3] px-2.5 sm:px-3.5 py-1 sm:py-1.5 text-[8px] sm:text-[9px] uppercase tracking-[0.2em] sm:tracking-[0.22em] font-semibold text-[#111111] shadow-xs">
                 Raw Elements
               </div>
 
               {/* Hover Prompt */}
-              <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity bg-[#111111]/80 backdrop-blur-xs text-[#f9f9f7] p-1.5 border border-[#111111]">
+              <div className="absolute top-3 right-3 sm:top-4 sm:right-4 opacity-0 group-hover:opacity-100 transition-opacity bg-[#111111]/80 backdrop-blur-xs text-[#f9f9f7] p-1.5 border border-[#111111]">
                 <ZoomIn className="w-3 h-3" />
               </div>
             </div>
@@ -165,7 +165,7 @@ export default function AtTheTable({ onSelectRitual }: AtTheTableProps) {
             {/* Bottom Right: Nocturne Setting */}
             <div
               onClick={() => onSelectRitual(rituals.nocturne)}
-              className="group relative aspect-[16/9] lg:h-[278px] bg-[#eeeeec] border border-[#e5e5e3] overflow-hidden cursor-pointer"
+              className="group relative aspect-[16/10] lg:h-[278px] bg-[#eeeeec] border border-[#e5e5e3] overflow-hidden cursor-pointer"
             >
               <Image
                 src={rituals.nocturne.image}
@@ -177,12 +177,12 @@ export default function AtTheTable({ onSelectRitual }: AtTheTableProps) {
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
 
               {/* Tag Badge */}
-              <div className="absolute bottom-5 left-5 bg-[#f9f9f7]/95 backdrop-blur-xs border border-[#e5e5e3] px-3.5 py-1.5 text-[9px] uppercase tracking-[0.22em] font-semibold text-[#111111] shadow-xs">
+              <div className="absolute bottom-3 left-3 sm:bottom-5 sm:left-5 bg-[#f9f9f7]/95 backdrop-blur-xs border border-[#e5e5e3] px-2.5 sm:px-3.5 py-1 sm:py-1.5 text-[8px] sm:text-[9px] uppercase tracking-[0.2em] sm:tracking-[0.22em] font-semibold text-[#111111] shadow-xs">
                 Nocturne Setting
               </div>
 
               {/* Hover Prompt */}
-              <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity bg-[#111111]/80 backdrop-blur-xs text-[#f9f9f7] p-1.5 border border-[#111111]">
+              <div className="absolute top-3 right-3 sm:top-4 sm:right-4 opacity-0 group-hover:opacity-100 transition-opacity bg-[#111111]/80 backdrop-blur-xs text-[#f9f9f7] p-1.5 border border-[#111111]">
                 <ZoomIn className="w-3 h-3" />
               </div>
             </div>

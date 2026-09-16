@@ -75,8 +75,8 @@ export default function HeroSection({
       id="hero-section"
       className="relative w-full border-b border-[#e5e5e3] overflow-hidden"
     >
-      <div className="max-w-7xl mx-auto px-6 lg:px-12 py-12 md:py-20 lg:py-24">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-8 sm:py-14 md:py-20 lg:py-24">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
           {/* Left Editorial Text Column */}
           <div className="lg:col-span-6 flex flex-col justify-center">
             {/* Eyebrow and Edition Tag */}
@@ -84,13 +84,13 @@ export default function HeroSection({
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ ...transitionConfig, delay: 0.1 }}
-              className="flex items-center space-x-3 mb-6"
+              className="flex flex-wrap items-center gap-2 sm:gap-3 mb-4 sm:mb-6"
             >
-              <span className="text-[10px] md:text-[11px] uppercase tracking-[0.2em] font-medium text-[#747878]">
+              <span className="text-[9px] sm:text-[10px] md:text-[11px] uppercase tracking-[0.18em] sm:tracking-[0.2em] font-medium text-[#747878]">
                 Objects for the Everyday Ritual
               </span>
-              <span className="w-8 h-[1px] bg-[#c5a059]" />
-              <span className="text-[10px] md:text-[11px] uppercase tracking-[0.18em] font-semibold text-[#c5a059]">
+              <span className="w-6 sm:w-8 h-[1px] bg-[#c5a059]" />
+              <span className="text-[9px] sm:text-[10px] md:text-[11px] uppercase tracking-[0.16em] sm:tracking-[0.18em] font-semibold text-[#c5a059]">
                 Edition 01
               </span>
             </motion.div>
@@ -100,7 +100,7 @@ export default function HeroSection({
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ ...transitionConfig, delay: 0.2 }}
-              className="font-[family-name:var(--font-cormorant)] text-[46px] sm:text-[56px] md:text-[64px] lg:text-[72px] font-light leading-[1.06] tracking-[-0.02em] text-[#111111] mb-8"
+              className="font-[family-name:var(--font-cormorant)] text-[36px] xs:text-[42px] sm:text-[54px] md:text-[64px] lg:text-[72px] font-light leading-[1.06] tracking-[-0.02em] text-[#111111] mb-6 sm:mb-8"
             >
               A quieter kind <br />
               of <span className="italic font-normal text-[#111111]">brilliance.</span>
@@ -111,7 +111,7 @@ export default function HeroSection({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ ...transitionConfig, delay: 0.35 }}
-              className="font-[family-name:var(--font-inter)] text-[15px] sm:text-[16px] text-[#444748] font-light leading-[1.7] max-w-lg mb-10"
+              className="font-[family-name:var(--font-inter)] text-[14px] sm:text-[16px] text-[#444748] font-light leading-[1.7] max-w-lg mb-8 sm:mb-10"
             >
               Stainless steel. A new reflection. Clean lines and liquid luster
               forged to turn domestic dining into quiet sculpture.
@@ -122,12 +122,12 @@ export default function HeroSection({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ ...transitionConfig, delay: 0.48 }}
-              className="flex flex-wrap items-center gap-4 mb-16"
+              className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 mb-10 sm:mb-14"
             >
               <button
                 id="hero-discover-btn"
                 onClick={onDiscoverClick}
-                className="group inline-flex items-center justify-center space-x-3 bg-[#111111] text-[#f9f9f7] px-7 py-4 text-[11px] uppercase tracking-[0.18em] font-medium hover:bg-[#2b2b2b] transition-all cursor-pointer border border-[#111111]"
+                className="w-full sm:w-auto group inline-flex items-center justify-center space-x-3 bg-[#111111] text-[#f9f9f7] px-6 sm:px-7 py-3.5 sm:py-4 text-[11px] uppercase tracking-[0.18em] font-medium hover:bg-[#2b2b2b] transition-all cursor-pointer border border-[#111111]"
               >
                 <span>Discover The Plate</span>
                 <ArrowUpRight className="w-4 h-4 text-[#c5a059] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
@@ -136,7 +136,7 @@ export default function HeroSection({
               <button
                 id="hero-reserve-btn"
                 onClick={onReserveClick}
-                className="inline-flex items-center justify-center bg-transparent text-[#111111] px-7 py-4 text-[11px] uppercase tracking-[0.18em] font-medium hover:bg-[#111111] hover:text-[#f9f9f7] transition-all cursor-pointer border border-[#111111]"
+                className="w-full sm:w-auto inline-flex items-center justify-center bg-transparent text-[#111111] px-6 sm:px-7 py-3.5 sm:py-4 text-[11px] uppercase tracking-[0.18em] font-medium hover:bg-[#111111] hover:text-[#f9f9f7] transition-all cursor-pointer border border-[#111111]"
               >
                 <span>Reserve First Edition</span>
               </button>
@@ -147,29 +147,29 @@ export default function HeroSection({
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ ...transitionConfig, delay: 0.6 }}
-              className="pt-8 border-t border-[#e5e5e3] grid grid-cols-3 gap-6"
+              className="pt-6 sm:pt-8 border-t border-[#e5e5e3] grid grid-cols-3 gap-3 sm:gap-6"
             >
               <div>
-                <div className="text-[9px] uppercase tracking-[0.2em] font-medium text-[#747878] mb-1.5">
+                <div className="text-[9px] uppercase tracking-[0.18em] sm:tracking-[0.2em] font-medium text-[#747878] mb-1">
                   Material
                 </div>
-                <div className="text-[13px] md:text-[14px] font-medium text-[#111111] tracking-tight">
+                <div className="text-[12px] sm:text-[13px] md:text-[14px] font-medium text-[#111111] tracking-tight">
                   18/10 Stainless
                 </div>
               </div>
               <div>
-                <div className="text-[9px] uppercase tracking-[0.2em] font-medium text-[#747878] mb-1.5">
+                <div className="text-[9px] uppercase tracking-[0.18em] sm:tracking-[0.2em] font-medium text-[#747878] mb-1">
                   Craft
                 </div>
-                <div className="text-[13px] md:text-[14px] font-medium text-[#111111] tracking-tight">
+                <div className="text-[12px] sm:text-[13px] md:text-[14px] font-medium text-[#111111] tracking-tight">
                   Optical Buff
                 </div>
               </div>
               <div>
-                <div className="text-[9px] uppercase tracking-[0.2em] font-medium text-[#747878] mb-1.5">
+                <div className="text-[9px] uppercase tracking-[0.18em] sm:tracking-[0.2em] font-medium text-[#747878] mb-1">
                   Edition
                 </div>
-                <div className="text-[13px] md:text-[14px] font-medium text-[#111111] tracking-tight">
+                <div className="text-[12px] sm:text-[13px] md:text-[14px] font-medium text-[#111111] tracking-tight">
                   Batch 01 / 250
                 </div>
               </div>
@@ -178,19 +178,19 @@ export default function HeroSection({
 
           {/* Right Editorial Image Composition with Side Hero Image */}
           <div
-            className="lg:col-span-6 relative pb-6 sm:pb-8 lg:pb-0"
+            className="lg:col-span-6 relative pb-8 sm:pb-10 lg:pb-0"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
           >
             {/* View Switcher Bar & Loop Control */}
-            <div className="flex items-center justify-between mb-3 text-[10px] uppercase tracking-[0.18em] text-[#747878]">
+            <div className="flex flex-wrap items-center justify-between gap-2 mb-2.5 sm:mb-3 text-[9px] sm:text-[10px] uppercase tracking-[0.16em] sm:tracking-[0.18em] text-[#747878]">
               <div className="flex items-center space-x-2">
                 <span className="font-medium text-[#111111]">Atelier Perspectives</span>
                 <span className="text-[#c5a059]">•</span>
                 <button
                   id="hero-loop-toggle-btn"
                   onClick={() => setIsPaused(!isPaused)}
-                  className="inline-flex items-center space-x-1 text-[9px] uppercase tracking-[0.18em] text-[#747878] hover:text-[#111111] transition-colors cursor-pointer"
+                  className="inline-flex items-center space-x-1 text-[9px] uppercase tracking-[0.16em] text-[#747878] hover:text-[#111111] transition-colors cursor-pointer"
                   title={isPaused ? 'Resume infinite perspective loop' : 'Pause infinite perspective loop'}
                 >
                   {isPaused ? (
@@ -208,7 +208,7 @@ export default function HeroSection({
               </div>
 
               {/* Perspective Selector Tabs */}
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-1 sm:space-x-2">
                 {perspectives.map((persp, idx) => {
                   const isActive = activeIndex === idx;
                   return (
@@ -216,7 +216,7 @@ export default function HeroSection({
                       key={persp.id}
                       id={`hero-perspective-${persp.id}-btn`}
                       onClick={() => handleSelectPerspective(idx)}
-                      className={`relative px-2.5 py-1 transition-all cursor-pointer overflow-hidden ${
+                      className={`relative px-2 sm:px-2.5 py-1 text-[9px] sm:text-[10px] transition-all cursor-pointer overflow-hidden ${
                         isActive
                           ? 'bg-[#111111] text-[#f9f9f7]'
                           : 'bg-transparent text-[#747878] hover:text-[#111111]'
@@ -281,14 +281,14 @@ export default function HeroSection({
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/15 to-transparent pointer-events-none z-10" />
 
               {/* Top Edition Counter Badge */}
-              <div className="absolute top-4 left-4 z-20 pointer-events-none">
-                <span className="text-[9px] uppercase tracking-[0.22em] font-medium bg-black/45 backdrop-blur-xs text-[#f9f9f7] px-2.5 py-1 border border-white/15">
+              <div className="absolute top-3 sm:top-4 left-3 sm:left-4 z-20 pointer-events-none">
+                <span className="text-[8px] sm:text-[9px] uppercase tracking-[0.2em] font-medium bg-black/45 backdrop-blur-xs text-[#f9f9f7] px-2 sm:px-2.5 py-1 border border-white/15">
                   Maison Glint • {currentMain.badge}
                 </span>
               </div>
 
               {/* Bottom Caption Overlay Matching Active Perspective */}
-              <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8 z-20 pointer-events-none">
+              <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 md:p-8 pr-28 sm:pr-40 md:pr-8 z-20 pointer-events-none">
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={currentMain.id}
@@ -296,18 +296,18 @@ export default function HeroSection({
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -8 }}
                     transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
-                    className="flex items-end justify-between text-[#f9f9f7]"
+                    className="flex flex-col sm:flex-row sm:items-end justify-between gap-1 sm:gap-2 text-[#f9f9f7]"
                   >
                     <div>
-                      <div className="text-[9px] uppercase tracking-[0.25em] font-medium text-[#c5a059] mb-1">
+                      <div className="text-[8px] sm:text-[9px] uppercase tracking-[0.22em] font-medium text-[#c5a059] mb-0.5 sm:mb-1">
                         {currentMain.category}
                       </div>
-                      <div className="font-[family-name:var(--font-cormorant)] text-[20px] md:text-[24px] italic font-light tracking-wide text-white drop-shadow-sm">
+                      <div className="font-[family-name:var(--font-cormorant)] text-[17px] sm:text-[20px] md:text-[24px] italic font-light tracking-wide text-white drop-shadow-sm">
                         {currentMain.title}
                       </div>
                     </div>
 
-                    <div className="text-[10px] uppercase tracking-[0.2em] font-medium text-[#e5e2e1]/90">
+                    <div className="text-[9px] sm:text-[10px] uppercase tracking-[0.18em] font-medium text-[#e5e2e1]/90">
                       {currentMain.fig}
                     </div>
                   </motion.div>
@@ -322,7 +322,7 @@ export default function HeroSection({
               transition={{ duration: 0.95, ease: [0.16, 1, 0.3, 1], delay: 0.45 }}
               id="hero-side-image-card"
               onClick={toggleSwap}
-              className="absolute -bottom-4 right-2 sm:-bottom-6 sm:right-0 md:-bottom-8 md:-right-4 lg:-bottom-8 lg:-right-6 w-36 sm:w-48 md:w-56 lg:w-60 aspect-[3/4] bg-[#f9f9f7] p-2 sm:p-2.5 border border-[#e5e5e3] shadow-[0_16px_40px_rgba(0,0,0,0.14)] z-30 group cursor-pointer transition-transform duration-300 hover:-translate-y-1 hover:shadow-[0_20px_48px_rgba(0,0,0,0.18)] select-none"
+              className="absolute -bottom-3 right-2 sm:-bottom-6 sm:right-0 md:-bottom-8 md:-right-4 lg:-bottom-8 lg:-right-6 w-28 sm:w-44 md:w-56 lg:w-60 aspect-[3/4] bg-[#f9f9f7] p-1.5 sm:p-2.5 border border-[#e5e5e3] shadow-[0_16px_40px_rgba(0,0,0,0.14)] z-30 group cursor-pointer transition-transform duration-300 hover:-translate-y-1 hover:shadow-[0_20px_48px_rgba(0,0,0,0.18)] select-none"
               role="button"
               tabIndex={0}
               onKeyDown={(e) => {

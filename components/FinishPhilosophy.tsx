@@ -21,10 +21,10 @@ export default function FinishPhilosophy() {
   return (
     <section
       id="the-finish"
-      className="w-full border-b border-[#e5e5e3] py-16 md:py-24 bg-[#f9f9f7] overflow-hidden"
+      className="w-full border-b border-[#e5e5e3] py-12 sm:py-16 md:py-24 bg-[#f9f9f7] overflow-hidden"
     >
-      <div className="max-w-7xl mx-auto px-6 lg:px-12">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
           {/* Left Text Narrative */}
           <motion.div
             initial={{ opacity: 0, y: 32 }}
@@ -33,16 +33,16 @@ export default function FinishPhilosophy() {
             transition={{ duration: 0.9, ease: luxuryEase }}
             className="lg:col-span-6 flex flex-col justify-center"
           >
-            <div className="text-[10px] md:text-[11px] uppercase tracking-[0.2em] font-medium text-[#747878] mb-4">
+            <div className="text-[10px] md:text-[11px] uppercase tracking-[0.2em] font-medium text-[#747878] mb-3 sm:mb-4">
               02 / The Finish & Philosophy
             </div>
 
-            <h2 className="font-[family-name:var(--font-cormorant)] text-[38px] sm:text-[48px] md:text-[54px] font-light leading-[1.12] text-[#111111] mb-8">
+            <h2 className="font-[family-name:var(--font-cormorant)] text-[32px] sm:text-[44px] md:text-[54px] font-light leading-[1.12] text-[#111111] mb-6 sm:mb-8">
               Made of steel. <br />
               <span className="italic font-normal">Alive with light.</span>
             </h2>
 
-            <div className="space-y-6 text-[15px] sm:text-[16px] text-[#444748] font-light leading-[1.75] max-w-xl">
+            <div className="space-y-4 sm:space-y-6 text-[14px] sm:text-[16px] text-[#444748] font-light leading-[1.75] max-w-xl">
               <p>
                 A curve. A glint. The room, reflected. A surface that becomes
                 part of the setting.
@@ -56,14 +56,14 @@ export default function FinishPhilosophy() {
             </div>
 
             {/* Interactive preset selector */}
-            <div className="pt-10 mt-6 border-t border-[#e5e5e3]">
+            <div className="pt-8 sm:pt-10 mt-6 border-t border-[#e5e5e3]">
               <div className="text-[10px] uppercase tracking-[0.2em] font-semibold text-[#747878] mb-3">
                 Select Optical Light State
               </div>
               <div className="flex flex-wrap gap-2">
                 <button
                   onClick={() => setLightingPreset('morning')}
-                  className={`px-3.5 py-2 text-[10px] uppercase tracking-[0.16em] font-medium transition-all border ${
+                  className={`px-3 sm:px-3.5 py-1.5 sm:py-2 text-[9px] sm:text-[10px] uppercase tracking-[0.16em] font-medium transition-all border cursor-pointer ${
                     lightingPreset === 'morning'
                       ? 'bg-[#111111] text-[#f9f9f7] border-[#111111]'
                       : 'bg-[#f4f4f2] text-[#444748] border-[#e5e5e3] hover:border-[#111111]'
@@ -73,7 +73,7 @@ export default function FinishPhilosophy() {
                 </button>
                 <button
                   onClick={() => setLightingPreset('candlelight')}
-                  className={`px-3.5 py-2 text-[10px] uppercase tracking-[0.16em] font-medium transition-all border ${
+                  className={`px-3 sm:px-3.5 py-1.5 sm:py-2 text-[9px] sm:text-[10px] uppercase tracking-[0.16em] font-medium transition-all border cursor-pointer ${
                     lightingPreset === 'candlelight'
                       ? 'bg-[#111111] text-[#f9f9f7] border-[#111111]'
                       : 'bg-[#f4f4f2] text-[#444748] border-[#e5e5e3] hover:border-[#111111]'
@@ -83,7 +83,7 @@ export default function FinishPhilosophy() {
                 </button>
                 <button
                   onClick={() => setLightingPreset('zenith')}
-                  className={`px-3.5 py-2 text-[10px] uppercase tracking-[0.16em] font-medium transition-all border ${
+                  className={`px-3 sm:px-3.5 py-1.5 sm:py-2 text-[9px] sm:text-[10px] uppercase tracking-[0.16em] font-medium transition-all border cursor-pointer ${
                     lightingPreset === 'zenith'
                       ? 'bg-[#111111] text-[#f9f9f7] border-[#111111]'
                       : 'bg-[#f4f4f2] text-[#444748] border-[#e5e5e3] hover:border-[#111111]'
@@ -105,7 +105,7 @@ export default function FinishPhilosophy() {
           >
             <div
               id="technical-reflection-card"
-              className="bg-[#f4f4f2] border border-[#e5e5e3] p-8 md:p-10 flex flex-col justify-between"
+              className="bg-[#f4f4f2] border border-[#e5e5e3] p-5 sm:p-8 md:p-10 flex flex-col justify-between"
             >
               {/* Card Header */}
               <div className="flex items-center justify-between border-b border-[#e5e5e3] pb-4 mb-6">

@@ -45,17 +45,17 @@ export default function PriorityAccessModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fadeIn">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs animate-fadeIn overflow-y-auto">
       {/* Modal Container */}
       <div
         id="priority-access-modal"
-        className="relative w-full max-w-lg bg-[#f9f9f7] border border-[#e5e5e3] p-8 sm:p-10 shadow-2xl transition-all"
+        className="relative w-full max-w-lg bg-[#f9f9f7] border border-[#e5e5e3] p-5 sm:p-8 md:p-10 shadow-2xl transition-all max-h-[92vh] overflow-y-auto"
       >
         {/* Close Button */}
         <button
           onClick={onClose}
           aria-label="Close allocation modal"
-          className="absolute top-6 right-6 p-2 text-[#747878] hover:text-[#111111] transition-colors cursor-pointer"
+          className="absolute top-4 right-4 sm:top-6 sm:right-6 p-2 text-[#747878] hover:text-[#111111] transition-colors cursor-pointer"
         >
           <X className="w-5 h-5 stroke-[1.5]" />
         </button>
@@ -63,21 +63,21 @@ export default function PriorityAccessModal({
         {!completedSerial ? (
           <div>
             {/* Header */}
-            <div className="text-[10px] uppercase tracking-[0.25em] font-medium text-[#c5a059] mb-2">
+            <div className="text-[9px] sm:text-[10px] uppercase tracking-[0.25em] font-medium text-[#c5a059] mb-1.5 sm:mb-2">
               Edition 01 Allocation
             </div>
-            <h3 className="font-[family-name:var(--font-cormorant)] text-[32px] sm:text-[38px] font-light text-[#111111] leading-none mb-3">
+            <h3 className="font-[family-name:var(--font-cormorant)] text-[26px] sm:text-[34px] md:text-[38px] font-light text-[#111111] leading-tight mb-2 sm:mb-3">
               Request Priority Access
             </h3>
-            <p className="text-[13px] text-[#444748] font-light leading-[1.6] mb-8">
+            <p className="text-[12px] sm:text-[13px] text-[#444748] font-light leading-[1.6] mb-6 sm:mb-8">
               Register for exclusive reservation access to Batch 01 (250 serialized
               pieces). Allocations granted in chronological order of submission.
             </p>
 
             {/* Form */}
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
               <div>
-                <label className="block text-[10px] uppercase tracking-[0.2em] font-semibold text-[#111111] mb-2">
+                <label className="block text-[9px] sm:text-[10px] uppercase tracking-[0.2em] font-semibold text-[#111111] mb-1.5 sm:mb-2">
                   Collector Full Name
                 </label>
                 <input
@@ -86,12 +86,12 @@ export default function PriorityAccessModal({
                   onChange={(e) => setCollectorName(e.target.value)}
                   placeholder="E.G. CLAUDIA WEBER"
                   required
-                  className="w-full bg-[#f4f4f2] text-[#111111] text-[12px] uppercase tracking-[0.14em] px-4 py-3 border border-[#e5e5e3] focus:outline-none focus:border-[#111111] transition-colors"
+                  className="w-full bg-[#f4f4f2] text-[#111111] text-[11px] sm:text-[12px] uppercase tracking-[0.14em] px-3.5 sm:px-4 py-2.5 sm:py-3 border border-[#e5e5e3] focus:outline-none focus:border-[#111111] transition-colors"
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] uppercase tracking-[0.2em] font-semibold text-[#111111] mb-2">
+                <label className="block text-[9px] sm:text-[10px] uppercase tracking-[0.2em] font-semibold text-[#111111] mb-1.5 sm:mb-2">
                   Email Address
                 </label>
                 <input
@@ -100,19 +100,19 @@ export default function PriorityAccessModal({
                   onChange={(e) => setCollectorEmail(e.target.value)}
                   placeholder="COLLECTOR@ATELIER.COM"
                   required
-                  className="w-full bg-[#f4f4f2] text-[#111111] text-[12px] uppercase tracking-[0.14em] px-4 py-3 border border-[#e5e5e3] focus:outline-none focus:border-[#111111] transition-colors"
+                  className="w-full bg-[#f4f4f2] text-[#111111] text-[11px] sm:text-[12px] uppercase tracking-[0.14em] px-3.5 sm:px-4 py-2.5 sm:py-3 border border-[#e5e5e3] focus:outline-none focus:border-[#111111] transition-colors"
                 />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div>
-                  <label className="block text-[10px] uppercase tracking-[0.2em] font-semibold text-[#111111] mb-2">
+                  <label className="block text-[9px] sm:text-[10px] uppercase tracking-[0.2em] font-semibold text-[#111111] mb-1.5 sm:mb-2">
                     Preferred Batch Range
                   </label>
                   <select
                     value={serialRange}
                     onChange={(e) => setSerialRange(e.target.value)}
-                    className="w-full bg-[#f4f4f2] text-[#111111] text-[11px] uppercase tracking-[0.14em] px-3 py-3 border border-[#e5e5e3] focus:outline-none focus:border-[#111111] transition-colors"
+                    className="w-full bg-[#f4f4f2] text-[#111111] text-[10px] sm:text-[11px] uppercase tracking-[0.14em] px-3 py-2.5 sm:py-3 border border-[#e5e5e3] focus:outline-none focus:border-[#111111] transition-colors"
                   >
                     <option>#001–#050 (Founders)</option>
                     <option>#051–#150 (Patrons)</option>
@@ -121,13 +121,13 @@ export default function PriorityAccessModal({
                 </div>
 
                 <div>
-                  <label className="block text-[10px] uppercase tracking-[0.2em] font-semibold text-[#111111] mb-2">
+                  <label className="block text-[9px] sm:text-[10px] uppercase tracking-[0.2em] font-semibold text-[#111111] mb-1.5 sm:mb-2">
                     Application Ritual
                   </label>
                   <select
                     value={discipline}
                     onChange={(e) => setDiscipline(e.target.value)}
-                    className="w-full bg-[#f4f4f2] text-[#111111] text-[11px] uppercase tracking-[0.14em] px-3 py-3 border border-[#e5e5e3] focus:outline-none focus:border-[#111111] transition-colors"
+                    className="w-full bg-[#f4f4f2] text-[#111111] text-[10px] sm:text-[11px] uppercase tracking-[0.14em] px-3 py-2.5 sm:py-3 border border-[#e5e5e3] focus:outline-none focus:border-[#111111] transition-colors"
                   >
                     <option>Private Residence</option>
                     <option>Hospitality & Fine Dining</option>
@@ -136,10 +136,10 @@ export default function PriorityAccessModal({
                 </div>
               </div>
 
-              <div className="pt-4">
+              <div className="pt-2 sm:pt-4">
                 <button
                   type="submit"
-                  className="w-full bg-[#111111] text-[#f9f9f7] py-4 text-[11px] uppercase tracking-[0.2em] font-medium hover:bg-[#2b2b2b] transition-all cursor-pointer border border-[#111111]"
+                  className="w-full bg-[#111111] text-[#f9f9f7] py-3.5 sm:py-4 text-[10px] sm:text-[11px] uppercase tracking-[0.2em] font-medium hover:bg-[#2b2b2b] transition-all cursor-pointer border border-[#111111]"
                 >
                   Confirm Priority Request
                 </button>

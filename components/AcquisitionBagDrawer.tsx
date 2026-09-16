@@ -56,10 +56,10 @@ export default function AcquisitionBagDrawer({
           {quantity > 0 ? (
             <div className="space-y-6">
               {/* Product Item Card */}
-              <div className="bg-[#f4f4f2] border border-[#e5e5e3] p-4 flex gap-4">
-                <div className="relative w-24 h-24 bg-[#eeeeec] border border-[#e5e5e3] shrink-0 overflow-hidden">
+              <div className="bg-[#f4f4f2] border border-[#e5e5e3] p-3 sm:p-4 flex gap-3 sm:gap-4">
+                <div className="relative w-20 h-20 sm:w-24 sm:h-24 bg-[#eeeeec] border border-[#e5e5e3] shrink-0 overflow-hidden">
                   <Image
-                    src="https://drive.google.com/file/d/1ObMqle7rqHnjfZa2-hGrGNDHSWz0E-Rg/view?usp=sharing"
+                    src="/images/dining-ritual.png"
                     alt="The Glint Plate"
                     fill
                     referrerPolicy="no-referrer"
@@ -67,15 +67,15 @@ export default function AcquisitionBagDrawer({
                   />
                 </div>
 
-                <div className="flex-1 flex flex-col justify-between">
+                <div className="flex-1 flex flex-col justify-between min-w-0">
                   <div>
                     <div className="text-[8px] uppercase tracking-[0.22em] text-[#c5a059] font-medium">
                       Object 01 · Batch 01
                     </div>
-                    <h4 className="font-[family-name:var(--font-cormorant)] text-[18px] font-light text-[#111111] leading-tight">
+                    <h4 className="font-[family-name:var(--font-cormorant)] text-[16px] sm:text-[18px] font-light text-[#111111] leading-tight truncate sm:whitespace-normal">
                       The Glint Plate (280mm)
                     </h4>
-                    <div className="text-[12px] font-medium text-[#111111] mt-1">
+                    <div className="text-[12px] font-medium text-[#111111] mt-0.5 sm:mt-1">
                       ${pricePerItem} USD
                     </div>
                   </div>
@@ -85,16 +85,18 @@ export default function AcquisitionBagDrawer({
                     <div className="flex items-center border border-[#e5e5e3] bg-[#f9f9f7]">
                       <button
                         onClick={() => onUpdateQuantity(Math.max(1, quantity - 1))}
-                        className="px-2.5 py-1 text-[#111111] hover:bg-[#e5e5e3] transition-colors text-[11px]"
+                        className="w-8 h-8 flex items-center justify-center text-[#111111] hover:bg-[#e5e5e3] transition-colors text-[11px]"
+                        aria-label="Decrease quantity"
                       >
                         <Minus className="w-3 h-3" />
                       </button>
-                      <span className="px-3 text-[11px] font-mono font-medium text-[#111111]">
+                      <span className="px-2.5 text-[11px] font-mono font-medium text-[#111111]">
                         {quantity}
                       </span>
                       <button
                         onClick={() => onUpdateQuantity(Math.min(6, quantity + 1))}
-                        className="px-2.5 py-1 text-[#111111] hover:bg-[#e5e5e3] transition-colors text-[11px]"
+                        className="w-8 h-8 flex items-center justify-center text-[#111111] hover:bg-[#e5e5e3] transition-colors text-[11px]"
+                        aria-label="Increase quantity"
                       >
                         <Plus className="w-3 h-3" />
                       </button>
@@ -102,7 +104,7 @@ export default function AcquisitionBagDrawer({
 
                     <button
                       onClick={() => onUpdateQuantity(0)}
-                      className="text-[9px] uppercase tracking-[0.16em] text-[#747878] hover:text-[#111111] underline underline-offset-2"
+                      className="text-[9px] uppercase tracking-[0.16em] text-[#747878] hover:text-[#111111] underline underline-offset-2 py-1 px-1 cursor-pointer"
                     >
                       Remove
                     </button>
