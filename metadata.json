@@ -1,0 +1,6 @@
+{
+  "name": "Maison Glint",
+  "description": "Modernist chromeware and precision-forged stainless steel tableware. Introducing The Glint Plate, Object 01.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
