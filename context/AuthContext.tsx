@@ -27,6 +27,7 @@ interface AuthContextType {
   signOutAccount: () => Promise<void>;
   sendResetEmail: (e: string) => Promise<void>;
   saveAddress: (address: ShippingAddress) => Promise<void>;
+  updateUserProfile: (data: Partial<UserProfile>) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -242,6 +243,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const updateUserProfile = async (data: Partial<UserProfile>) => {
+    if (!user) return;
+    if (data.displayName && auth?.currentUser) {
+      try {
+        await updateProfile(auth.currentUser, { displayName: data.displayName });
+      } catch (err) {
+        console.warn('[Maison Glint Auth] updateProfile warning:', err);
+      }
+    }
+    setProfile((prev) => (prev ? { ...prev, ...data } : null));
+    if (db) {
+      const path = `users/${user.uid}`;
+      try {
+        await setDoc(
+          doc(db, 'users', user.uid),
+          {
+            ...data,
+            updatedAt: serverTimestamp(),
+          },
+          { merge: true }
+        );
+      } catch (err) {
+        handleFirestoreError(err, OperationType.UPDATE, path);
+      }
+    }
+  };
+
   const isAdmin = Boolean(
     user?.email &&
     Boolean(user.emailVerified || user.providerData?.some((p) => p.providerId === 'google.com')) &&
@@ -261,6 +289,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         signOutAccount,
         sendResetEmail,
         saveAddress,
+        updateUserProfile,
       }}
     >
       {children}
