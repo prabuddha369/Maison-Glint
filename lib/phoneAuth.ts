@@ -68,12 +68,24 @@ export async function verifyPhoneCode(
   };
 }
 
+export const isValidPhoneNumber = validatePhoneNumber;
+export const isValidPhone = validatePhoneNumber;
+export const formatPhone = formatPhoneNumber;
+export const sendVerificationCode = sendPhoneVerificationCode;
+export const verifyCode = verifyPhoneCode;
+
 const phoneAuth = {
   validatePhoneNumber,
   formatPhoneNumber,
   sendPhoneVerificationCode,
   verifyPhoneCode,
+  isValidPhoneNumber,
+  isValidPhone,
+  formatPhone,
+  sendVerificationCode,
+  verifyCode,
 };
 
 export default phoneAuth;
+
 

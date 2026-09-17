@@ -88,10 +88,57 @@ export async function verifyAddressWithApi(
   }
 }
 
+export function validatePostalCode(postalCode?: string | null): boolean {
+  if (!postalCode || typeof postalCode !== 'string') return false;
+  return postalCode.trim().length >= 3;
+}
+
+export function validateStreetAddress(street?: string | null): boolean {
+  if (!street || typeof street !== 'string') return false;
+  return street.trim().length >= 4;
+}
+
+export function validateCity(city?: string | null): boolean {
+  if (!city || typeof city !== 'string') return false;
+  return city.trim().length >= 2;
+}
+
+export function validateState(state?: string | null): boolean {
+  if (!state || typeof state !== 'string') return false;
+  return state.trim().length >= 1;
+}
+
+export function validateCountry(country?: string | null): boolean {
+  if (!country || typeof country !== 'string') return false;
+  return country.trim().length >= 2;
+}
+
+export function formatAddress(address: Partial<ShippingAddress>): string {
+  return [
+    address.line1,
+    address.line2,
+    `${address.city || ''}, ${address.state || ''} ${address.postalCode || ''}`.trim(),
+    address.country,
+  ]
+    .filter(Boolean)
+    .join(', ');
+}
+
+export const isValidAddress = (address: Partial<ShippingAddress>): boolean =>
+  validateAddress(address).isValid;
+
 const addressValidator = {
   validateAddress,
   verifyAddressWithApi,
+  validatePostalCode,
+  validateStreetAddress,
+  validateCity,
+  validateState,
+  validateCountry,
+  formatAddress,
+  isValidAddress,
 };
 
 export default addressValidator;
+
 

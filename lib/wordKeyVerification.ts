@@ -59,10 +59,21 @@ export function generateWordKey(length: number = 3): string {
   return selected.join('-');
 }
 
+export const validateWordKey = verifyWordKey;
+export const isValidWordKey = (key: string, expected?: string): boolean =>
+  verifyWordKey(key, expected).valid;
+export const verifyKey = verifyWordKey;
+export const generateKey = generateWordKey;
+
 const wordKeyVerification = {
   verifyWordKey,
   generateWordKey,
+  validateWordKey,
+  isValidWordKey,
+  verifyKey,
+  generateKey,
 };
 
 export default wordKeyVerification;
+
 
