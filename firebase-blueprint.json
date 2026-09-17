@@ -1,0 +1,106 @@
+{
+  "entities": {
+    "Product": {
+      "title": "Product",
+      "description": "Maison Glint sculpted chromeware product catalog item",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 200 },
+        "description": { "type": "string", "maxLength": 2000 },
+        "price": { "type": "number" },
+        "currency": { "type": "string", "maxLength": 10 },
+        "images": { "type": "array" },
+        "specifications": { "type": "object" },
+        "inStock": { "type": "boolean" },
+        "createdAt": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["id", "name", "price", "currency", "inStock"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Verified customer order capturing items, verified credentials, and pending gateway status",
+      "type": "object",
+      "properties": {
+        "orderId": { "type": "string", "maxLength": 128 },
+        "userId": { "type": "string", "maxLength": 128 },
+        "customer": { "type": "object" },
+        "shippingAddress": { "type": "object" },
+        "items": { "type": "array" },
+        "subtotal": { "type": "number" },
+        "shippingCost": { "type": "number" },
+        "total": { "type": "number" },
+        "status": { "type": "string", "enum": ["pending_payment", "paid", "processing", "shipped", "cancelled"], "maxLength": 32 },
+        "paymentGateway": { "type": "string", "maxLength": 64 },
+        "verificationMetadata": { "type": "object" },
+        "createdAt": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["orderId", "userId", "customer", "shippingAddress", "items", "total", "status"]
+    },
+    "User": {
+      "title": "User",
+      "description": "Verified atelier customer profile, phone & email authentication status, and saved addresses",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "maxLength": 128 },
+        "email": { "type": "string", "maxLength": 256 },
+        "displayName": { "type": "string", "maxLength": 200 },
+        "firstName": { "type": "string", "maxLength": 100 },
+        "lastName": { "type": "string", "maxLength": 100 },
+        "phoneNumber": { "type": "string", "maxLength": 32 },
+        "phoneVerified": { "type": "boolean" },
+        "emailVerified": { "type": "boolean" },
+        "savedAddresses": { "type": "array" },
+        "createdAt": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["uid", "email"]
+    },
+    "EmailVerification": {
+      "title": "EmailVerification",
+      "description": "Luxury word-key passkey for email verification",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "maxLength": 128 },
+        "email": { "type": "string", "maxLength": 256 },
+        "wordKey": { "type": "string", "maxLength": 16 },
+        "expiresAt": { "type": "number" },
+        "verified": { "type": "boolean" }
+      },
+      "required": ["userId", "email", "wordKey", "expiresAt"]
+    },
+    "Admin": {
+      "title": "Admin",
+      "description": "Authorized atelier administrators",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "maxLength": 128 },
+        "email": { "type": "string", "maxLength": 256 },
+        "role": { "type": "string", "maxLength": 64 },
+        "createdAt": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["uid", "email"]
+    }
+  },
+  "firestore": {
+    "/products/{productId}": {
+      "schema": "Product",
+      "description": "Storefront product catalog and inventory availability"
+    },
+    "/orders/{orderId}": {
+      "schema": "Order",
+      "description": "Captured verified customer acquisitions and payment gateway tracking"
+    },
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Authenticated user records, verification flags, and saved addresses"
+    },
+    "/emailVerifications/{verificationId}": {
+      "schema": "EmailVerification",
+      "description": "Editorial passkeys for atelier client email authentication"
+    },
+    "/admins/{adminId}": {
+      "schema": "Admin",
+      "description": "Atelier administrator permissions lookup"
+    }
+  }
+}

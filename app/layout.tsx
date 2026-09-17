@@ -1,5 +1,6 @@
 import type {Metadata} from 'next';
 import {Cormorant_Garamond, Inter} from 'next/font/google';
+import Providers from '../components/Providers';
 import './globals.css'; // Global styles
 
 const cormorant = Cormorant_Garamond({
@@ -36,7 +37,7 @@ export default function RootLayout({children}: {children: React.ReactNode}) {
   return (
     <html lang="en" className={`${cormorant.variable} ${inter.variable} scroll-smooth`}>
       <body className="bg-[#f9f9f7] text-[#111111] antialiased selection:bg-[#111111] selection:text-[#f9f9f7]" suppressHydrationWarning>
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

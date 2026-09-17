@@ -1,12 +1,14 @@
 'use client';
 
 import { useState } from 'react';
+import { useCart } from '@/hooks/useCart';
 import TopAnnouncement from '@/components/TopAnnouncement';
 import Navbar from '@/components/Navbar';
 import HeroSection from '@/components/HeroSection';
 import ObjectShowcase from '@/components/ObjectShowcase';
 import FinishPhilosophy from '@/components/FinishPhilosophy';
 import Specifications from '@/components/Specifications';
+import CatalogGrid from '@/components/CatalogGrid';
 import AtTheTable from '@/components/AtTheTable';
 import AcquisitionSection from '@/components/AcquisitionSection';
 import Footer from '@/components/Footer';
@@ -15,6 +17,7 @@ import AcquisitionBagDrawer from '@/components/AcquisitionBagDrawer';
 import RitualModal from '@/components/RitualModal';
 
 export default function Home() {
+  const { openCart, itemCount } = useCart();
   const [priorityModalOpen, setPriorityModalOpen] = useState(false);
   const [bagDrawerOpen, setBagDrawerOpen] = useState(false);
   const [bagCount, setBagCount] = useState(1);
@@ -63,9 +66,9 @@ export default function Home() {
 
       {/* Main Luxury Navigation */}
       <Navbar
-        onOpenBag={() => setBagDrawerOpen(true)}
+        onOpenBag={openCart}
         onOpenAllocation={() => setPriorityModalOpen(true)}
-        bagCount={bagCount}
+        bagCount={itemCount}
       />
 
       {/* Hero Section */}
@@ -85,7 +88,10 @@ export default function Home() {
       {/* 03 / Specifications */}
       <Specifications />
 
-      {/* 04 / At The Table */}
+      {/* 04 / The Atelier Collection (Dynamic Multi-Object Catalog) */}
+      <CatalogGrid />
+
+      {/* 05 / At The Table */}
       <AtTheTable onSelectRitual={(ritual) => setSelectedRitual(ritual)} />
 
       {/* Acquisition & Allocation Waitlist */}

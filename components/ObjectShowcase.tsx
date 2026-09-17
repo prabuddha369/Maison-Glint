@@ -2,8 +2,11 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { Plus, Minus } from 'lucide-react';
+import Link from 'next/link';
+import { Plus, Minus, ShoppingBag, ArrowUpRight, Sparkles } from 'lucide-react';
 import { motion } from 'motion/react';
+import { useCart } from '../hooks/useCart';
+import { useProduct } from '../lib/catalog';
 
 interface ObjectShowcaseProps {
   onRequestPriorityAccess: () => void;
@@ -12,6 +15,8 @@ interface ObjectShowcaseProps {
 export default function ObjectShowcase({
   onRequestPriorityAccess,
 }: ObjectShowcaseProps) {
+  const { addItem } = useCart();
+  const { product, loading } = useProduct('object-01');
   // Accordion state
   const [openAccordion, setOpenAccordion] = useState<string | null>('details');
 
@@ -20,6 +25,8 @@ export default function ObjectShowcase({
   };
 
   const luxuryEase = [0.16, 1, 0.3, 1] as const;
+  const showcaseImage = product.images?.[2] || product.images?.[0] || '/images/scallops-macro.png';
+  const priceDisplay = product.price ? `$${product.price}` : '$680';
 
   return (
     <section
@@ -67,16 +74,17 @@ export default function ObjectShowcase({
             {/* Macro Close-up Image Container */}
             <div className="relative w-full aspect-[4/3] bg-[#eeeeec] border border-[#e5e5e3] overflow-hidden group">
               <Image
-                src="/images/scallops-macro.png"
-                alt="Macro profile of the mirror-polished steel rim bevel"
+                src={showcaseImage}
+                alt={product.name || 'Macro profile of the mirror-polished steel rim bevel'}
                 fill
+                sizes="(max-width: 1024px) 100vw, 58vw"
                 referrerPolicy="no-referrer"
                 className="object-cover object-center group-hover:scale-[1.02] transition-transform duration-700 ease-out"
               />
 
               {/* Top-left Pill Badge */}
               <div className="absolute top-3 left-3 sm:top-5 sm:left-5 bg-[#f9f9f7]/95 backdrop-blur-sm border border-[#e5e5e3] px-2.5 sm:px-3.5 py-1 sm:py-1.5 text-[8px] sm:text-[9px] uppercase tracking-[0.18em] sm:tracking-[0.2em] font-medium text-[#111111] shadow-xs">
-                Optical Rim Bevel · Profile
+                {product.specifications?.finish || 'Optical Rim Bevel · Profile'}
               </div>
 
               {/* Reflection Accent Line */}
@@ -117,17 +125,17 @@ export default function ObjectShowcase({
             transition={{ duration: 0.9, ease: luxuryEase, delay: 0.2 }}
             className="lg:col-span-5 flex flex-col"
           >
-            <div className="text-[9px] sm:text-[10px] uppercase tracking-[0.25em] font-medium text-[#c5a059] mb-1.5 sm:mb-2">
-              Maison Glint / Object 01
+            <div className="text-[9px] sm:text-[10px] uppercase tracking-[0.25em] font-medium text-[#c5a059] mb-1.5 sm:mb-2 flex items-center space-x-2">
+              <span>Maison Glint / {product.id.startsWith('object-') ? product.id.split('-').slice(0, 2).join(' ').toUpperCase() : 'OBJECT 01'}</span>
+              {loading && <span className="w-1.5 h-1.5 bg-[#c5a059] animate-ping" />}
             </div>
 
             <h3 className="font-[family-name:var(--font-cormorant)] text-[32px] sm:text-[40px] md:text-[44px] font-light text-[#111111] leading-tight mb-2 sm:mb-3">
-              The Glint Plate
+              {product.name}
             </h3>
 
             <p className="text-[13px] sm:text-[14px] text-[#444748] font-light leading-[1.6] mb-6 sm:mb-8">
-              Stainless steel · Mirror polish. A considered canvas for whatever
-              you bring to the table.
+              {product.description}
             </p>
 
             {/* Status & Priority Request Card */}
@@ -135,22 +143,45 @@ export default function ObjectShowcase({
               <div className="flex flex-wrap items-center justify-between gap-2 mb-3 sm:mb-4 text-[9px] sm:text-[10px] uppercase tracking-[0.16em] sm:tracking-[0.18em]">
                 <span className="font-semibold text-[#747878]">Status</span>
                 <span className="bg-[#eeeeec] text-[#111111] px-2 sm:px-2.5 py-1 border border-[#e0e0de] font-medium">
-                  The First Release — Coming Soon
+                  {product.editionRemaining !== undefined
+                    ? `Edition: ${product.editionRemaining} of ${product.editionTotal || 250} Exemplars`
+                    : 'The First Release — Active Allocation'}
                 </span>
               </div>
 
               <p className="text-[12px] sm:text-[13px] text-[#444748] font-light leading-[1.6] mb-4 sm:mb-6">
-                Serialized private batch allocation opens shortly. Edition
-                verification certificate included with each boxed exemplar.
+                Serialized private batch allocation active in Atelier catalog. Edition
+                verification certificate and serial hallmark included with each boxed exemplar.
               </p>
 
-              <button
-                id="request-priority-access-btn"
-                onClick={onRequestPriorityAccess}
-                className="w-full bg-[#111111] text-[#f9f9f7] py-3.5 px-4 sm:px-6 text-[10px] sm:text-[11px] uppercase tracking-[0.18em] sm:tracking-[0.2em] font-medium hover:bg-[#2b2b2b] transition-all cursor-pointer text-center border border-[#111111]"
-              >
-                Request Priority Access
-              </button>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <button
+                  id="acquire-plate-btn"
+                  onClick={() => addItem(product, 1, product.specifications)}
+                  className="flex-1 bg-[#111111] text-[#f9f9f7] py-3.5 px-4 text-[10px] sm:text-[11px] uppercase tracking-[0.18em] sm:tracking-[0.2em] font-medium hover:bg-[#2b2b2b] transition-all cursor-pointer text-center border border-[#111111] flex items-center justify-center space-x-2"
+                >
+                  <ShoppingBag className="w-3.5 h-3.5 text-[#c5a059]" />
+                  <span>Acquire Edition · {priceDisplay}</span>
+                </button>
+                <button
+                  id="request-priority-access-btn"
+                  onClick={onRequestPriorityAccess}
+                  className="bg-transparent text-[#111111] py-3.5 px-4 text-[10px] sm:text-[11px] uppercase tracking-[0.18em] font-medium hover:bg-[#ecece9] transition-all cursor-pointer text-center border border-[#111111]"
+                >
+                  Priority Access
+                </button>
+              </div>
+
+              <div className="mt-3 pt-3 border-t border-[#e0e0de] flex items-center justify-between text-[10px] uppercase tracking-[0.16em] text-[#747878]">
+                <span>Provenance: {product.specifications?.origin || 'Atelier Zurich / Milan'}</span>
+                <Link
+                  href={`/product/${product.id}`}
+                  className="inline-flex items-center space-x-1 text-[#111111] hover:text-[#c5a059] transition-colors"
+                >
+                  <span>Monograph View</span>
+                  <ArrowUpRight className="w-3 h-3" />
+                </Link>
+              </div>
             </div>
 
             {/* Accordion Group */}
@@ -176,10 +207,12 @@ export default function ObjectShowcase({
                       Crafted from surgical-grade AISI 316 austenitic stainless steel, resistant to food acids, citrus, and extreme temperature swings.
                     </p>
                     <div className="grid grid-cols-2 gap-2 pt-2 text-[12px]">
-                      <div><span className="font-medium text-[#111111]">Outer Diameter:</span> 280 mm</div>
-                      <div><span className="font-medium text-[#111111]">Rim Height:</span> 18 mm</div>
-                      <div><span className="font-medium text-[#111111]">Core Gauge:</span> 2.5 mm</div>
-                      <div><span className="font-medium text-[#111111]">Net Mass:</span> 640 grams</div>
+                      <div><span className="font-medium text-[#111111]">Outer Diameter:</span> {product.specifications?.diameter || '280 mm'}</div>
+                      <div><span className="font-medium text-[#111111]">Rim Height:</span> {product.specifications?.rimHeight || '18 mm'}</div>
+                      <div><span className="font-medium text-[#111111]">Core Gauge:</span> {product.specifications?.gauge || '18-Gauge Surgical 316L Core'}</div>
+                      <div><span className="font-medium text-[#111111]">Net Mass:</span> {product.specifications?.weight || '1,420 grams'}</div>
+                      <div><span className="font-medium text-[#111111]">Finish:</span> {product.specifications?.finish || 'Mirror Chrome'}</div>
+                      <div><span className="font-medium text-[#111111]">Origin:</span> {product.specifications?.origin || 'Atelier Zurich / Milan'}</div>
                     </div>
                   </div>
                 )}

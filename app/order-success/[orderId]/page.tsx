@@ -1,0 +1,254 @@
+'use client';
+
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
+import Image from 'next/image';
+import Link from 'next/link';
+import {
+  CheckCircle2,
+  Clock,
+  ArrowRight,
+  Package,
+  MapPin,
+  Mail,
+  ShieldCheck,
+  CreditCard,
+} from 'lucide-react';
+import { getOrderById } from '../../../lib/payment';
+import type { Order } from '../../../types/store';
+
+export default function OrderSuccessPage() {
+  const params = useParams();
+  const orderId = params?.orderId as string;
+  const [order, setOrder] = useState<Order | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    async function loadOrder() {
+      if (!orderId) return;
+      try {
+        const found = await getOrderById(orderId);
+        setOrder(found);
+      } catch (e) {
+        console.error('Failed to load order', e);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadOrder();
+  }, [orderId]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#f9f9f7] flex items-center justify-center p-6 text-center">
+        <div className="font-[family-name:var(--font-cormorant)] text-2xl text-[#111111] animate-pulse">
+          Retrieving Atelier Vault Order Manifest...
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-[#f9f9f7] text-[#111111]">
+      {/* Navigation Bar */}
+      <header className="border-b border-[#e5e5e3] bg-[#ffffff]">
+        <div className="max-w-5xl mx-auto px-6 h-20 flex items-center justify-between">
+          <Link href="/" className="font-[family-name:var(--font-cormorant)] text-2xl tracking-[0.18em] uppercase text-[#111111] font-light">
+            Maison Glint
+          </Link>
+          <div className="flex items-center space-x-4">
+            <Link
+              href="/account"
+              className="text-[10px] uppercase tracking-[0.16em] text-[#747878] hover:text-[#111111] transition-colors"
+            >
+              Collector Account
+            </Link>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Order Confirmation Block */}
+      <main className="max-w-4xl mx-auto px-6 py-12 sm:py-16">
+        {/* Banner */}
+        <div className="bg-[#ffffff] border border-[#e5e5e3] p-8 sm:p-12 mb-8 shadow-sm">
+          <div className="flex items-start space-x-4 sm:space-x-6">
+            <div className="w-12 h-12 border border-[#111111] bg-[#111111] text-[#f9f9f7] flex items-center justify-center shrink-0">
+              <CheckCircle2 className="w-6 h-6 text-[#c5a059]" />
+            </div>
+
+            <div className="flex-1">
+              <div className="flex flex-wrap items-center gap-3 mb-2">
+                <span className="text-[10px] uppercase tracking-[0.24em] font-semibold text-[#747878]">
+                  Order Registered
+                </span>
+                <span className="inline-flex items-center space-x-1.5 px-2.5 py-1 bg-[#fff8e7] border border-[#e8d5aa] text-[#8a681c] text-[10px] uppercase tracking-[0.15em] font-medium">
+                  <Clock className="w-3 h-3 text-[#c5a059]" />
+                  <span>Pending Gateway Settlement</span>
+                </span>
+              </div>
+
+              <h1 className="font-[family-name:var(--font-cormorant)] text-3xl sm:text-4xl font-light text-[#111111]">
+                Acquisition Confirmed: {order?.orderId || orderId}
+              </h1>
+
+              <p className="text-[13px] text-[#747878] font-light mt-3 leading-relaxed">
+                Your bespoke allocation has been registered in the Maison Glint ledger. All units are currently allocated to your reservation docket.
+              </p>
+            </div>
+          </div>
+
+          {/* Payment Gateway Handoff Info */}
+          <div className="mt-8 pt-8 border-t border-[#e5e5e3] grid grid-cols-1 sm:grid-cols-3 gap-6 text-[11px]">
+            <div>
+              <span className="uppercase tracking-[0.16em] text-[#747878] block mb-1">
+                Order Reference
+              </span>
+              <span className="font-mono text-base font-semibold text-[#111111]">
+                {order?.orderId || orderId}
+              </span>
+            </div>
+
+            <div>
+              <span className="uppercase tracking-[0.16em] text-[#747878] block mb-1">
+                Settlement Status
+              </span>
+              <span className="font-medium text-[#111111] flex items-center space-x-1.5">
+                <CreditCard className="w-3.5 h-3.5 text-[#c5a059]" />
+                <span>Pending Gateway Callback</span>
+              </span>
+            </div>
+
+            <div>
+              <span className="uppercase tracking-[0.16em] text-[#747878] block mb-1">
+                Dispatch Target
+              </span>
+              <span className="font-medium text-[#111111]">
+                {order?.shippingMethod?.estimatedDelivery || '8–12 Business Days'}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Order Details & Summary */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
+          {/* Items */}
+          <div className="md:col-span-7 bg-[#ffffff] border border-[#e5e5e3] p-6 sm:p-8">
+            <h2 className="font-[family-name:var(--font-cormorant)] text-2xl font-light text-[#111111] mb-6 flex items-center justify-between border-b border-[#f0f0ee] pb-3">
+              <span>Secured Items</span>
+              <span className="text-[12px] uppercase tracking-[0.15em] text-[#747878] font-sans">
+                {order?.items?.length || 0} Object(s)
+              </span>
+            </h2>
+
+            <div className="divide-y divide-[#f0f0ee]">
+              {order?.items?.map((item, idx) => (
+                <div key={idx} className="py-4 flex items-center gap-4">
+                  <div className="relative w-16 h-16 bg-[#ecece9] border border-[#e5e5e3] shrink-0">
+                    <Image
+                      src={item.image || '/images/fig-01-table.png'}
+                      alt={item.name}
+                      fill
+                      sizes="64px"
+                      className="object-cover"
+                      referrerPolicy="no-referrer"
+                    />
+                  </div>
+
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-[family-name:var(--font-cormorant)] text-lg font-medium text-[#111111] truncate">
+                      {item.name}
+                    </h3>
+                    {item.specifications?.gauge && (
+                      <p className="text-[10px] uppercase tracking-[0.12em] text-[#747878]">
+                        {item.specifications.gauge}
+                      </p>
+                    )}
+                    <span className="text-[11px] text-[#747878]">Qty: {item.quantity}</span>
+                  </div>
+
+                  <span className="font-[family-name:var(--font-cormorant)] text-base font-semibold text-[#111111]">
+                    ${(item.price * item.quantity).toLocaleString()} USD
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            {/* Financials */}
+            <div className="border-t border-[#e5e5e3] pt-4 mt-4 space-y-2 text-[11px] uppercase tracking-[0.14em]">
+              <div className="flex justify-between text-[#747878]">
+                <span>Subtotal</span>
+                <span className="text-[#111111]">${order?.subtotal?.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between text-[#747878]">
+                <span>Transit</span>
+                <span className="text-[#111111]">
+                  {order?.shippingCost === 0 ? 'Complimentary' : `$${order?.shippingCost}`}
+                </span>
+              </div>
+              <div className="flex justify-between text-[#747878]">
+                <span>Import Tax & Atelier Duties</span>
+                <span className="text-[#111111]">${order?.taxEstimate?.toLocaleString()}</span>
+              </div>
+              <div className="pt-3 border-t border-[#e5e5e3] flex justify-between items-baseline text-[#111111] font-semibold">
+                <span className="text-[12px]">Total Balance</span>
+                <span className="font-[family-name:var(--font-cormorant)] text-xl font-bold">
+                  ${order?.total?.toLocaleString()} USD
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Delivery Coordinates */}
+          <div className="md:col-span-5 space-y-6">
+            <div className="bg-[#ffffff] border border-[#e5e5e3] p-6 sm:p-8">
+              <h3 className="text-[10px] uppercase tracking-[0.2em] font-semibold text-[#747878] mb-4 flex items-center space-x-2">
+                <MapPin className="w-3.5 h-3.5 text-[#c5a059]" />
+                <span>Delivery Address</span>
+              </h3>
+
+              <div className="text-[12px] text-[#111111] space-y-1">
+                <div className="font-semibold text-sm">
+                  {order?.shippingAddress?.fullName || order?.customer?.fullName}
+                </div>
+                <div>{order?.shippingAddress?.line1}</div>
+                {order?.shippingAddress?.line2 && <div>{order?.shippingAddress.line2}</div>}
+                <div>
+                  {order?.shippingAddress?.city}, {order?.shippingAddress?.state}{' '}
+                  {order?.shippingAddress?.postalCode}
+                </div>
+                <div>{order?.shippingAddress?.country}</div>
+                <div className="pt-2 text-[#747878]">{order?.shippingAddress?.phone}</div>
+              </div>
+
+              <div className="mt-6 pt-6 border-t border-[#f0f0ee]">
+                <h4 className="text-[10px] uppercase tracking-[0.2em] font-semibold text-[#747878] mb-2 flex items-center space-x-2">
+                  <Mail className="w-3.5 h-3.5 text-[#c5a059]" />
+                  <span>Telemetry Updates</span>
+                </h4>
+                <p className="text-[12px] text-[#111111]">{order?.customer?.email}</p>
+              </div>
+            </div>
+
+            {/* Next Steps */}
+            <div className="bg-[#ffffff] border border-[#e5e5e3] p-6 text-center space-y-4">
+              <Link
+                href="/account"
+                className="w-full py-3.5 bg-[#111111] text-[#f9f9f7] hover:bg-[#2b2b2b] text-[10px] uppercase tracking-[0.2em] font-semibold flex items-center justify-center space-x-2 transition-all border border-[#111111]"
+              >
+                <span>View in Customer Portal</span>
+                <ArrowRight className="w-3.5 h-3.5 text-[#c5a059]" />
+              </Link>
+
+              <Link
+                href="/"
+                className="block text-[10px] uppercase tracking-[0.16em] text-[#747878] hover:text-[#111111] transition-colors"
+              >
+                Return to Storefront
+              </Link>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}

@@ -106,11 +106,18 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href="#specifications"
-                  onClick={(e) => scrollToSection(e, '#specifications')}
+                  href="/account"
                   className="hover:text-[#111111] transition-colors"
                 >
-                  Object 01 Archive
+                  Collector Account
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/admin"
+                  className="hover:text-[#111111] transition-colors text-[#747878]"
+                >
+                  Atelier Admin
                 </a>
               </li>
             </ul>
