@@ -7,6 +7,135 @@ export interface ProductSpecifications {
   [key: string]: string | undefined;
 }
 
+export interface ProductImage {
+  id?: string;
+  url: string;
+  alt: string;
+  role: 'catalog' | 'hero' | 'showcase' | 'ritual' | 'detail' | string;
+  sortOrder: number;
+}
+
+export interface ProductHeroSlide {
+  id?: string;
+  imageUrl: string;
+  alt: string;
+  category: string;
+  title: string;
+  figureLabel: string;
+  tabLabel: string;
+  badge: string;
+  sortOrder: number;
+}
+
+export interface ProductFeature {
+  id?: string;
+  label: string;
+  description: string;
+  sortOrder: number;
+}
+
+export interface ProductPanel {
+  id?: string;
+  title: string;
+  body: string;
+  sortOrder: number;
+}
+
+export interface ProductFinishPreset {
+  id?: string;
+  key: string;
+  label: string;
+  angle: number;
+  roughness: string;
+  dispersion: string;
+  sortOrder: number;
+}
+
+export interface ProductSpecificationRow {
+  id?: string;
+  label: string;
+  metric: string;
+  imperial: string;
+  sortOrder: number;
+}
+
+export interface ProductRitualItem {
+  id?: string;
+  label: string;
+  sortOrder: number;
+}
+
+export interface ProductRitual {
+  id?: string;
+  title: string;
+  subtitle: string;
+  imageUrl: string;
+  imageAlt: string;
+  description: string;
+  items: ProductRitualItem[];
+  sortOrder: number;
+}
+
+export interface ProductEditorialContent {
+  hero: {
+    eyebrow: string;
+    editionLabel: string;
+    description: string;
+    discoverLabel: string;
+    reserveLabel: string;
+    materialLabel: string;
+    materialValue: string;
+    craftLabel: string;
+    craftValue: string;
+    editionLabelMeta: string;
+    editionValue: string;
+    slides: ProductHeroSlide[];
+  };
+  showcase: {
+    sectionLabel: string;
+    title: string;
+    titleEmphasis: string;
+    description: string;
+    finishBadge: string;
+    statusLabel: string;
+    statusDescription: string;
+    provenanceLabel: string;
+    monographLabel: string;
+    acquireLabel: string;
+    priorityLabel: string;
+    features: ProductFeature[];
+    panels: ProductPanel[];
+  };
+  finish: {
+    sectionLabel: string;
+    title: string;
+    titleEmphasis: string;
+    paragraphs: string[];
+    presetLabel: string;
+    spectrumLabel: string;
+    roughnessLabel: string;
+    presets: ProductFinishPreset[];
+  };
+  specifications: {
+    sectionLabel: string;
+    title: string;
+    titleEmphasis: string;
+    description: string;
+    metricToggleLabel: string;
+    imperialToggleLabel: string;
+    serialStamp: string;
+    archiveLabel: string;
+    rows: ProductSpecificationRow[];
+  };
+  table: {
+    sectionLabel: string;
+    title: string;
+    titleEmphasis: string;
+    description: string;
+    rituals: ProductRitual[];
+  };
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -19,6 +148,7 @@ export interface Product {
   editionTotal?: number;
   editionRemaining?: number;
   createdAt?: string;
+  editorial?: ProductEditorialContent;
 }
 
 export interface CartItem {
@@ -102,7 +232,6 @@ export interface UserProfile {
   lastName?: string;
   phoneNumber?: string;
   phoneVerified?: boolean;
-  emailVerified?: boolean;
   savedAddresses?: ShippingAddress[];
   createdAt?: string;
   updatedAt?: string;

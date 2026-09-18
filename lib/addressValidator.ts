@@ -5,9 +5,15 @@
 
 import type { ShippingAddress } from '../types/store';
 
+export type AddressValidationStatus = 'invalid' | 'validated' | 'acknowledged' | 'mismatch';
+
 export interface AddressValidationResult {
   isValid: boolean;
+  valid: boolean;
   errors: Record<string, string>;
+  status: AddressValidationStatus;
+  message: string;
+  provider: 'OlaMaps' | 'StandardPostalVerification' | 'ManualAcknowledgement';
   formattedAddress?: string;
   source?: string;
 }
@@ -53,7 +59,13 @@ export function validateAddress(address: Partial<ShippingAddress>): AddressValid
 
   return {
     isValid,
+    valid: isValid,
     errors,
+    status: isValid ? 'validated' : 'invalid',
+    message: isValid
+      ? 'Address validated successfully.'
+      : Object.values(errors)[0] || 'Address validation failed.',
+    provider: 'StandardPostalVerification',
     formattedAddress,
     source: 'client_validation',
   };

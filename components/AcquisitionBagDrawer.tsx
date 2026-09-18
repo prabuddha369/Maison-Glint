@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { X, Plus, Minus, ShieldCheck, ArrowRight, Check } from 'lucide-react';
+import { X, Plus, Minus, ShieldCheck, ArrowRight } from 'lucide-react';
+import type { Product } from '../types/store';
 
 interface AcquisitionBagDrawerProps {
   isOpen: boolean;
@@ -10,6 +11,7 @@ interface AcquisitionBagDrawerProps {
   quantity: number;
   onUpdateQuantity: (q: number) => void;
   onProceedCheckout: () => void;
+  product?: Product;
 }
 
 export default function AcquisitionBagDrawer({
@@ -18,9 +20,10 @@ export default function AcquisitionBagDrawer({
   quantity,
   onUpdateQuantity,
   onProceedCheckout,
+  product,
 }: AcquisitionBagDrawerProps) {
   const [packagingType, setPackagingType] = useState<'archival' | 'hospitality'>('archival');
-  const pricePerItem = 280;
+  const pricePerItem = product?.price || 0;
   const subtotal = pricePerItem * quantity;
 
   if (!isOpen) return null;
@@ -59,8 +62,8 @@ export default function AcquisitionBagDrawer({
               <div className="bg-[#f4f4f2] border border-[#e5e5e3] p-3 sm:p-4 flex gap-3 sm:gap-4">
                 <div className="relative w-20 h-20 sm:w-24 sm:h-24 bg-[#eeeeec] border border-[#e5e5e3] shrink-0 overflow-hidden">
                   <Image
-                    src="/images/dining-ritual.png"
-                    alt="The Glint Plate"
+                    src={product?.images?.[0] || '/images/fig-01-table.png'}
+                    alt={product?.name || 'Selected product'}
                     fill
                     referrerPolicy="no-referrer"
                     className="object-cover"
@@ -70,13 +73,13 @@ export default function AcquisitionBagDrawer({
                 <div className="flex-1 flex flex-col justify-between min-w-0">
                   <div>
                     <div className="text-[8px] uppercase tracking-[0.22em] text-[#c5a059] font-medium">
-                      Object 01 · Batch 01
+                      {product?.id || 'Selected edition'}
                     </div>
                     <h4 className="font-[family-name:var(--font-cormorant)] text-[16px] sm:text-[18px] font-light text-[#111111] leading-tight truncate sm:whitespace-normal">
-                      The Glint Plate (280mm)
+                      {product?.name || 'Selected edition'}
                     </h4>
                     <div className="text-[12px] font-medium text-[#111111] mt-0.5 sm:mt-1">
-                      ${pricePerItem} USD
+                      ${pricePerItem} {product?.currency || 'USD'}
                     </div>
                   </div>
 
@@ -169,7 +172,7 @@ export default function AcquisitionBagDrawer({
                 }}
                 className="inline-flex items-center px-6 py-3 bg-[#111111] text-[#f9f9f7] text-[10px] uppercase tracking-[0.2em] font-medium"
               >
-                Add Object 01 Exemplar
+                Add {product?.name || 'an exemplar'}
               </button>
             </div>
           )}

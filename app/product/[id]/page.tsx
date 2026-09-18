@@ -53,9 +53,7 @@ export default function ProductDetailPage() {
     }
   };
 
-  const images = product.images && product.images.length > 0
-    ? product.images
-    : ['/images/fig-01-table.png', '/images/fig-02-profile.png', '/images/scallops-macro.png'];
+  const images = product.images || [];
 
   const otherObjects = allProducts.filter((p) => p.id !== product.id);
 
@@ -122,7 +120,7 @@ export default function ProductDetailPage() {
                 className="object-cover object-center transition-all duration-500"
               />
               <div className="absolute top-4 left-4 bg-[#f9f9f7]/95 backdrop-blur-sm border border-[#e5e5e3] px-3 py-1.5 text-[9px] uppercase tracking-[0.2em] font-medium text-[#111111]">
-                Plate Monograph · Figure 0{activeImageIndex + 1}
+                {product.editorial?.hero.slides[activeImageIndex]?.figureLabel || `Figure 0${activeImageIndex + 1}`}
               </div>
             </div>
 
@@ -158,8 +156,7 @@ export default function ProductDetailPage() {
                 Atelier Architectural Context
               </div>
               <p className="text-[13px] text-[#444748] font-light leading-relaxed">
-                Every edition is hand-finished in our Zurich & Milan ateliers, ensuring mirror refraction
-                surpasses 98% spectral clarity without industrial distortion.
+                {product.editorial?.showcase.description || product.description}
               </p>
             </div>
           </div>
@@ -202,8 +199,8 @@ export default function ProductDetailPage() {
                 />
               </div>
               <div className="text-[11px] text-[#747878] font-light flex items-center justify-between pt-1">
-                <span>Provenance Certificate Included</span>
-                <span className="text-[#111111]">Laser Hallmarked</span>
+                <span>{product.editorial?.showcase.statusLabel || 'Edition Status'}</span>
+                <span className="text-[#111111]">{product.specifications?.origin || product.name}</span>
               </div>
             </div>
 
@@ -318,7 +315,7 @@ export default function ProductDetailPage() {
                 >
                   <div className="relative w-full aspect-[4/3] bg-[#eeeeec] mb-4 overflow-hidden">
                     <Image
-                      src={item.images?.[0] || '/images/fig-01-table.png'}
+                      src={item.images?.[0] || images[0]}
                       alt={item.name}
                       fill
                       sizes="(max-width: 768px) 100vw, 33vw"
@@ -353,7 +350,7 @@ export default function ProductDetailPage() {
 
       {/* Atelier Footer */}
       <footer className="border-t border-[#e5e5e3] bg-[#ffffff] py-8 text-center text-[10px] uppercase tracking-[0.2em] text-[#747878]">
-        Maison Glint · Atelier Zurich & Milan · Serial Authenticity Guaranteed
+        Maison Glint · {product.specifications?.origin || product.name}
       </footer>
     </div>
   );

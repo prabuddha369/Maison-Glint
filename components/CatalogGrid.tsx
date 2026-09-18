@@ -5,11 +5,17 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ShoppingBag, ArrowUpRight, Sparkles } from 'lucide-react';
 import { motion } from 'motion/react';
-import { useCatalog } from '../lib/catalog';
 import { useCart } from '../hooks/useCart';
+import type { Product } from '../types/store';
 
-export default function CatalogGrid() {
-  const { products, loading } = useCatalog();
+interface CatalogGridProps {
+  products?: Product[];
+  loading?: boolean;
+}
+
+export default function CatalogGrid({ products: suppliedProducts, loading: suppliedLoading }: CatalogGridProps) {
+  const products = suppliedProducts || [];
+  const loading = suppliedLoading ?? false;
   const { addItem } = useCart();
   const luxuryEase = [0.16, 1, 0.3, 1] as const;
 
@@ -33,7 +39,7 @@ export default function CatalogGrid() {
             </h2>
           </div>
           <p className="font-[family-name:var(--font-inter)] text-[13px] sm:text-[14px] text-[#747878] font-light max-w-md mt-4 md:mt-0 leading-relaxed">
-            Every object is cataloged directly from our verified Firestore atelier ledger,
+            Every object is cataloged directly from our verified atelier ledger,
             each serialized with laser-engraved hallmarks.
           </p>
         </motion.div>

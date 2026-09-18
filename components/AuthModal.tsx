@@ -1,17 +1,18 @@
 'use client';
 
 import React, { useState } from 'react';
-import { X, Mail, Lock, User, ArrowRight, Shield } from 'lucide-react';
+import { X, Mail, Lock, User, ArrowRight, Shield, CheckCircle2, Clock } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onConfirmationPending?: (email: string) => void;
   defaultMode?: 'login' | 'register';
 }
 
-export default function AuthModal({ isOpen, onClose, defaultMode = 'login' }: AuthModalProps) {
-  const { signInWithGoogle, signInWithEmail, signUpWithEmail, sendResetEmail } = useAuth();
+export default function AuthModal({ isOpen, onClose, onConfirmationPending, defaultMode = 'login' }: AuthModalProps) {
+  const { signInWithEmail, signUpWithEmail, sendResetEmail } = useAuth();
   const [mode, setMode] = useState<'login' | 'register' | 'forgot'>(defaultMode);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -19,6 +20,8 @@ export default function AuthModal({ isOpen, onClose, defaultMode = 'login' }: Au
   const [errorMsg, setErrorMsg] = useState('');
   const [statusMsg, setStatusMsg] = useState('');
   const [loading, setLoading] = useState(false);
+  const [confirmationPending, setConfirmationPending] = useState(false);
+  const [confirmationEmail, setConfirmationEmail] = useState('');
 
   if (!isOpen) return null;
 
@@ -44,21 +47,15 @@ export default function AuthModal({ isOpen, onClose, defaultMode = 'login' }: Au
       }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Authentication verification failed.';
-      setErrorMsg(msg.replace('Firebase: ', ''));
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleGoogleAuth = async () => {
-    setErrorMsg('');
-    setLoading(true);
-    try {
-      await signInWithGoogle();
-      onClose();
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Google authentication bypassed or canceled.';
-      setErrorMsg(msg.replace('Firebase: ', ''));
+      if (msg.toLowerCase().includes('check your email')) {
+        const normalizedEmail = email.trim().toLowerCase();
+        setConfirmationEmail(normalizedEmail);
+        setConfirmationPending(true);
+        onConfirmationPending?.(normalizedEmail);
+        window.setTimeout(onClose, 1800);
+      } else {
+        setErrorMsg(msg);
+      }
     } finally {
       setLoading(false);
     }
@@ -96,6 +93,30 @@ export default function AuthModal({ isOpen, onClose, defaultMode = 'login' }: Au
           <div className="w-8 h-[1px] bg-[#c5a059] mx-auto mt-3" />
         </div>
 
+        {confirmationPending ? (
+          <div className="space-y-6 text-center">
+            <div className="flex justify-center">
+              <CheckCircle2 className="w-10 h-10 text-[#2e7d32]" />
+            </div>
+            <div>
+              <h3 className="font-[family-name:var(--font-cormorant)] text-2xl font-light text-[#111111]">
+                Confirmation Email Sent
+              </h3>
+              <p className="mt-3 text-[12px] leading-relaxed text-[#747878]">
+                We sent a verification link to <span className="font-medium text-[#111111]">{maskEmail(confirmationEmail)}</span>.
+              </p>
+            </div>
+            <div className="border border-[#e5e5e3] bg-[#ffffff] p-4 text-left space-y-2">
+              <div className="flex items-start space-x-2">
+                <Clock className="w-4 h-4 shrink-0 text-[#c5a059] mt-0.5" />
+                <p className="text-[11px] leading-relaxed text-[#444748]">
+                  Open your inbox or spam folder, click <strong>Verify Client Profile</strong>, then return here and sign in.
+                </p>
+              </div>
+              <p className="text-[10px] text-[#8c8c8c] pl-6">This window will close automatically. No additional email has been requested.</p>
+            </div>
+          </div>
+        ) : <>
         {/* Feedback Messages */}
         {errorMsg && (
           <div className="mb-6 p-3 bg-[#fff0f0] border border-[#ffcccc] text-[#b91c1c] text-[11px] leading-relaxed">
@@ -109,42 +130,14 @@ export default function AuthModal({ isOpen, onClose, defaultMode = 'login' }: Au
           </div>
         )}
 
-        {/* Google One-Click Action */}
         {mode !== 'forgot' && (
           <div className="mb-6">
-            <button
-              onClick={handleGoogleAuth}
-              disabled={loading}
-              type="button"
-              className="w-full py-3.5 px-4 bg-[#ffffff] hover:bg-[#f2f2ef] border border-[#d6d6d4] text-[#111111] text-[11px] uppercase tracking-[0.16em] font-medium flex items-center justify-center space-x-3 transition-colors cursor-pointer"
-            >
-              <svg className="w-4 h-4" viewBox="0 0 24 24">
-                <path
-                  fill="#4285F4"
-                  d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"
-                />
-                <path
-                  fill="#34A853"
-                  d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.26v3.15C3.27 21.36 7.33 24 12 24z"
-                />
-                <path
-                  fill="#FBBC05"
-                  d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.26C.46 8.16 0 9.98 0 12s.46 3.84 1.26 5.42l4.02-3.15z"
-                />
-                <path
-                  fill="#EA4335"
-                  d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.27 2.64 1.26 6.58l4.02 3.15c.95-2.83 3.6-4.98 6.72-4.98z"
-                />
-              </svg>
-              <span>Continue with Google</span>
-            </button>
-
-            <div className="relative my-6 text-center">
+            <div className="relative text-center">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-[#e5e5e3]" />
               </div>
               <span className="relative bg-[#f9f9f7] px-3 text-[9px] uppercase tracking-[0.2em] text-[#8c8c8c]">
-                Or Authenticate via Email
+                Authenticate via Email
               </span>
             </div>
           </div>
@@ -282,9 +275,16 @@ export default function AuthModal({ isOpen, onClose, defaultMode = 'login' }: Au
         {/* Security badge */}
         <div className="mt-4 flex items-center justify-center space-x-1.5 text-[9px] uppercase tracking-[0.16em] text-[#8c8c8c]">
           <Shield className="w-3 h-3 text-[#c5a059]" />
-          <span>Firebase Spark Identity · 256-Bit SSL Safeguarded</span>
+          <span>Supabase Identity · 256-Bit SSL Safeguarded</span>
         </div>
+        </>}
       </div>
     </div>
   );
+}
+
+function maskEmail(email: string): string {
+  const [local, domain] = email.split('@');
+  if (!local || !domain) return email;
+  return `${local.slice(0, 1)}${'*'.repeat(Math.max(2, local.length - 1))}@${domain}`;
 }

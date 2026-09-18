@@ -5,6 +5,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import {
   Lock,
+  Mail,
+  KeyRound,
   Package,
   ShoppingBag,
   Plus,
@@ -20,14 +22,16 @@ import {
   Database,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { getProducts, saveProduct, deleteProduct, seedDefaultProducts } from '../../lib/products';
+import { INITIAL_PRODUCTS, getProducts, saveProduct, deleteProduct, seedDefaultProducts } from '../../lib/products';
 import { getAllOrders, updateOrderStatus } from '../../lib/payment';
 import type { Product, Order, OrderStatus } from '../../types/store';
 
 export default function AdminPage() {
-  const { user, isAdmin, signInWithGoogle, signOutAccount } = useAuth();
+  const { user, isAdmin, signInWithEmail, signOutAccount } = useAuth();
   const [authError, setAuthError] = useState<string>('');
   const [isSigningIn, setIsSigningIn] = useState<boolean>(false);
+  const [adminEmail, setAdminEmail] = useState<string>('');
+  const [adminPassword, setAdminPassword] = useState<string>('');
 
   const [activeTab, setActiveTab] = useState<'products' | 'orders'>('orders');
   const [products, setProducts] = useState<Product[]>([]);
@@ -52,6 +56,7 @@ export default function AdminPage() {
     inStock: true,
     editionTotal: 200,
     editionRemaining: 50,
+    editorial: INITIAL_PRODUCTS[0].editorial,
   });
 
   const loadData = async () => {
@@ -90,18 +95,6 @@ export default function AdminPage() {
     };
   }, [isAdmin]);
 
-  const handleAdminSignIn = async () => {
-    setIsSigningIn(true);
-    setAuthError('');
-    try {
-      await signInWithGoogle();
-    } catch (err: unknown) {
-      setAuthError(err instanceof Error ? err.message : 'Authentication failed.');
-    } finally {
-      setIsSigningIn(false);
-    }
-  };
-
   const handleSaveProduct = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!productForm.name || !productForm.price) return;
@@ -117,6 +110,19 @@ export default function AdminPage() {
     setFeedback(`Product "${productToSave.name}" successfully registered in catalog.`);
     await loadData();
     setTimeout(() => setFeedback(''), 4000);
+  };
+
+  const handleAdminSignIn = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setIsSigningIn(true);
+    setAuthError('');
+    try {
+      await signInWithEmail(adminEmail.trim(), adminPassword);
+    } catch (err: unknown) {
+      setAuthError(err instanceof Error ? err.message : 'Authentication failed.');
+    } finally {
+      setIsSigningIn(false);
+    }
   };
 
   const handleDeleteProduct = async (productId: string) => {
@@ -138,7 +144,7 @@ export default function AdminPage() {
     setLoading(true);
     await seedDefaultProducts();
     await loadData();
-    setFeedback('Initial atelier catalog re-seeded to Firestore.');
+    setFeedback('Initial atelier catalog re-seeded to Supabase.');
     setTimeout(() => setFeedback(''), 4000);
   };
 
@@ -193,10 +199,40 @@ export default function AdminPage() {
               </button>
             </div>
           ) : (
-            <div className="space-y-4 mb-6">
+            <form onSubmit={handleAdminSignIn} className="space-y-4 mb-6 text-left">
+              <label className="block text-[10px] uppercase tracking-[0.16em] text-[#747878] font-medium">
+                Administrator Email
+                <div className="relative mt-1.5">
+                  <Mail className="absolute left-3 top-3 w-4 h-4 text-[#8c8c8c]" />
+                  <input
+                    type="email"
+                    value={adminEmail}
+                    onChange={(event) => setAdminEmail(event.target.value)}
+                    required
+                    autoComplete="username"
+                    className="w-full py-2.5 pl-10 pr-3 border border-[#d6d6d4] bg-[#ffffff] text-[12px] text-[#111111] outline-none focus:border-[#111111]"
+                  />
+                </div>
+              </label>
+
+              <label className="block text-[10px] uppercase tracking-[0.16em] text-[#747878] font-medium">
+                Administrator Password
+                <div className="relative mt-1.5">
+                  <KeyRound className="absolute left-3 top-3 w-4 h-4 text-[#8c8c8c]" />
+                  <input
+                    type="password"
+                    value={adminPassword}
+                    onChange={(event) => setAdminPassword(event.target.value)}
+                    required
+                    minLength={6}
+                    autoComplete="current-password"
+                    className="w-full py-2.5 pl-10 pr-3 border border-[#d6d6d4] bg-[#ffffff] text-[12px] text-[#111111] outline-none focus:border-[#111111]"
+                  />
+                </div>
+              </label>
+
               <button
-                type="button"
-                onClick={handleAdminSignIn}
+                type="submit"
                 disabled={isSigningIn}
                 className="w-full py-3.5 bg-[#111111] text-[#f9f9f7] hover:bg-[#2b2b2b] text-[10px] uppercase tracking-[0.2em] font-medium transition-colors flex items-center justify-center space-x-2 disabled:opacity-60"
               >
@@ -207,7 +243,10 @@ export default function AdminPage() {
                 )}
                 <span>{isSigningIn ? 'Verifying...' : 'Sign In as Administrator'}</span>
               </button>
-            </div>
+              <p className="text-[10px] text-[#747878] leading-relaxed">
+                Uses secure server email/password authentication with an HttpOnly session.
+              </p>
+            </form>
           )}
 
           <div className="pt-2 border-t border-[#e5e5e3]">
@@ -246,7 +285,7 @@ export default function AdminPage() {
           <div className="flex items-center space-x-3">
             <button
               onClick={handleSeedCatalog}
-              title="Re-seed initial catalog items to Firestore"
+              title="Re-seed initial catalog items to Supabase"
               className="px-3 py-1.5 border border-[#d6d6d4] hover:border-[#111111] text-[10px] uppercase tracking-[0.14em] text-[#747878] hover:text-[#111111] flex items-center space-x-1.5"
             >
               <Database className="w-3 h-3 text-[#c5a059]" />
@@ -451,6 +490,7 @@ export default function AdminPage() {
                     inStock: true,
                     editionTotal: 100,
                     editionRemaining: 25,
+                    editorial: INITIAL_PRODUCTS[0].editorial,
                   });
                   setIsEditingProduct(true);
                 }}
@@ -514,6 +554,43 @@ export default function AdminPage() {
                       }
                       placeholder="Design philosophy and material properties..."
                       className="w-full bg-[#f9f9f7] px-3 py-2 text-[12px] border border-[#d6d6d4]"
+                    />
+                  </div>
+
+                  <div className="sm:col-span-2">
+                    <label className="block text-[10px] uppercase tracking-[0.16em] text-[#747878] mb-1">
+                      Image URLs (one per line)
+                    </label>
+                    <textarea
+                      rows={3}
+                      value={productForm.images.join('\n')}
+                      onChange={(e) =>
+                        setProductForm({
+                          ...productForm,
+                          images: e.target.value.split(/\r?\n/).map((url) => url.trim()).filter(Boolean),
+                        })
+                      }
+                      placeholder="https://cdn.example.com/object-01-main.jpg"
+                      className="w-full bg-[#f9f9f7] px-3 py-2 text-[12px] border border-[#d6d6d4] font-mono"
+                    />
+                  </div>
+
+                  <div className="sm:col-span-2">
+                    <label className="block text-[10px] uppercase tracking-[0.16em] text-[#747878] mb-1">
+                      Section Content JSON
+                    </label>
+                    <textarea
+                      rows={8}
+                      value={JSON.stringify(productForm.editorial || INITIAL_PRODUCTS[0].editorial, null, 2)}
+                      onChange={(e) => {
+                        try {
+                          const editorial = JSON.parse(e.target.value);
+                          setProductForm({ ...productForm, editorial });
+                        } catch {
+                          // Keep the last valid structured value while the JSON is being edited.
+                        }
+                      }}
+                      className="w-full bg-[#f9f9f7] px-3 py-2 text-[11px] border border-[#d6d6d4] font-mono"
                     />
                   </div>
 

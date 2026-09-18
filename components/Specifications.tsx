@@ -1,149 +1,52 @@
 'use client';
 
-import { useState } from 'react';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { motion } from 'motion/react';
+import { useState } from 'react';
+import { useProductCarousel } from '../hooks/useProductCarousel';
+import type { Product } from '../types/store';
 
-export default function Specifications() {
+interface SpecificationsProps {
+  products: Product[];
+  loading: boolean;
+}
+
+export default function Specifications({ products, loading }: SpecificationsProps) {
   const [unitSystem, setUnitSystem] = useState<'metric' | 'imperial'>('metric');
+  const { activeProduct, activeIndex, next, previous, prefersReducedMotion } = useProductCarousel(products);
+  const editorial = activeProduct?.editorial?.specifications;
 
-  const specsData = [
-    {
-      label: 'DIAMETER',
-      metric: '280 mm',
-      imperial: '11.02 in',
-    },
-    {
-      label: 'RIM HEIGHT',
-      metric: '18 mm',
-      imperial: '0.71 in',
-    },
-    {
-      label: 'BASE GAUGE THICKNESS',
-      metric: '2.5 mm',
-      imperial: '0.10 in',
-    },
-    {
-      label: 'NET MASS',
-      metric: '640 grams',
-      imperial: '22.58 oz',
-    },
-    {
-      label: 'ALLOY GRADE',
-      metric: 'AISI 316 Food Safe Austenitic Steel',
-      imperial: 'AISI 316 Food Safe Austenitic Steel',
-    },
-    {
-      label: 'MIRROR POLISH',
-      metric: 'Multi-Stage Optical Hand-Buff',
-      imperial: 'Multi-Stage Optical Hand-Buff',
-    },
-    {
-      label: 'ORIGIN ATELIER',
-      metric: 'Precision Cold-Pressed & Finished in Zurich',
-      imperial: 'Precision Cold-Pressed & Finished in Zurich',
-    },
-  ];
-
-  const luxuryEase = [0.16, 1, 0.3, 1] as const;
+  if (loading || !activeProduct || !editorial) {
+    return <section id="specifications" className="min-h-[55vh] border-b border-[#e5e5e3]" />;
+  }
 
   return (
-    <section
-      id="specifications"
-      className="w-full border-b border-[#e5e5e3] py-12 sm:py-16 md:py-24 bg-[#f9f9f7] overflow-hidden"
-    >
+    <section id="specifications" className="w-full border-b border-[#e5e5e3] py-12 sm:py-16 md:py-24 bg-[#f9f9f7]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 lg:gap-16 items-start">
-          {/* Left Column: Title and Unit Toggle */}
-          <motion.div
-            initial={{ opacity: 0, y: 32 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-60px' }}
-            transition={{ duration: 0.9, ease: luxuryEase }}
-            className="lg:col-span-5 flex flex-col justify-between"
-          >
-            <div>
-              <div className="text-[10px] md:text-[11px] uppercase tracking-[0.2em] font-medium text-[#747878] mb-3 sm:mb-4">
-                03 / Specifications
-              </div>
-
-              <h2 className="font-[family-name:var(--font-cormorant)] text-[32px] sm:text-[44px] md:text-[54px] font-light leading-[1.12] text-[#111111] mb-4 sm:mb-6">
-                Every detail, <br />
-                <span className="italic font-normal">considered.</span>
-              </h2>
-
-              <p className="text-[14px] sm:text-[16px] text-[#444748] font-light leading-[1.7] mb-6 sm:mb-10 max-w-md">
-                Refined measurements balanced to rest flush against tablecloth,
-                bare hardwood, or raw travertine.
-              </p>
-            </div>
-
-            {/* Interactive Unit Switcher Button Group */}
-            <div className="flex items-center space-x-2 pt-1 sm:pt-2">
-              <button
-                id="unit-metric-btn"
-                onClick={() => setUnitSystem('metric')}
-                className={`px-3.5 sm:px-4 py-2 sm:py-2.5 text-[9px] sm:text-[10px] uppercase tracking-[0.2em] font-medium transition-all cursor-pointer border ${
-                  unitSystem === 'metric'
-                    ? 'bg-[#111111] text-[#f9f9f7] border-[#111111]'
-                    : 'bg-[#f4f4f2] text-[#444748] border-[#e5e5e3] hover:border-[#111111]'
-                }`}
-              >
-                MM / G
-              </button>
-              <button
-                id="unit-imperial-btn"
-                onClick={() => setUnitSystem('imperial')}
-                className={`px-3.5 sm:px-4 py-2 sm:py-2.5 text-[9px] sm:text-[10px] uppercase tracking-[0.2em] font-medium transition-all cursor-pointer border ${
-                  unitSystem === 'imperial'
-                    ? 'bg-[#111111] text-[#f9f9f7] border-[#111111]'
-                    : 'bg-[#f4f4f2] text-[#444748] border-[#e5e5e3] hover:border-[#111111]'
-                }`}
-              >
-                IN / OZ
-              </button>
-            </div>
-          </motion.div>
-
-          {/* Right Column: High Precision Spec Sheet Table */}
-          <motion.div
-            initial={{ opacity: 0, y: 32 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-60px' }}
-            transition={{ duration: 0.9, ease: luxuryEase, delay: 0.15 }}
-            className="lg:col-span-7"
-          >
-            <div
-              id="spec-table-card"
-              className="bg-[#f4f4f2] border border-[#e5e5e3] p-4 sm:p-8 md:p-10 transition-all shadow-2xs"
-            >
-              <div className="divide-y divide-[#e5e5e3]">
-                {specsData.map((spec) => (
-                  <div
-                    key={spec.label}
-                    className="py-3 sm:py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-[13px]"
-                  >
-                    <span className="text-[9px] sm:text-[10px] uppercase tracking-[0.18em] sm:tracking-[0.2em] font-medium text-[#747878]">
-                      {spec.label}
-                    </span>
-                    <span className="font-[family-name:var(--font-inter)] text-[12px] sm:text-[14px] font-medium text-[#111111] tracking-tight">
-                      {unitSystem === 'metric' ? spec.metric : spec.imperial}
-                    </span>
-                  </div>
-                ))}
-              </div>
-
-              {/* Table Footer Stamp */}
-              <div className="pt-6 sm:pt-8 mt-3 sm:mt-4 border-t border-[#e5e5e3] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-3 text-[9px] sm:text-[10px] uppercase tracking-[0.18em] sm:tracking-[0.2em]">
-                <span className="font-mono text-[#747878]">
-                  Verified Serial Stamp No. 001–250
-                </span>
-                <span className="font-medium text-[#c5a059] tracking-[0.22em] sm:tracking-[0.25em]">
-                  Maison Glint Archive
-                </span>
-              </div>
-            </div>
-          </motion.div>
+        <div className="flex items-end justify-between gap-6 border-b border-[#e5e5e3] pb-8">
+          <div>
+            <div className="text-[10px] uppercase tracking-[0.2em] text-[#747878] mb-3">{editorial.sectionLabel}</div>
+            <h2 className="font-[family-name:var(--font-cormorant)] text-[32px] sm:text-[50px] font-light leading-tight">{editorial.title} <span className="italic">{editorial.titleEmphasis}</span></h2>
+            <p className="max-w-md mt-4 text-[14px] text-[#444748] font-light leading-[1.7]">{editorial.description}</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <button aria-label="Previous product" onClick={previous} className="p-2 border border-[#e5e5e3] hover:border-[#111111]"><ArrowLeft className="w-4 h-4" /></button>
+            <span className="font-mono text-[10px] text-[#747878]">{String(activeIndex + 1).padStart(2, '0')} / {String(products.length).padStart(2, '0')}</span>
+            <button aria-label="Next product" onClick={next} className="p-2 border border-[#e5e5e3] hover:border-[#111111]"><ArrowRight className="w-4 h-4" /></button>
+          </div>
         </div>
+        <motion.div key={activeProduct.id} initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 20 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 pt-10">
+          <div className="lg:col-span-5 flex items-start gap-2">
+            <button onClick={() => setUnitSystem('metric')} className={`px-4 py-2 border text-[10px] uppercase tracking-[0.2em] ${unitSystem === 'metric' ? 'bg-[#111111] text-[#f9f9f7] border-[#111111]' : 'border-[#e5e5e3]'}`}>{editorial.metricToggleLabel}</button>
+            <button onClick={() => setUnitSystem('imperial')} className={`px-4 py-2 border text-[10px] uppercase tracking-[0.2em] ${unitSystem === 'imperial' ? 'bg-[#111111] text-[#f9f9f7] border-[#111111]' : 'border-[#e5e5e3]'}`}>{editorial.imperialToggleLabel}</button>
+          </div>
+          <div className="lg:col-span-7 bg-[#f4f4f2] border border-[#e5e5e3] p-5 sm:p-8">
+            <div className="divide-y divide-[#e5e5e3]">
+              {editorial.rows.map((row) => <div key={row.id || row.label} className="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2"><span className="text-[10px] uppercase tracking-[0.18em] text-[#747878]">{row.label}</span><span className="text-[13px] font-medium">{unitSystem === 'metric' ? row.metric : row.imperial}</span></div>)}
+            </div>
+            <div className="pt-6 mt-4 border-t border-[#e5e5e3] flex flex-wrap justify-between gap-3 text-[9px] uppercase tracking-[0.18em] text-[#747878]"><span>{editorial.serialStamp}</span><span className="text-[#c5a059]">{editorial.archiveLabel}</span></div>
+          </div>
+        </motion.div>
       </div>
     </section>
   );

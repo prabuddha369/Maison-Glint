@@ -13,20 +13,28 @@ interface NavbarProps {
   onOpenBag?: () => void;
   onOpenAllocation?: () => void;
   bagCount?: number;
+  productName?: string;
 }
 
 export default function Navbar({
   onOpenBag,
   onOpenAllocation,
   bagCount: propBagCount,
+  productName = 'the current edition',
 }: NavbarProps) {
   const router = useRouter();
   const { openCart, itemCount } = useCart();
   const { user } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [confirmationNotice, setConfirmationNotice] = useState('');
 
   const displayBagCount = propBagCount !== undefined ? propBagCount : itemCount;
+
+  const handleConfirmationPending = (email: string) => {
+    setConfirmationNotice(`Confirmation email sent to ${email}. Check your inbox, click Verify Client Profile, then sign in.`);
+    window.setTimeout(() => setConfirmationNotice(''), 10000);
+  };
 
   const handleBagClick = () => {
     if (onOpenBag) {
@@ -63,6 +71,11 @@ export default function Navbar({
 
   return (
     <>
+      {confirmationNotice && (
+        <div className="fixed top-20 right-4 sm:right-6 z-50 max-w-sm bg-[#f0f9f0] border border-[#cceccc] text-[#166534] px-4 py-3 shadow-lg text-[11px] leading-relaxed">
+          {confirmationNotice}
+        </div>
+      )}
       <header className="sticky top-0 z-40 w-full bg-[#f9f9f7]/95 backdrop-blur-md border-b border-[#e5e5e3] transition-all duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 h-16 sm:h-20 flex items-center justify-between">
           {/* Brand Lockup */}
@@ -107,7 +120,7 @@ export default function Navbar({
               onClick={onOpenAllocation || openCart}
               className="hidden sm:inline-flex items-center space-x-2 bg-[#111111] text-[#f9f9f7] px-4 py-2.5 text-[10px] uppercase tracking-[0.16em] font-medium hover:bg-[#2b2b2b] transition-all cursor-pointer border border-[#111111]"
             >
-              <span>Acquire Object 01</span>
+              <span>Acquire {productName}</span>
               <ArrowUpRight className="w-3.5 h-3.5 text-[#c5a059]" />
             </button>
 
@@ -202,7 +215,7 @@ export default function Navbar({
                   }}
                   className="w-full py-3.5 bg-[#111111] text-[#f9f9f7] text-[10px] uppercase tracking-[0.18em] font-medium flex items-center justify-center space-x-2 border border-[#111111]"
                 >
-                  <span>Acquire Object 01</span>
+                  <span>Acquire {productName}</span>
                   <ArrowUpRight className="w-3.5 h-3.5 text-[#c5a059]" />
                 </button>
               </div>
@@ -212,7 +225,11 @@ export default function Navbar({
       </header>
 
       {/* Authentication Modal */}
-      <AuthModal isOpen={authModalOpen} onClose={() => setAuthModalOpen(false)} />
+      <AuthModal
+        isOpen={authModalOpen}
+        onClose={() => setAuthModalOpen(false)}
+        onConfirmationPending={handleConfirmationPending}
+      />
     </>
   );
 }

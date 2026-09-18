@@ -3,12 +3,15 @@
 import { useState } from 'react';
 import { Check, ShieldCheck, Copy } from 'lucide-react';
 import { motion } from 'motion/react';
+import type { Product } from '../types/store';
 
 interface AcquisitionSectionProps {
+  product?: Product;
   onSuccessfulAllocation?: (email: string, serial: string) => void;
 }
 
 export default function AcquisitionSection({
+  product,
   onSuccessfulAllocation,
 }: AcquisitionSectionProps) {
   const [email, setEmail] = useState('');
@@ -58,14 +61,12 @@ export default function AcquisitionSection({
 
         {/* Display Title */}
         <h2 className="font-[family-name:var(--font-cormorant)] text-[34px] sm:text-[46px] md:text-[58px] font-light leading-tight text-[#111111] mb-4 sm:mb-6">
-          Acquire Object 01
+          Acquire {product?.name || 'the current edition'}
         </h2>
 
         {/* Description */}
         <p className="text-[13px] sm:text-[15px] text-[#444748] font-light leading-[1.7] max-w-xl mx-auto mb-8 sm:mb-10">
-          Batch 01 will be strictly restricted to 250 individually inscribed
-          exemplars. Registrants receive private access 48 hours prior to public
-          release.
+          {product?.description || 'This edition is offered through a limited serialized allocation.'}
         </p>
 
         {!submitted ? (

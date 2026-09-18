@@ -1,45 +1,18 @@
 import { useState, useEffect, useCallback } from 'react';
-import {
-  collection,
-  query,
-  where,
-  getDocs,
-  getDoc,
-  doc,
-} from 'firebase/firestore';
-import { db } from './firebase';
 import { INITIAL_PRODUCTS, getProducts, getProductById } from './products';
 import type { Product } from '../types/store';
 
 /**
- * Fetch all active/in-stock products from Firestore catalog
- * Gracefully falls back to local cached catalog or INITIAL_PRODUCTS
+ * Fetch all active/in-stock products from the secure catalog API.
+ * Gracefully falls back to local cached catalog or INITIAL_PRODUCTS.
  */
 export async function fetchActiveProducts(): Promise<Product[]> {
-  if (!db) {
-    return INITIAL_PRODUCTS.filter((p) => p.inStock);
-  }
-
   try {
-    const productsRef = collection(db, 'products');
-    // Attempt Firestore query for active inventory
-    const q = query(productsRef, where('inStock', '==', true));
-    const snap = await getDocs(q);
-
-    if (!snap.empty) {
-      const activeList: Product[] = [];
-      snap.forEach((docSnap) => {
-        activeList.push({ id: docSnap.id, ...(docSnap.data() as Omit<Product, 'id'>) });
-      });
-      return activeList;
-    }
-
-    // If query returns empty (e.g. initial launch or unset flags), check all products
     const allProducts = await getProducts();
     const filtered = allProducts.filter((p) => p.inStock !== false);
     return filtered.length > 0 ? filtered : INITIAL_PRODUCTS;
   } catch (error) {
-    console.warn('[Maison Glint Catalog] Firestore active products query fallback:', error);
+    console.warn('[Maison Glint Catalog] Secure active products query fallback:', error);
     const all = await getProducts();
     return all.length > 0 ? all : INITIAL_PRODUCTS;
   }
@@ -69,7 +42,7 @@ export async function fetchProductByIdOrPrefix(idOrPrefix: string): Promise<Prod
 }
 
 /**
- * React hook to access dynamic active products from Firestore with state and refetch
+ * React hook to access dynamic active products with state and refetch
  */
 export function useCatalog() {
   const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
@@ -108,7 +81,7 @@ export function useCatalog() {
 }
 
 /**
- * React hook to access a single product from Firestore by ID or prefix
+ * React hook to access a single product by ID or prefix
  */
 export function useProduct(idOrPrefix: string = 'object-01') {
   const [product, setProduct] = useState<Product>(INITIAL_PRODUCTS[0]);

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useCart } from '@/hooks/useCart';
+import { useCatalog } from '@/lib/catalog';
 import TopAnnouncement from '@/components/TopAnnouncement';
 import Navbar from '@/components/Navbar';
 import HeroSection from '@/components/HeroSection';
@@ -18,6 +19,7 @@ import RitualModal from '@/components/RitualModal';
 
 export default function Home() {
   const { openCart, itemCount } = useCart();
+  const { products, loading: productsLoading } = useCatalog();
   const [priorityModalOpen, setPriorityModalOpen] = useState(false);
   const [bagDrawerOpen, setBagDrawerOpen] = useState(false);
   const [bagCount, setBagCount] = useState(1);
@@ -69,33 +71,43 @@ export default function Home() {
         onOpenBag={openCart}
         onOpenAllocation={() => setPriorityModalOpen(true)}
         bagCount={itemCount}
+        productName={products[0]?.name}
       />
 
       {/* Hero Section */}
       <HeroSection
+        products={products}
+        loading={productsLoading}
         onReserveClick={() => setPriorityModalOpen(true)}
         onDiscoverClick={scrollToPlate}
       />
 
       {/* 01 / The Glint Plate Showcase */}
       <ObjectShowcase
+        products={products}
+        loading={productsLoading}
         onRequestPriorityAccess={() => setPriorityModalOpen(true)}
       />
 
       {/* 02 / The Finish & Philosophy */}
-      <FinishPhilosophy />
+      <FinishPhilosophy products={products} loading={productsLoading} />
 
       {/* 03 / Specifications */}
-      <Specifications />
+      <Specifications products={products} loading={productsLoading} />
 
       {/* 04 / The Atelier Collection (Dynamic Multi-Object Catalog) */}
-      <CatalogGrid />
+      <CatalogGrid products={products} loading={productsLoading} />
 
       {/* 05 / At The Table */}
-      <AtTheTable onSelectRitual={(ritual) => setSelectedRitual(ritual)} />
+      <AtTheTable
+        products={products}
+        loading={productsLoading}
+        onSelectRitual={(ritual) => setSelectedRitual(ritual)}
+      />
 
       {/* Acquisition & Allocation Waitlist */}
       <AcquisitionSection
+        product={products[0]}
         onSuccessfulAllocation={handleSuccessfulAllocation}
       />
 
@@ -119,6 +131,7 @@ export default function Home() {
           if (q > 0) showToast(`Acquisition drawer updated: ${q} exemplar(s)`);
         }}
         onProceedCheckout={handleProceedCheckout}
+        product={products[0]}
       />
 
       {/* Ritual Lightbox Inspector Modal */}

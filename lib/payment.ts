@@ -1,17 +1,12 @@
-import {
-  collection,
-  doc,
-  setDoc,
-  getDoc,
-  getDocs,
-  query,
-  where,
-  orderBy,
-  updateDoc,
-  serverTimestamp,
-} from 'firebase/firestore';
-import { db, handleFirestoreError, OperationType } from './firebase';
-import type { Order, OrderStatus, CartItem, CustomerInfo, ShippingAddress } from '../types/store';
+import type {
+  Order,
+  OrderStatus,
+  CartItem,
+  CustomerInfo,
+  ShippingAddress,
+  OrderVerificationMetadata,
+} from '../types/store';
+import { getSupabaseBrowser } from './supabase/client';
 
 export interface CreateOrderPayload {
   userId: string | null;
@@ -30,6 +25,7 @@ export interface CreateOrderPayload {
   total: number;
   currency?: string;
   notes?: string;
+  verificationMetadata?: OrderVerificationMetadata;
 }
 
 export interface PaymentGatewayInput {
@@ -121,61 +117,33 @@ export async function processPaymentGateway(
 }
 
 /**
- * Orchestrate complete order capture in Firestore and trigger payment abstraction
+ * Orchestrate complete order capture through the secure order API and trigger payment abstraction
  */
 export async function createStorefrontOrder(payload: CreateOrderPayload): Promise<Order> {
   const orderId = generateOrderReference();
   const timestamp = new Date().toISOString();
-
   const newOrder: Order = {
-    orderId,
-    userId: payload.userId,
-    customer: payload.customer,
-    shippingAddress: payload.shippingAddress,
-    shippingMethod: payload.shippingMethod,
-    items: payload.items.map((item) => ({
-      productId: item.productId,
-      name: item.name,
-      price: item.price,
-      quantity: item.quantity,
-      image: item.image,
-      specifications: item.specifications,
-    })),
-    subtotal: payload.subtotal,
-    shippingCost: payload.shippingCost,
-    taxEstimate: payload.taxEstimate,
-    total: payload.total,
-    currency: payload.currency || 'USD',
-    status: 'pending_payment',
-    paymentGateway: 'pending_selection',
-    notes: payload.notes || '',
-    createdAt: timestamp,
-    updatedAt: timestamp,
+    orderId, userId: payload.userId, customer: payload.customer, shippingAddress: payload.shippingAddress,
+    shippingMethod: payload.shippingMethod, items: payload.items.map((item) => ({
+      productId: item.productId, name: item.name, price: item.price, quantity: item.quantity, image: item.image, specifications: item.specifications,
+    })), subtotal: payload.subtotal, shippingCost: payload.shippingCost, taxEstimate: payload.taxEstimate,
+    total: payload.total, currency: payload.currency || 'USD', status: 'pending_payment', paymentGateway: 'pending_selection',
+    verificationMetadata: payload.verificationMetadata, notes: payload.notes || '', createdAt: timestamp, updatedAt: timestamp,
   };
-
-  // Always retain order in local cache for offline resiliency
+  const { error } = await getSupabaseBrowser().from('orders').insert({
+    order_id: newOrder.orderId, user_id: newOrder.userId, customer: newOrder.customer,
+    shipping_address: newOrder.shippingAddress, shipping_method: newOrder.shippingMethod, items: newOrder.items,
+    subtotal: newOrder.subtotal, shipping_cost: newOrder.shippingCost, tax_estimate: newOrder.taxEstimate,
+    total: newOrder.total, currency: newOrder.currency, status: newOrder.status, payment_gateway: newOrder.paymentGateway,
+    verification_metadata: newOrder.verificationMetadata, notes: newOrder.notes,
+  });
+  if (error) throw error;
   saveLocalOrder(newOrder);
-
-  // Persist into Firestore collection 'orders'
-  if (db) {
-    const path = `orders/${orderId}`;
-    try {
-      await setDoc(doc(db, 'orders', orderId), {
-        ...newOrder,
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
-      });
-      console.log(`[Maison Glint] Order ${orderId} successfully captured in Firestore.`);
-    } catch (error) {
-      console.warn('[Maison Glint] Order Firestore write error, local fallback maintained:', error);
-      // Non-blocking: local order cache preserves checkout continuity
-    }
-  }
 
   // Trigger payment gateway orchestrator
   await processPaymentGateway({
-    orderId,
-    orderReference: orderId,
+    orderId: newOrder.orderId,
+    orderReference: newOrder.orderId,
     amount: newOrder.total,
     currency: newOrder.currency,
     customer: newOrder.customer,
@@ -193,17 +161,10 @@ export async function getOrderById(orderId: string): Promise<Order | null> {
   // First check local orders
   const localMatch = getLocalOrders().find((o) => o.orderId === orderId);
 
-  if (!db) {
-    return localMatch || null;
-  }
-
-  const path = `orders/${orderId}`;
   try {
-    const snap = await getDoc(doc(db, 'orders', orderId));
-    if (snap.exists()) {
-      return snap.data() as Order;
-    }
-    return localMatch || null;
+    const { data, error } = await getSupabaseBrowser().from('orders').select('*').eq('order_id', orderId).maybeSingle();
+    if (error || !data) return localMatch || null;
+    return fromOrderRow(data);
   } catch (error) {
     console.warn('[Maison Glint] getOrderById error, local fallback used:', error);
     return localMatch || null;
@@ -218,23 +179,10 @@ export async function getOrdersByUser(userId: string, email?: string): Promise<O
     (o) => (userId && o.userId === userId) || (email && o.customer.email.toLowerCase() === email.toLowerCase())
   );
 
-  if (!db) {
-    return localOrders;
-  }
-
-  const path = 'orders';
   try {
-    // ABAC query compliant with security rules
-    const q = query(
-      collection(db, path),
-      where('userId', '==', userId),
-      orderBy('createdAt', 'desc')
-    );
-    const snap = await getDocs(q);
-    const list: Order[] = [];
-    snap.forEach((docSnap) => {
-      list.push(docSnap.data() as Order);
-    });
+    const { data, error } = await getSupabaseBrowser().from('orders').select('*').eq('user_id', userId).order('created_at', { ascending: false });
+    if (error) return localOrders;
+    const list = (data || []).map(fromOrderRow);
 
     // Merge with any local orders not yet synced
     const ids = new Set(list.map((o) => o.orderId));
@@ -255,18 +203,10 @@ export async function getOrdersByUser(userId: string, email?: string): Promise<O
  */
 export async function getAllOrders(): Promise<Order[]> {
   const localOrders = getLocalOrders();
-
-  if (!db) {
-    return localOrders;
-  }
-
-  const path = 'orders';
   try {
-    const snap = await getDocs(collection(db, path));
-    const list: Order[] = [];
-    snap.forEach((docSnap) => {
-      list.push(docSnap.data() as Order);
-    });
+    const { data, error } = await getSupabaseBrowser().from('orders').select('*').order('created_at', { ascending: false });
+    if (error) return localOrders;
+    const list = (data || []).map(fromOrderRow);
 
     // Merge with local orders
     const ids = new Set(list.map((o) => o.orderId));
@@ -294,14 +234,21 @@ export async function updateOrderStatus(orderId: string, status: OrderStatus): P
     localStorage.setItem(LOCAL_ORDERS_KEY, JSON.stringify(updated));
   }
 
-  if (!db) return;
-  const path = `orders/${orderId}`;
   try {
-    await updateDoc(doc(db, 'orders', orderId), {
-      status,
-      updatedAt: serverTimestamp(),
-    });
+    const { error } = await getSupabaseBrowser().from('orders').update({ status }).eq('order_id', orderId);
+    if (error) throw error;
   } catch (error) {
-    handleFirestoreError(error, OperationType.UPDATE, path);
+    throw error;
   }
+}
+
+function fromOrderRow(item: Record<string, unknown>): Order {
+  return {
+    orderId: String(item.order_id), userId: String(item.user_id), customer: item.customer as Order['customer'],
+    shippingAddress: item.shipping_address as Order['shippingAddress'], shippingMethod: item.shipping_method as Order['shippingMethod'],
+    items: item.items as Order['items'], subtotal: Number(item.subtotal), shippingCost: Number(item.shipping_cost),
+    taxEstimate: Number(item.tax_estimate), total: Number(item.total), currency: String(item.currency), status: item.status as OrderStatus,
+    paymentGateway: String(item.payment_gateway), verificationMetadata: item.verification_metadata as Order['verificationMetadata'],
+    notes: String(item.notes || ''), createdAt: String(item.created_at), updatedAt: item.updated_at ? String(item.updated_at) : undefined,
+  };
 }

@@ -23,6 +23,7 @@ export default function AccountPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [ordersLoading, setOrdersLoading] = useState<boolean>(true);
   const [authModalOpen, setAuthModalOpen] = useState<boolean>(false);
+  const [confirmationNotice, setConfirmationNotice] = useState<string>('');
   const [activeTab, setActiveTab] = useState<'orders' | 'addresses'>('orders');
 
   // Address form modal/state
@@ -79,6 +80,11 @@ export default function AccountPage() {
     });
   };
 
+  const handleConfirmationPending = (email: string) => {
+    setConfirmationNotice(`Confirmation email sent to ${email}. Check your inbox, click Verify Client Profile, then sign in.`);
+    window.setTimeout(() => setConfirmationNotice(''), 10000);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-[#f9f9f7] flex items-center justify-center p-6 text-center">
@@ -111,6 +117,11 @@ export default function AccountPage() {
             <p className="text-[12px] text-[#747878] font-light leading-relaxed mb-6">
               Authenticate your identity to inspect active serial reservations, previous acquisition invoices, and designated transit coordinates.
             </p>
+            {confirmationNotice && (
+              <div className="mb-4 p-3 bg-[#f0f9f0] border border-[#cceccc] text-[#166534] text-[11px] leading-relaxed text-left">
+                {confirmationNotice}
+              </div>
+            )}
             <button
               onClick={() => setAuthModalOpen(true)}
               className="w-full py-3.5 bg-[#111111] text-[#f9f9f7] hover:bg-[#2b2b2b] text-[10px] uppercase tracking-[0.2em] font-medium transition-colors"
@@ -120,7 +131,11 @@ export default function AccountPage() {
           </div>
         </main>
 
-        <AuthModal isOpen={authModalOpen} onClose={() => setAuthModalOpen(false)} />
+        <AuthModal
+          isOpen={authModalOpen}
+          onClose={() => setAuthModalOpen(false)}
+          onConfirmationPending={handleConfirmationPending}
+        />
         <footer className="border-t border-[#e5e5e3] py-6 text-center text-[10px] uppercase tracking-[0.16em] text-[#8c8c8c]">
           Maison Glint Atelier · Private Collector Vault
         </footer>
@@ -209,7 +224,7 @@ export default function AccountPage() {
           <div>
             {ordersLoading ? (
               <div className="p-12 text-center text-[#747878] text-[12px]">
-                Querying Firestore order collection...
+                Querying secure order records...
               </div>
             ) : orders.length === 0 ? (
               <div className="bg-[#ffffff] border border-[#e5e5e3] p-12 text-center">

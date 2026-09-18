@@ -80,7 +80,6 @@ export default function CheckoutPage() {
   const {
     user,
     profile,
-    signInWithGoogle,
     signInWithEmail,
     signUpWithEmail,
     updateUserProfile,
@@ -100,6 +99,7 @@ export default function CheckoutPage() {
   const [authFullName, setAuthFullName] = useState<string>('');
   const [authError, setAuthError] = useState<string>('');
   const [authLoading, setAuthLoading] = useState<boolean>(false);
+  const [emailConfirmationPending, setEmailConfirmationPending] = useState<boolean>(false);
 
   // ---------------------------------------------------------------------------
   // STAGE 2: Luxury Word-Key Email Passkey Verification
@@ -113,7 +113,7 @@ export default function CheckoutPage() {
   const [passkeyVerifiedDirectly, setPasskeyVerifiedDirectly] = useState<boolean>(false);
   const [emailVerifiedAt, setEmailVerifiedAt] = useState<string>('');
 
-  const isEmailVerified = Boolean(passkeyVerifiedDirectly || profile?.emailVerified);
+  const isEmailVerified = Boolean(user?.emailVerified);
 
   // ---------------------------------------------------------------------------
   // STAGE 3: Address Validation Engine (Ola Maps)
@@ -141,7 +141,7 @@ export default function CheckoutPage() {
   >('OlaMaps');
 
   // ---------------------------------------------------------------------------
-  // STAGE 4: Phone Number Verification (Firebase SMS Auth)
+  // STAGE 4: Phone Number Verification
   // ---------------------------------------------------------------------------
   const [selectedDialCode, setSelectedDialCode] = useState<string>('+1');
   const [rawPhoneInput, setRawPhoneInput] = useState<string>('');
@@ -180,20 +180,6 @@ export default function CheckoutPage() {
   // ---------------------------------------------------------------------------
   // Handlers for Stage 1: Auth & Identity
   // ---------------------------------------------------------------------------
-  const handleGoogleSignIn = async () => {
-    setAuthLoading(true);
-    setAuthError('');
-    try {
-      await signInWithGoogle();
-      setActiveStage(2);
-    } catch (err: unknown) {
-      console.error('Google Auth error:', err);
-      setAuthError('Google identity authentication could not be completed. Please try again or use direct login.');
-    } finally {
-      setAuthLoading(false);
-    }
-  };
-
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setAuthError('');
@@ -224,7 +210,15 @@ export default function CheckoutPage() {
         setActiveStage(2);
       } catch (err: unknown) {
         console.error('Registration error:', err);
-        setAuthError('Registration failed. The email may already be registered or password is too weak.');
+        const message = err instanceof Error ? err.message : '';
+        setAuthError(
+          message.toLowerCase().includes('check your email')
+            ? 'Registration created. Check your email, click Verify Client Profile, then return here and sign in.'
+            : 'Registration failed. The email may already be registered or password is too weak.'
+        );
+        if (message.toLowerCase().includes('check your email')) {
+          setEmailConfirmationPending(true);
+        }
       } finally {
         setAuthLoading(false);
       }
@@ -240,7 +234,12 @@ export default function CheckoutPage() {
         setActiveStage(2);
       } catch (err: unknown) {
         console.error('Sign-in error:', err);
-        setAuthError('Invalid credentials. Please verify your email and password.');
+        const message = err instanceof Error ? err.message.toLowerCase() : '';
+        setAuthError(
+          message.includes('confirm') || message.includes('verify')
+            ? 'Your email is not verified. Open the confirmation email, click Verify Client Profile, then sign in again.'
+            : 'Invalid credentials. Please verify your email and password.'
+        );
       } finally {
         setAuthLoading(false);
       }
@@ -314,9 +313,6 @@ export default function CheckoutPage() {
         setPasskeyVerifiedDirectly(true);
         const timestamp = new Date().toISOString();
         setEmailVerifiedAt(timestamp);
-        if (updateUserProfile) {
-          await updateUserProfile({ emailVerified: true });
-        }
         setActiveStage(3);
       } else {
         setPasskeyError(result.error || 'Invalid editorial passkey.');
@@ -365,7 +361,7 @@ export default function CheckoutPage() {
   };
 
   // ---------------------------------------------------------------------------
-  // Handlers for Stage 4: Phone Auth (Firebase SMS)
+  // Handlers for Stage 4: Phone Auth
   // ---------------------------------------------------------------------------
   const handleSendPhoneSms = async () => {
     setPhoneError('');
@@ -462,7 +458,7 @@ export default function CheckoutPage() {
 
   const handleProceedToTransactionalClearing = async () => {
     if (!isAllGatesPassed) {
-      setOrderError('All 4 identity, editorial passkey, postal, and telephonic gates must be authenticated.');
+      setOrderError('Your account must be active and email-confirmed before an order can be placed.');
       return;
     }
 
@@ -716,34 +712,6 @@ export default function CheckoutPage() {
                         To maintain allocation integrity and prevent fraudulent reservation botting, guest checkout is disabled. Every order must link to an authenticated collector dossier.
                       </div>
 
-                      {/* Google Primary Auth */}
-                      <button
-                        type="button"
-                        onClick={handleGoogleSignIn}
-                        disabled={authLoading}
-                        className="w-full py-3.5 px-4 bg-[#ffffff] hover:bg-[#f9f9f7] text-[#111111] border border-[#111111] text-xs uppercase tracking-[0.2em] font-medium flex items-center justify-center space-x-3 transition-colors disabled:opacity-50"
-                      >
-                        <svg className="w-4 h-4" viewBox="0 0 24 24">
-                          <path
-                            fill="#4285F4"
-                            d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"
-                          />
-                          <path
-                            fill="#34A853"
-                            d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"
-                          />
-                          <path
-                            fill="#FBBC05"
-                            d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.14-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z"
-                          />
-                          <path
-                            fill="#EA4335"
-                            d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"
-                          />
-                        </svg>
-                        <span>Continue with Google Identity</span>
-                      </button>
-
                       <div className="relative flex py-1 items-center">
                         <div className="flex-grow border-t border-[#e5e5e3]" />
                         <span className="flex-shrink mx-4 text-[10px] uppercase tracking-[0.25em] text-[#8c8c8c]">
@@ -773,6 +741,12 @@ export default function CheckoutPage() {
                           Existing Client Sign-In
                         </button>
                       </div>
+
+                      {emailConfirmationPending && (
+                        <div className="p-4 bg-[#f0f9f0] border border-[#cceccc] text-[#166534] text-xs leading-relaxed">
+                          Registration created. Check your inbox or spam folder, click <strong>Verify Client Profile</strong>, then return and sign in. Registration is locked until this step is complete.
+                        </div>
+                      )}
 
                       <form onSubmit={handleEmailAuth} className="space-y-4">
                         {authMode === 'register' && (
@@ -834,7 +808,7 @@ export default function CheckoutPage() {
 
                         <button
                           type="submit"
-                          disabled={authLoading}
+                          disabled={authLoading || emailConfirmationPending}
                           className="w-full py-3.5 bg-[#111111] hover:bg-[#2b2b2b] text-[#ffffff] text-xs uppercase tracking-[0.25em] font-semibold transition-colors disabled:opacity-50"
                         >
                           {authLoading
@@ -1209,7 +1183,7 @@ export default function CheckoutPage() {
             </div>
 
             {/* --------------------------------------------------------------------- */}
-            {/* STAGE 4: Phone Number Verification (Firebase SMS Auth) */}
+            {/* STAGE 4: Phone Number Verification */}
             {/* --------------------------------------------------------------------- */}
             <div
               id="stage-4-phone"
@@ -1240,7 +1214,7 @@ export default function CheckoutPage() {
                     <p className="text-[11px] uppercase tracking-[0.15em] text-[#8c8c8c]">
                       {isPhoneVerified
                         ? `Authenticated: ${normalizedPhone || profile?.phoneNumber} (E.164 Cleared)`
-                        : 'Firebase SMS OTP verification · Carrier authentication'}
+                        : 'SMS OTP verification · Carrier authentication'}
                     </p>
                   </div>
                 </div>
@@ -1268,7 +1242,7 @@ export default function CheckoutPage() {
                           <span className="font-mono text-[#111111]">{normalizedPhone || profile?.phoneNumber}</span>
                         </p>
                         <p className="text-[10px] font-mono text-[#8c8c8c]">
-                          Timestamp: {phoneVerifiedAt || 'Session Verified'} · Protocol: Firebase Phone Auth
+                          Timestamp: {phoneVerifiedAt || 'Session Verified'} · Protocol: SMS Phone Auth
                         </p>
                       </div>
                       <button
@@ -1553,7 +1527,7 @@ export default function CheckoutPage() {
                   </button>
 
                   <p className="text-[10px] text-center text-[#8c8c8c] tracking-wider uppercase">
-                    Order is securely recorded with status pending_payment in Firestore prior to gateway clearing.
+                    Order is securely recorded with status pending_payment prior to gateway clearing.
                   </p>
                 </div>
               )}

@@ -1,73 +1,48 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
 import { ArrowUpRight, ZoomIn, RefreshCw, Play, Pause } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useProductCarousel } from '../hooks/useProductCarousel';
+import type { Product } from '../types/store';
 
 interface HeroSectionProps {
+  products: Product[];
+  loading: boolean;
   onReserveClick: () => void;
   onDiscoverClick: () => void;
 }
 
 export default function HeroSection({
+  products,
+  loading,
   onReserveClick,
   onDiscoverClick,
 }: HeroSectionProps) {
-  const [activeIndex, setActiveIndex] = useState<number>(0);
-  const [isPaused, setIsPaused] = useState<boolean>(false);
   const [isHovered, setIsHovered] = useState<boolean>(false);
-
-  const CYCLE_DURATION = 5200; // 5.2s interval for a stately, quiet-luxury loop
+  const { activeIndex, activeProduct, isPaused, setIsPaused, setActiveIndex } = useProductCarousel(products, { interval: 5200 });
 
   const transitionConfig = {
     duration: 0.9,
     ease: [0.16, 1, 0.3, 1] as const,
   };
 
-  const perspectives = [
-    {
-      id: 'table',
-      src: '/images/fig-01-table.png',
-      alt: 'The Glint Plate resting on honed travertine with dessert in delicate glass coupe',
-      category: 'The Table Setting',
-      title: 'Travertine and Reflected Sunlight',
-      fig: 'FIG. 01 — 280MM',
-      tabLabel: 'Fig. 01 Table',
-      badge: 'Atmosphere',
-    },
-    {
-      id: 'profile',
-      src: '/images/fig-02-profile.png',
-      alt: 'Low-angle side profile showing the paper-thin 1.8mm tapered rim and mirror bevel of the Glint Plate',
-      category: 'Side Elevation',
-      title: '1.8mm Tapered Rim & Mirror Bevel',
-      fig: 'FIG. 02 — PROFILE',
-      tabLabel: 'Fig. 02 Profile',
-      badge: 'Side Profile',
-    },
-  ];
-
-  // Continuous infinite animation loop
-  useEffect(() => {
-    if (isPaused || isHovered) return;
-
-    const interval = setInterval(() => {
-      setActiveIndex((prev) => (prev === 0 ? 1 : 0));
-    }, CYCLE_DURATION);
-
-    return () => clearInterval(interval);
-  }, [isPaused, isHovered, activeIndex]);
-
+  const editorial = activeProduct?.editorial;
+  const perspectives = editorial?.hero.slides || [];
   const currentMain = perspectives[activeIndex];
-  const currentSide = perspectives[activeIndex === 0 ? 1 : 0];
+  const currentSide = perspectives[(activeIndex + 1) % perspectives.length] || currentMain;
+
+  if (loading || !activeProduct || !editorial || perspectives.length === 0) {
+    return <section id="hero-section" className="min-h-[70vh] border-b border-[#e5e5e3]" />;
+  }
 
   const handleSelectPerspective = (index: number) => {
     setActiveIndex(index);
   };
 
   const toggleSwap = () => {
-    setActiveIndex((prev) => (prev === 0 ? 1 : 0));
+    setActiveIndex((activeIndex + 1) % perspectives.length);
   };
 
   return (
@@ -87,11 +62,11 @@ export default function HeroSection({
               className="flex flex-wrap items-center gap-2 sm:gap-3 mb-4 sm:mb-6"
             >
               <span className="text-[9px] sm:text-[10px] md:text-[11px] uppercase tracking-[0.18em] sm:tracking-[0.2em] font-medium text-[#747878]">
-                Objects for the Everyday Ritual
+                {editorial.hero.eyebrow}
               </span>
               <span className="w-6 sm:w-8 h-[1px] bg-[#c5a059]" />
               <span className="text-[9px] sm:text-[10px] md:text-[11px] uppercase tracking-[0.16em] sm:tracking-[0.18em] font-semibold text-[#c5a059]">
-                Edition 01
+                {editorial.hero.editionLabel}
               </span>
             </motion.div>
 
@@ -102,8 +77,7 @@ export default function HeroSection({
               transition={{ ...transitionConfig, delay: 0.2 }}
               className="font-[family-name:var(--font-cormorant)] text-[36px] xs:text-[42px] sm:text-[54px] md:text-[64px] lg:text-[72px] font-light leading-[1.06] tracking-[-0.02em] text-[#111111] mb-6 sm:mb-8"
             >
-              A quieter kind <br />
-              of <span className="italic font-normal text-[#111111]">brilliance.</span>
+              {activeProduct.name}
             </motion.h1>
 
             {/* Body Description */}
@@ -113,8 +87,7 @@ export default function HeroSection({
               transition={{ ...transitionConfig, delay: 0.35 }}
               className="font-[family-name:var(--font-inter)] text-[14px] sm:text-[16px] text-[#444748] font-light leading-[1.7] max-w-lg mb-8 sm:mb-10"
             >
-              Stainless steel. A new reflection. Clean lines and liquid luster
-              forged to turn domestic dining into quiet sculpture.
+              {editorial.hero.description}
             </motion.p>
 
             {/* CTAs */}
@@ -129,7 +102,7 @@ export default function HeroSection({
                 onClick={onDiscoverClick}
                 className="w-full sm:w-auto group inline-flex items-center justify-center space-x-3 bg-[#111111] text-[#f9f9f7] px-6 sm:px-7 py-3.5 sm:py-4 text-[11px] uppercase tracking-[0.18em] font-medium hover:bg-[#2b2b2b] transition-all cursor-pointer border border-[#111111]"
               >
-                <span>Discover The Plate</span>
+                <span>{editorial.hero.discoverLabel}</span>
                 <ArrowUpRight className="w-4 h-4 text-[#c5a059] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
               </button>
 
@@ -138,7 +111,7 @@ export default function HeroSection({
                 onClick={onReserveClick}
                 className="w-full sm:w-auto inline-flex items-center justify-center bg-transparent text-[#111111] px-6 sm:px-7 py-3.5 sm:py-4 text-[11px] uppercase tracking-[0.18em] font-medium hover:bg-[#111111] hover:text-[#f9f9f7] transition-all cursor-pointer border border-[#111111]"
               >
-                <span>Reserve First Edition</span>
+                <span>{editorial.hero.reserveLabel}</span>
               </button>
             </motion.div>
 
@@ -151,26 +124,26 @@ export default function HeroSection({
             >
               <div>
                 <div className="text-[9px] uppercase tracking-[0.18em] sm:tracking-[0.2em] font-medium text-[#747878] mb-1">
-                  Material
+                  {editorial.hero.materialLabel}
                 </div>
                 <div className="text-[12px] sm:text-[13px] md:text-[14px] font-medium text-[#111111] tracking-tight">
-                  18/10 Stainless
+                  {editorial.hero.materialValue}
                 </div>
               </div>
               <div>
                 <div className="text-[9px] uppercase tracking-[0.18em] sm:tracking-[0.2em] font-medium text-[#747878] mb-1">
-                  Craft
+                  {editorial.hero.craftLabel}
                 </div>
                 <div className="text-[12px] sm:text-[13px] md:text-[14px] font-medium text-[#111111] tracking-tight">
-                  Optical Buff
+                  {editorial.hero.craftValue}
                 </div>
               </div>
               <div>
                 <div className="text-[9px] uppercase tracking-[0.18em] sm:tracking-[0.2em] font-medium text-[#747878] mb-1">
-                  Edition
+                  {editorial.hero.editionLabelMeta}
                 </div>
                 <div className="text-[12px] sm:text-[13px] md:text-[14px] font-medium text-[#111111] tracking-tight">
-                  Batch 01 / 250
+                  {editorial.hero.editionValue}
                 </div>
               </div>
             </motion.div>
@@ -185,7 +158,7 @@ export default function HeroSection({
             {/* View Switcher Bar & Loop Control */}
             <div className="flex flex-wrap items-center justify-between gap-2 mb-2.5 sm:mb-3 text-[9px] sm:text-[10px] uppercase tracking-[0.16em] sm:tracking-[0.18em] text-[#747878]">
               <div className="flex items-center space-x-2">
-                <span className="font-medium text-[#111111]">Atelier Perspectives</span>
+                <span className="font-medium text-[#111111]">{activeProduct.name}</span>
                 <span className="text-[#c5a059]">•</span>
                 <button
                   id="hero-loop-toggle-btn"
@@ -213,7 +186,7 @@ export default function HeroSection({
                   const isActive = activeIndex === idx;
                   return (
                     <button
-                      key={persp.id}
+                      key={`${activeProduct.id}-perspective-tab-${idx}`}
                       id={`hero-perspective-${persp.id}-btn`}
                       onClick={() => handleSelectPerspective(idx)}
                       className={`relative px-2 sm:px-2.5 py-1 text-[9px] sm:text-[10px] transition-all cursor-pointer overflow-hidden ${
@@ -230,7 +203,7 @@ export default function HeroSection({
                           key={`progress-${activeIndex}`}
                           initial={{ width: '0%' }}
                           animate={{ width: '100%' }}
-                          transition={{ duration: CYCLE_DURATION / 1000, ease: 'linear' }}
+                          transition={{ duration: 5.2, ease: 'linear' }}
                           className="absolute bottom-0 left-0 h-[2px] bg-[#c5a059] z-20"
                         />
                       )}
@@ -253,7 +226,7 @@ export default function HeroSection({
                 const isActive = activeIndex === idx;
                 return (
                   <motion.div
-                    key={persp.id}
+                    key={`${activeProduct.id}-perspective-${idx}`}
                     initial={false}
                     animate={{
                       opacity: isActive ? 1 : 0,
@@ -266,7 +239,7 @@ export default function HeroSection({
                     className={`absolute inset-0 ${isActive ? 'z-10' : 'z-0 pointer-events-none'}`}
                   >
                     <Image
-                      src={persp.src}
+                      src={persp.imageUrl}
                       alt={persp.alt}
                       fill
                       priority={idx === 0}
@@ -291,7 +264,7 @@ export default function HeroSection({
               <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 md:p-8 pr-28 sm:pr-40 md:pr-8 z-20 pointer-events-none">
                 <AnimatePresence mode="wait">
                   <motion.div
-                    key={currentMain.id}
+                    key={`${activeProduct.id}-main-caption-${activeIndex}`}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -8 }}
@@ -308,7 +281,7 @@ export default function HeroSection({
                     </div>
 
                     <div className="text-[9px] sm:text-[10px] uppercase tracking-[0.18em] font-medium text-[#e5e2e1]/90">
-                      {currentMain.fig}
+                      {currentMain.figureLabel}
                     </div>
                   </motion.div>
                 </AnimatePresence>
@@ -338,7 +311,7 @@ export default function HeroSection({
                   const isSideActive = activeIndex !== idx;
                   return (
                     <motion.div
-                      key={`side-${persp.id}`}
+                      key={`${activeProduct.id}-side-perspective-${idx}`}
                       initial={false}
                       animate={{
                         opacity: isSideActive ? 1 : 0,
@@ -351,7 +324,7 @@ export default function HeroSection({
                       className={`absolute inset-0 ${isSideActive ? 'z-10' : 'z-0 pointer-events-none'}`}
                     >
                       <Image
-                        src={persp.src}
+                        src={persp.imageUrl}
                         alt={persp.alt}
                         fill
                         referrerPolicy="no-referrer"
@@ -378,14 +351,14 @@ export default function HeroSection({
                 <div className="absolute bottom-0 left-0 right-0 p-2.5 sm:p-3 text-[#f9f9f7] pointer-events-none z-20">
                   <AnimatePresence mode="wait">
                     <motion.div
-                      key={`caption-${currentSide.id}`}
+                      key={`${activeProduct.id}-side-caption-${(activeIndex + 1) % perspectives.length}`}
                       initial={{ opacity: 0, y: 4 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -4 }}
                       transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
                     >
                       <div className="text-[7px] sm:text-[8px] uppercase tracking-[0.2em] font-medium text-[#c5a059] mb-0.5">
-                        {currentSide.fig}
+                        {currentSide.figureLabel}
                       </div>
                       <div className="font-[family-name:var(--font-cormorant)] text-[12px] sm:text-[14px] italic leading-tight text-white line-clamp-1">
                         {currentSide.title}
