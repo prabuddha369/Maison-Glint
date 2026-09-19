@@ -11,11 +11,68 @@ import type {
 } from '../types/store';
 import { getSupabaseBrowser } from './supabase/client';
 
+/**
+ * Normalizes Google Drive sharing links to direct CDN endpoints.
+ * Handles /file/d/{id}/view, ?id={id}, open?id={id}, uc?id={id}, and lh3.googleusercontent.com
+ */
+export function formatGoogleDriveUrl(url?: string): string | undefined {
+  if (!url || typeof url !== 'string') return undefined;
+  const trimmed = url.trim();
+  if (!trimmed) return undefined;
+
+  // Already a direct local image or data URI
+  if (trimmed.startsWith('/') || trimmed.startsWith('data:')) {
+    return trimmed;
+  }
+
+  // Extract Google Drive File ID
+  const driveMatch =
+    trimmed.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) ||
+    trimmed.match(/[?&]id=([a-zA-Z0-9_-]+)/) ||
+    trimmed.match(/\/d\/([a-zA-Z0-9_-]+)/);
+
+  if (driveMatch && driveMatch[1]) {
+    return `https://lh3.googleusercontent.com/d/${driveMatch[1]}`;
+  }
+
+  return trimmed;
+}
+
+export const DEFAULT_FINISH_PRESETS: ProductFinishPreset[] = [
+  {
+    key: 'morning',
+    label: 'Morning Sun',
+    angle: 45,
+    roughness: 'Ra < 0.050 µm',
+    dispersion: '98.4%',
+    imageUrl: 'https://drive.google.com/file/d/10MrLj9sZ0g3rDmXhl1XATt3WbHymY-RI/view?usp=sharing',
+    sortOrder: 0,
+  },
+  {
+    key: 'candlelight',
+    label: 'Candlelight Grazing',
+    angle: 22,
+    roughness: 'Ra < 0.048 µm',
+    dispersion: '99.1%',
+    imageUrl: 'https://drive.google.com/file/d/1J6r_3beMMM8DGnMch3WVLIzncvKRUJrj/view?usp=sharing',
+    sortOrder: 1,
+  },
+  {
+    key: 'zenith',
+    label: 'Overhead Ambient',
+    angle: 70,
+    roughness: 'Ra < 0.045 µm',
+    dispersion: '98.8%',
+    imageUrl: 'https://drive.google.com/file/d/1rgJEFBuH17GLAhCK6i-2Kcd0MoGmDFPu/view?usp=sharing',
+    sortOrder: 2,
+  },
+];
+
 function createEditorialContent(name: string, images: string[], editionLabel: string): ProductEditorialContent {
   return {
     hero: {
       eyebrow: 'Objects for the Everyday Ritual', editionLabel, description: 'A considered object with a reflective surface, clean geometry, and a quiet presence at the table.',
-      discoverLabel: 'Discover Object', reserveLabel: 'Reserve Edition', materialLabel: 'Material', materialValue: 'Surgical Stainless',
+      discoverLabel: 'Discover Object', reserveLabel: 'Request Priority Access', materialLabel: 'Material', materialValue: 'Surgical Stainless',
       craftLabel: 'Craft', craftValue: 'Optical Hand Finish', editionLabelMeta: 'Edition', editionValue: editionLabel,
       slides: images.slice(0, 2).map((imageUrl, index) => ({ imageUrl, alt: `${name} perspective ${index + 1}`, category: index === 0 ? 'Table Setting' : 'Side Elevation', title: index === 0 ? 'A considered presence at the table' : 'Profile, edge, and reflected light', figureLabel: `FIG. 0${index + 1}`, tabLabel: `Fig. 0${index + 1}`, badge: index === 0 ? 'Atmosphere' : 'Profile', sortOrder: index })),
     },
@@ -37,11 +94,7 @@ function createEditorialContent(name: string, images: string[], editionLabel: st
       sectionLabel: '02 / The Finish & Philosophy', title: 'Made of steel.', titleEmphasis: 'Alive with light.',
       paragraphs: ['A curve. A glint. The room, reflected. A surface that becomes part of the setting.', 'The finish carries the season, the lighting, and the architecture of the gathering.'],
       presetLabel: 'Select Optical Light State', spectrumLabel: 'Reflective Index Spectrum', roughnessLabel: 'Surface Index',
-      presets: [
-        { key: 'morning', label: 'Morning Sun', angle: 45, roughness: 'Ra < 0.050 µm', dispersion: '98.4%', sortOrder: 0 },
-        { key: 'candlelight', label: 'Candlelight Grazing', angle: 22, roughness: 'Ra < 0.048 µm', dispersion: '99.1%', sortOrder: 1 },
-        { key: 'zenith', label: 'Overhead Ambient', angle: 70, roughness: 'Ra < 0.045 µm', dispersion: '98.8%', sortOrder: 2 },
-      ],
+      presets: DEFAULT_FINISH_PRESETS,
     },
     specifications: {
       sectionLabel: '03 / Specifications', title: 'Every detail,', titleEmphasis: 'considered.', description: 'Refined measurements balanced for the surfaces and rituals of everyday dining.',
@@ -89,6 +142,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     inStock: true,
     editionTotal: 250,
     editionRemaining: 34,
+    editionReserved: 0,
     createdAt: new Date().toISOString(),
     editorial: createEditorialContent('Object 01 — The Glint Plate', ['/images/fig-01-table.png', '/images/fig-02-profile.png', '/images/scallops-macro.png'], 'Batch 01 / 250'),
   },
@@ -103,6 +157,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     inStock: true,
     editionTotal: 150,
     editionRemaining: 18,
+    editionReserved: 0,
     createdAt: new Date().toISOString(),
     editorial: createEditorialContent('Object 02 — Fluid Coupe Pair', ['/images/dining-ritual.png', '/images/fig-01-table.png', '/images/nocturne-setting.png'], 'Batch 02 / 150'),
   },
@@ -117,6 +172,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     inStock: true,
     editionTotal: 300,
     editionRemaining: 52,
+    editionReserved: 0,
     createdAt: new Date().toISOString(),
     editorial: createEditorialContent('Object 03 — Monolith Serving Knife', ['/images/scallops-macro.png', '/images/fig-02-profile.png', '/images/raw-elements.png'], 'Batch 03 / 300'),
   },
@@ -255,7 +311,12 @@ export async function seedDefaultProducts(): Promise<void> {
   try {
     const { error } = await getSupabaseBrowser().from('products').upsert(INITIAL_PRODUCTS.map(toProductRow));
     if (error) throw error;
-    console.log('[Maison Glint] Seeded default atelier products to Supabase.');
+    for (const product of INITIAL_PRODUCTS) {
+      if (product.editorial) {
+        await saveEditorialContent(product);
+      }
+    }
+    console.log('[Maison Glint] Seeded default atelier products and editorial reflection presets to Supabase.');
   } catch (error) {
     console.warn('[Maison Glint] Product seeder notice (safe fallback):', error);
   }
@@ -294,7 +355,7 @@ async function saveEditorialContent(product: Product): Promise<void> {
     product_id: product.id,
     hero: { ...editorial.hero, slides: undefined },
     showcase: { ...editorial.showcase, features: undefined, panels: undefined },
-    finish: { ...editorial.finish, presets: undefined },
+    finish: { ...editorial.finish, presets: editorial.finish.presets },
     specifications: { ...editorial.specifications, rows: undefined },
     table_content: { ...editorial.table, rituals: undefined },
   });
@@ -323,12 +384,19 @@ async function saveEditorialContent(product: Product): Promise<void> {
     ['product_hero_slides', editorial.hero.slides.map((slide) => ({ product_id: product.id, image_url: slide.imageUrl, alt: slide.alt, category: slide.category, title: slide.title, figure_label: slide.figureLabel, tab_label: slide.tabLabel, badge: slide.badge, sort_order: slide.sortOrder }))],
     ['product_features', editorial.showcase.features.map((feature) => ({ product_id: product.id, label: feature.label, description: feature.description, sort_order: feature.sortOrder }))],
     ['product_panels', editorial.showcase.panels.map((panel) => ({ product_id: product.id, title: panel.title, body: panel.body, sort_order: panel.sortOrder }))],
-    ['product_finish_presets', editorial.finish.presets.map((preset) => ({ product_id: product.id, preset_key: preset.key, label: preset.label, angle: preset.angle, roughness: preset.roughness, dispersion: preset.dispersion, sort_order: preset.sortOrder }))],
+    ['product_finish_presets', editorial.finish.presets.map((preset) => ({ product_id: product.id, preset_key: preset.key, label: preset.label, angle: preset.angle, roughness: preset.roughness, dispersion: preset.dispersion, image_url: preset.imageUrl || '', sort_order: preset.sortOrder }))],
     ['product_specification_rows', editorial.specifications.rows.map((row) => ({ product_id: product.id, label: row.label, metric: row.metric, imperial: row.imperial, sort_order: row.sortOrder }))],
   ] as const;
   for (const [table, rows] of childRows) {
     if (!rows.length) continue;
-    const { error } = await client.from(table).insert(rows as Record<string, unknown>[]);
+    let { error } = await client.from(table).insert(rows as Record<string, unknown>[]);
+    if (error && table === 'product_finish_presets' && (error as { code?: string }).code === '42703') {
+      // If migration 006 has not been applied yet, gracefully fallback without image_url column
+      console.warn('Column image_url does not exist on product_finish_presets in database. Retrying without image_url.');
+      const fallbackRows = (rows as Record<string, unknown>[]).map(({ image_url: _, ...rest }) => rest);
+      const retry = await client.from(table).insert(fallbackRows);
+      error = retry.error;
+    }
     if (error) throw error;
   }
 
@@ -365,6 +433,7 @@ function toProduct(item: Record<string, unknown>): Product {
     specifications: (item.specifications || {}) as Product['specifications'], inStock: item.in_stock !== false,
     editionTotal: typeof item.edition_total === 'number' ? item.edition_total : undefined,
     editionRemaining: typeof item.edition_remaining === 'number' ? item.edition_remaining : undefined,
+    editionReserved: typeof item.edition_reserved === 'number' ? item.edition_reserved : 0,
     createdAt: typeof item.created_at === 'string' ? item.created_at : undefined,
   };
 }
@@ -451,10 +520,23 @@ function toEditorial(
   const panels: ProductPanel[] = owned(related.panels).map((item, index) => ({
     id: text(item.id), title: text(item.title), body: text(item.body), sortOrder: Number(item.sort_order ?? index),
   }));
-  const presets: ProductFinishPreset[] = owned(related.presets).map((item, index) => ({
-    id: text(item.id), key: text(item.preset_key), label: text(item.label), angle: Number(item.angle || 0),
-    roughness: text(item.roughness), dispersion: text(item.dispersion), sortOrder: Number(item.sort_order ?? index),
-  }));
+  const rawPresets = Array.isArray(finish.presets) ? (finish.presets as ProductFinishPreset[]) : [];
+  const presets: ProductFinishPreset[] = owned(related.presets).length > 0
+    ? owned(related.presets).map((item, index) => {
+        const rawJsonMatch = rawPresets.find((jp) => jp.key === text(item.preset_key));
+        const defaultMatch = DEFAULT_FINISH_PRESETS.find((dp) => dp.key === text(item.preset_key));
+        return {
+          id: text(item.id),
+          key: text(item.preset_key),
+          label: text(item.label),
+          angle: Number(item.angle || 0),
+          roughness: text(item.roughness),
+          dispersion: text(item.dispersion),
+          imageUrl: text(item.image_url) || rawJsonMatch?.imageUrl || defaultMatch?.imageUrl || '',
+          sortOrder: Number(item.sort_order ?? index),
+        };
+      })
+    : (rawPresets.length > 0 ? rawPresets : DEFAULT_FINISH_PRESETS);
   const specificationRows: ProductSpecificationRow[] = owned(related.specificationRows).map((item, index) => ({
     id: text(item.id), label: text(item.label), metric: text(item.metric), imperial: text(item.imperial), sortOrder: Number(item.sort_order ?? index),
   }));
@@ -503,5 +585,6 @@ function toProductRow(product: Product) {
     id: product.id, name: product.name, description: product.description, price: product.price, currency: product.currency,
     images: product.images, specifications: product.specifications, in_stock: product.inStock,
     edition_total: product.editionTotal, edition_remaining: product.editionRemaining,
+    edition_reserved: product.editionReserved ?? 0,
   };
 }

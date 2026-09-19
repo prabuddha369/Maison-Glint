@@ -20,11 +20,15 @@ import {
   DollarSign,
   Layers,
   Database,
+  Users,
+  UserCheck,
+  UserX,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { INITIAL_PRODUCTS, getProducts, saveProduct, deleteProduct, seedDefaultProducts } from '../../lib/products';
 import { getAllOrders, updateOrderStatus } from '../../lib/payment';
-import type { Product, Order, OrderStatus } from '../../types/store';
+import { fetchAllSubscribers, toggleSubscriberStatus, deleteSubscriberRecord } from '../../lib/newsletter';
+import type { Product, Order, OrderStatus, NewsletterSubscriber } from '../../types/store';
 
 export default function AdminPage() {
   const { user, isAdmin, signInWithEmail, signOutAccount } = useAuth();
@@ -33,14 +37,17 @@ export default function AdminPage() {
   const [adminEmail, setAdminEmail] = useState<string>('');
   const [adminPassword, setAdminPassword] = useState<string>('');
 
-  const [activeTab, setActiveTab] = useState<'products' | 'orders'>('orders');
+  const [activeTab, setActiveTab] = useState<'products' | 'orders' | 'newsletter'>('orders');
   const [products, setProducts] = useState<Product[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
+  const [subscribers, setSubscribers] = useState<NewsletterSubscriber[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [feedback, setFeedback] = useState<string>('');
 
   // Editing product modal / state
   const [isEditingProduct, setIsEditingProduct] = useState<boolean>(false);
+  const [editorialJsonInput, setEditorialJsonInput] = useState<string>('');
+  const [jsonError, setJsonError] = useState<string>('');
   const [productForm, setProductForm] = useState<Product>({
     id: '',
     name: '',
@@ -62,9 +69,14 @@ export default function AdminPage() {
   const loadData = async () => {
     setLoading(true);
     try {
-      const [prodList, orderList] = await Promise.all([getProducts(), getAllOrders()]);
+      const [prodList, orderList, subList] = await Promise.all([
+        getProducts(),
+        getAllOrders(),
+        fetchAllSubscribers(),
+      ]);
       setProducts(prodList);
       setOrders(orderList);
+      setSubscribers(subList);
     } catch (e) {
       console.error('Admin data load error:', e);
     } finally {
@@ -75,11 +87,12 @@ export default function AdminPage() {
   useEffect(() => {
     let active = true;
     if (isAdmin) {
-      Promise.all([getProducts(), getAllOrders()])
-        .then(([prodList, orderList]) => {
+      Promise.all([getProducts(), getAllOrders(), fetchAllSubscribers()])
+        .then(([prodList, orderList, subList]) => {
           if (active) {
             setProducts(prodList);
             setOrders(orderList);
+            setSubscribers(subList);
             setLoading(false);
           }
         })
@@ -95,14 +108,49 @@ export default function AdminPage() {
     };
   }, [isAdmin]);
 
+  const handleToggleSubscriber = async (email: string, currentStatus: boolean) => {
+    const nextStatus = !currentStatus;
+    const ok = await toggleSubscriberStatus(email, nextStatus);
+    if (ok) {
+      setFeedback(`Subscriber "${email}" updated to ${nextStatus ? 'Active' : 'Unsubscribed'}.`);
+      await loadData();
+      setTimeout(() => setFeedback(''), 4000);
+    } else {
+      alert('Failed to update subscriber status.');
+    }
+  };
+
+  const handleDeleteSubscriber = async (email: string) => {
+    if (!confirm(`Are you sure you want to permanently remove "${email}" from the subscriber archive?`)) return;
+    const ok = await deleteSubscriberRecord(email);
+    if (ok) {
+      setFeedback(`Subscriber "${email}" removed.`);
+      await loadData();
+      setTimeout(() => setFeedback(''), 4000);
+    } else {
+      alert('Failed to delete subscriber.');
+    }
+  };
+
   const handleSaveProduct = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!productForm.name || !productForm.price) return;
+
+    let parsedEditorial = productForm.editorial;
+    if (editorialJsonInput.trim()) {
+      try {
+        parsedEditorial = JSON.parse(editorialJsonInput);
+      } catch (err) {
+        alert('Invalid Section Content JSON: ' + (err instanceof Error ? err.message : 'Syntax error'));
+        return;
+      }
+    }
 
     const idToUse = productForm.id || `object-${Date.now().toString().slice(-4)}`;
     const productToSave: Product = {
       ...productForm,
       id: idToUse,
+      editorial: parsedEditorial,
     };
 
     await saveProduct(productToSave);
@@ -312,7 +360,7 @@ export default function AdminPage() {
         )}
 
         {/* Overview Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
           <div className="bg-[#ffffff] border border-[#e5e5e3] p-5">
             <span className="text-[9px] uppercase tracking-[0.18em] text-[#747878] block">
               Total Orders Captured
@@ -337,6 +385,15 @@ export default function AdminPage() {
             </span>
             <span className="font-[family-name:var(--font-cormorant)] text-3xl font-semibold text-[#111111]">
               {products.length}
+            </span>
+          </div>
+
+          <div className="bg-[#ffffff] border border-[#e5e5e3] p-5">
+            <span className="text-[9px] uppercase tracking-[0.18em] text-[#747878] block">
+              Active Subscribers
+            </span>
+            <span className="font-[family-name:var(--font-cormorant)] text-3xl font-semibold text-[#111111]">
+              {subscribers.filter((s) => s.isSubscribed).length}
             </span>
           </div>
 
@@ -371,6 +428,16 @@ export default function AdminPage() {
             }`}
           >
             Product Catalog ({products.length})
+          </button>
+          <button
+            onClick={() => setActiveTab('newsletter')}
+            className={`pb-4 px-6 text-[11px] uppercase tracking-[0.18em] font-medium border-b-2 cursor-pointer ${
+              activeTab === 'newsletter'
+                ? 'border-[#111111] text-[#111111]'
+                : 'border-transparent text-[#747878] hover:text-[#111111]'
+            }`}
+          >
+            Newsletter Subscribers ({subscribers.length})
           </button>
         </div>
 
@@ -473,32 +540,46 @@ export default function AdminPage() {
         {/* Tab 2: Products Catalog */}
         {activeTab === 'products' && (
           <div>
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
               <h2 className="font-[family-name:var(--font-cormorant)] text-2xl font-light text-[#111111]">
                 Catalog Objects
               </h2>
-              <button
-                onClick={() => {
-                  setProductForm({
-                    id: '',
-                    name: '',
-                    description: '',
-                    price: 550,
-                    currency: 'USD',
-                    images: ['/images/fig-01-table.png'],
-                    specifications: { gauge: '18-Gauge Surgical 316L Core' },
-                    inStock: true,
-                    editionTotal: 100,
-                    editionRemaining: 25,
-                    editorial: INITIAL_PRODUCTS[0].editorial,
-                  });
-                  setIsEditingProduct(true);
-                }}
-                className="px-4 py-2.5 bg-[#111111] text-[#f9f9f7] text-[10px] uppercase tracking-[0.18em] font-medium flex items-center space-x-2 hover:bg-[#2b2b2b]"
-              >
-                <Plus className="w-3.5 h-3.5" />
-                <span>Create New Object</span>
-              </button>
+              <div className="flex items-center space-x-3">
+                <button
+                  type="button"
+                  onClick={handleSeedCatalog}
+                  disabled={loading}
+                  className="px-3.5 py-2.5 border border-[#d6d6d4] text-[#111111] text-[10px] uppercase tracking-[0.18em] font-medium flex items-center space-x-2 hover:border-[#111111] transition-colors disabled:opacity-50"
+                  title="Sync default atelier products and reflection presets to Supabase"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin text-[#c5a059]' : 'text-[#747878]'}`} />
+                  <span>Sync Catalog & Presets</span>
+                </button>
+                <button
+                  onClick={() => {
+                    setProductForm({
+                      id: '',
+                      name: '',
+                      description: '',
+                      price: 550,
+                      currency: 'USD',
+                      images: ['/images/fig-01-table.png'],
+                      specifications: { gauge: '18-Gauge Surgical 316L Core' },
+                      inStock: true,
+                      editionTotal: 100,
+                      editionRemaining: 25,
+                      editorial: INITIAL_PRODUCTS[0].editorial,
+                    });
+                    setEditorialJsonInput(JSON.stringify(INITIAL_PRODUCTS[0].editorial, null, 2));
+                    setJsonError('');
+                    setIsEditingProduct(true);
+                  }}
+                  className="px-4 py-2.5 bg-[#111111] text-[#f9f9f7] text-[10px] uppercase tracking-[0.18em] font-medium flex items-center space-x-2 hover:bg-[#2b2b2b]"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Create New Object</span>
+                </button>
+              </div>
             </div>
 
             {/* Product Edit / Create Modal Form */}
@@ -576,21 +657,36 @@ export default function AdminPage() {
                   </div>
 
                   <div className="sm:col-span-2">
-                    <label className="block text-[10px] uppercase tracking-[0.16em] text-[#747878] mb-1">
-                      Section Content JSON
-                    </label>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="block text-[10px] uppercase tracking-[0.16em] text-[#747878]">
+                        Section Content JSON
+                      </label>
+                      {jsonError ? (
+                        <span className="text-[10px] text-[#b91c1c] font-mono">
+                          Syntax Error: {jsonError}
+                        </span>
+                      ) : (
+                        <span className="text-[10px] text-[#1c731c] font-mono">
+                          Valid JSON
+                        </span>
+                      )}
+                    </div>
                     <textarea
-                      rows={8}
-                      value={JSON.stringify(productForm.editorial || INITIAL_PRODUCTS[0].editorial, null, 2)}
+                      rows={10}
+                      value={editorialJsonInput}
                       onChange={(e) => {
+                        const val = e.target.value;
+                        setEditorialJsonInput(val);
                         try {
-                          const editorial = JSON.parse(e.target.value);
-                          setProductForm({ ...productForm, editorial });
-                        } catch {
-                          // Keep the last valid structured value while the JSON is being edited.
+                          JSON.parse(val);
+                          setJsonError('');
+                        } catch (err) {
+                          setJsonError(err instanceof Error ? err.message : 'Invalid JSON syntax');
                         }
                       }}
-                      className="w-full bg-[#f9f9f7] px-3 py-2 text-[11px] border border-[#d6d6d4] font-mono"
+                      className={`w-full bg-[#f9f9f7] px-3 py-2 text-[11px] border font-mono ${
+                        jsonError ? 'border-[#b91c1c]' : 'border-[#d6d6d4]'
+                      }`}
                     />
                   </div>
 
@@ -701,6 +797,8 @@ export default function AdminPage() {
                       <button
                         onClick={() => {
                           setProductForm(p);
+                          setEditorialJsonInput(JSON.stringify(p.editorial || INITIAL_PRODUCTS[0].editorial, null, 2));
+                          setJsonError('');
                           setIsEditingProduct(true);
                         }}
                         className="text-[10px] uppercase tracking-[0.14em] text-[#111111] hover:text-[#c5a059] flex items-center space-x-1"
@@ -720,6 +818,116 @@ export default function AdminPage() {
                 </div>
               ))}
             </div>
+          </div>
+        )}
+
+        {/* Tab 3: Newsletter Subscribers */}
+        {activeTab === 'newsletter' && (
+          <div className="space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#ffffff] border border-[#e5e5e3] p-6">
+              <div>
+                <span className="text-[9px] uppercase tracking-[0.24em] text-[#c5a059] font-medium block">
+                  Atelier Correspondence
+                </span>
+                <h2 className="font-[family-name:var(--font-cormorant)] text-2xl text-[#111111] font-light mt-0.5">
+                  Private Newsletter Circle
+                </h2>
+                <p className="text-[12px] text-[#747878] font-light mt-1">
+                  Patrons and collectors subscribed to release dispatches, private previews, and modernist chromeware essays.
+                </p>
+              </div>
+
+              <div className="flex items-center space-x-3 text-[11px]">
+                <span className="px-3 py-1.5 bg-[#eef8ee] border border-[#bfe4bf] text-[#1c731c] font-mono font-medium">
+                  {subscribers.filter((s) => s.isSubscribed).length} Active
+                </span>
+                <span className="px-3 py-1.5 bg-[#f4f4f2] border border-[#e5e5e3] text-[#747878] font-mono">
+                  {subscribers.filter((s) => !s.isSubscribed).length} Unsubscribed
+                </span>
+              </div>
+            </div>
+
+            {subscribers.length === 0 ? (
+              <div className="bg-[#ffffff] border border-[#e5e5e3] p-12 text-center text-[#747878] text-[12px]">
+                No subscribers recorded yet. Submissions from the storefront footer will appear here automatically.
+              </div>
+            ) : (
+              <div className="bg-[#ffffff] border border-[#e5e5e3] overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="border-b border-[#e5e5e3] bg-[#f9f9f7] text-[10px] uppercase tracking-[0.16em] text-[#747878]">
+                        <th className="py-3.5 px-6 font-medium">Patron Email</th>
+                        <th className="py-3.5 px-6 font-medium">Status</th>
+                        <th className="py-3.5 px-6 font-medium">Subscribed Date</th>
+                        <th className="py-3.5 px-6 font-medium">Unsubscribed Date</th>
+                        <th className="py-3.5 px-6 font-medium">Source</th>
+                        <th className="py-3.5 px-6 font-medium text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#f0f0ee] text-[12px]">
+                      {subscribers.map((subscriber) => (
+                        <tr key={subscriber.id || subscriber.email} className="hover:bg-[#fafaf8] transition-colors">
+                          <td className="py-4 px-6 font-mono text-[#111111] font-medium">
+                            {subscriber.email}
+                          </td>
+                          <td className="py-4 px-6">
+                            <span
+                              className={`inline-flex items-center px-2 py-0.5 text-[10px] uppercase tracking-[0.14em] font-medium border ${
+                                subscriber.isSubscribed
+                                  ? 'bg-[#eef8ee] border-[#bfe4bf] text-[#1c731c]'
+                                  : 'bg-[#fff0f0] border-[#ffcccc] text-[#b91c1c]'
+                              }`}
+                            >
+                              {subscriber.isSubscribed ? 'Active' : 'Unsubscribed'}
+                            </span>
+                          </td>
+                          <td className="py-4 px-6 text-[#747878]">
+                            {subscriber.createdAt
+                              ? new Date(subscriber.createdAt).toLocaleDateString('en-US', {
+                                  year: 'numeric',
+                                  month: 'short',
+                                  day: 'numeric',
+                                  hour: '2-digit',
+                                  minute: '2-digit',
+                                })
+                              : '—'}
+                          </td>
+                          <td className="py-4 px-6 text-[#8c8c8c]">
+                            {subscriber.unsubscribedAt
+                              ? new Date(subscriber.unsubscribedAt).toLocaleDateString('en-US', {
+                                  year: 'numeric',
+                                  month: 'short',
+                                  day: 'numeric',
+                                  hour: '2-digit',
+                                  minute: '2-digit',
+                                })
+                              : '—'}
+                          </td>
+                          <td className="py-4 px-6 text-[#747878] font-mono text-[11px]">
+                            {subscriber.source || 'storefront'}
+                          </td>
+                          <td className="py-4 px-6 text-right space-x-3">
+                            <button
+                              onClick={() => handleToggleSubscriber(subscriber.email, subscriber.isSubscribed)}
+                              className="text-[10px] uppercase tracking-[0.14em] text-[#111111] hover:text-[#c5a059] font-medium cursor-pointer"
+                            >
+                              {subscriber.isSubscribed ? 'Unsubscribe' : 'Reactivate'}
+                            </button>
+                            <button
+                              onClick={() => handleDeleteSubscriber(subscriber.email)}
+                              className="text-[10px] uppercase tracking-[0.14em] text-[#8c8c8c] hover:text-[#b91c1c] font-medium cursor-pointer"
+                            >
+                              Delete
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </main>

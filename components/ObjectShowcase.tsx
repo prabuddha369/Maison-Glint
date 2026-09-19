@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Plus, Minus, ShoppingBag, ArrowUpRight, Sparkles } from 'lucide-react';
-import { motion } from 'motion/react';
+import { motion, useScroll, useTransform } from 'motion/react';
 import { useCart } from '../hooks/useCart';
 import { useProductCarousel } from '../hooks/useProductCarousel';
 import type { Product } from '../types/store';
@@ -20,9 +20,22 @@ export default function ObjectShowcase({
   loading,
   onRequestPriorityAccess,
 }: ObjectShowcaseProps) {
+  const sectionRef = useRef<HTMLElement>(null);
   const { addItem } = useCart();
   const { activeProduct: product } = useProductCarousel(products);
   const [openAccordion, setOpenAccordion] = useState<string | null>('details');
+
+  // Parallax Scroll Tracking for entering from Hero section
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start end', 'end start'],
+  });
+
+  // Parallax Motion Values
+  const macroImageY = useTransform(scrollYProgress, [0, 1], ['-10%', '10%']);
+  const macroImageScale = useTransform(scrollYProgress, [0, 0.5, 1], [1.12, 1.18, 1.12]);
+  const sectionHeaderY = useTransform(scrollYProgress, [0, 0.35], ['35px', '0px']);
+  const sideColY = useTransform(scrollYProgress, [0.05, 0.45], ['30px', '0px']);
 
   const toggleAccordion = (id: string) => {
     setOpenAccordion(openAccordion === id ? null : id);
@@ -34,19 +47,21 @@ export default function ObjectShowcase({
   const priceDisplay = product ? `$${product.price}` : '';
 
   if (loading || !product || !editorial || !showcaseImage) {
-    return <section id="the-plate" className="min-h-[70vh] border-b border-[#e5e5e3]" />;
+    return <section ref={sectionRef} id="the-plate" className="min-h-[70vh] border-b border-[#e5e5e3]" />;
   }
 
   return (
     <section
+      ref={sectionRef}
       id="the-plate"
-      className="w-full border-b border-[#e5e5e3] py-12 sm:py-16 md:py-24 bg-[#f9f9f7] overflow-hidden"
+      className="relative z-20 w-full border-b border-[#e5e5e3] py-12 sm:py-16 md:py-24 bg-[#f9f9f7] shadow-[0_-20px_50px_rgba(0,0,0,0.06)] overflow-hidden"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
-        {/* Section Header */}
+        {/* Section Header with Parallax Float */}
         <motion.div
-          initial={{ opacity: 0, y: 28 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          style={{ y: sectionHeaderY }}
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
           viewport={{ once: true, margin: '-60px' }}
           transition={{ duration: 0.85, ease: luxuryEase }}
           className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-16 pb-8 sm:pb-12 md:pb-16 border-b border-[#e5e5e3]"
@@ -78,24 +93,29 @@ export default function ObjectShowcase({
             transition={{ duration: 0.9, ease: luxuryEase, delay: 0.1 }}
             className="lg:col-span-7 flex flex-col space-y-4 sm:space-y-6"
           >
-            {/* Macro Close-up Image Container */}
+            {/* Macro Close-up Image Container with Inner Parallax Glide */}
             <div className="relative w-full aspect-[4/3] bg-[#eeeeec] border border-[#e5e5e3] overflow-hidden group">
-              <Image
-                src={showcaseImage}
-                alt={product.name || 'Macro profile of the mirror-polished steel rim bevel'}
-                fill
-                sizes="(max-width: 1024px) 100vw, 58vw"
-                referrerPolicy="no-referrer"
-                className="object-cover object-center group-hover:scale-[1.02] transition-transform duration-700 ease-out"
-              />
+              <motion.div
+                style={{ y: macroImageY, scale: macroImageScale }}
+                className="absolute -inset-[12%] w-[124%] h-[124%]"
+              >
+                <Image
+                  src={showcaseImage}
+                  alt={product.name || 'Macro profile of the mirror-polished steel rim bevel'}
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 58vw"
+                  referrerPolicy="no-referrer"
+                  className="object-cover object-center group-hover:scale-[1.03] transition-transform duration-700 ease-out"
+                />
+              </motion.div>
 
               {/* Top-left Pill Badge */}
-              <div className="absolute top-3 left-3 sm:top-5 sm:left-5 bg-[#f9f9f7]/95 backdrop-blur-sm border border-[#e5e5e3] px-2.5 sm:px-3.5 py-1 sm:py-1.5 text-[8px] sm:text-[9px] uppercase tracking-[0.18em] sm:tracking-[0.2em] font-medium text-[#111111] shadow-xs">
+              <div className="absolute top-3 left-3 sm:top-5 sm:left-5 z-20 bg-[#f9f9f7]/95 backdrop-blur-sm border border-[#e5e5e3] px-2.5 sm:px-3.5 py-1 sm:py-1.5 text-[8px] sm:text-[9px] uppercase tracking-[0.18em] sm:tracking-[0.2em] font-medium text-[#111111] shadow-xs">
                 {editorial.showcase.finishBadge}
               </div>
 
               {/* Reflection Accent Line */}
-              <div className="absolute inset-0 bg-gradient-to-tr from-black/20 via-transparent to-white/10 pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-tr from-black/20 via-transparent to-white/10 pointer-events-none z-10" />
             </div>
 
             {/* Feature Sub-cards */}
@@ -114,10 +134,11 @@ export default function ObjectShowcase({
             </div>
           </motion.div>
 
-          {/* Right Column: Title, Allocation Status, Accordions */}
+          {/* Right Column: Title, Allocation Status, Accordions with Parallax */}
           <motion.div
-            initial={{ opacity: 0, y: 32 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            style={{ y: sideColY }}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
             viewport={{ once: true, margin: '-60px' }}
             transition={{ duration: 0.9, ease: luxuryEase, delay: 0.2 }}
             className="lg:col-span-5 flex flex-col"

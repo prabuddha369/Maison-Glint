@@ -31,17 +31,41 @@ export default function AtTheTable({ products, loading, onSelectRitual }: AtTheT
   return (
     <section id="at-the-table" className="w-full border-b border-[#e5e5e3] py-12 sm:py-16 md:py-24 bg-[#f9f9f7]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
-        <div className="flex items-end justify-between gap-6 border-b border-[#e5e5e3] pb-8">
-          <div>
-            <div className="text-[10px] uppercase tracking-[0.2em] text-[#747878] mb-3">{editorial.sectionLabel}</div>
-            <h2 className="font-[family-name:var(--font-cormorant)] text-[32px] sm:text-[50px] font-light leading-tight">{editorial.title} <span className="italic">{editorial.titleEmphasis}</span></h2>
-            <p className="max-w-xl mt-4 text-[14px] text-[#444748] font-light leading-[1.7]">{editorial.description}</p>
+        <div className="border-b border-[#e5e5e3] pb-8">
+          {/* Eyebrow & Carousel Switcher */}
+          <div className="flex items-center justify-between mb-3 sm:mb-4">
+            <div className="text-[10px] md:text-[11px] uppercase tracking-[0.2em] font-medium text-[#747878]">
+              {editorial.sectionLabel}
+            </div>
+            {products && products.length > 1 && (
+              <div className="flex items-center gap-2">
+                <button
+                  aria-label="Previous product"
+                  onClick={previous}
+                  className="p-1 text-[#747878] hover:text-[#111111] transition-colors cursor-pointer"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                </button>
+                <span className="font-mono text-[9px] text-[#747878] whitespace-nowrap">
+                  {String(activeIndex + 1).padStart(2, '0')} / {String(products.length).padStart(2, '0')}
+                </span>
+                <button
+                  aria-label="Next product"
+                  onClick={next}
+                  className="p-1 text-[#747878] hover:text-[#111111] transition-colors cursor-pointer"
+                >
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            )}
           </div>
-          <div className="flex items-center gap-2">
-            <button aria-label="Previous product" onClick={previous} className="p-2 border border-[#e5e5e3] hover:border-[#111111]"><ArrowLeft className="w-4 h-4" /></button>
-            <span className="font-mono text-[10px] text-[#747878]">{String(activeIndex + 1).padStart(2, '0')} / {String(products.length).padStart(2, '0')}</span>
-            <button aria-label="Next product" onClick={next} className="p-2 border border-[#e5e5e3] hover:border-[#111111]"><ArrowRight className="w-4 h-4" /></button>
-          </div>
+
+          <h2 className="font-[family-name:var(--font-cormorant)] text-[32px] sm:text-[50px] font-light leading-tight">
+            {editorial.title} <span className="italic">{editorial.titleEmphasis}</span>
+          </h2>
+          <p className="max-w-xl mt-4 text-[14px] text-[#444748] font-light leading-[1.7]">
+            {editorial.description}
+          </p>
         </div>
         <motion.div key={activeProduct.id} initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 20 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 pt-10">
           {editorial.rituals.map((ritual) => <button key={ritual.id || ritual.title} onClick={() => onSelectRitual({ title: ritual.title, subtitle: ritual.subtitle, image: ritual.imageUrl, description: ritual.description, curation: ritual.items.map((item) => item.label) })} className="group relative aspect-[4/3] overflow-hidden border border-[#e5e5e3] text-left bg-[#eeeeec]">

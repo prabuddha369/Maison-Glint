@@ -25,7 +25,7 @@ export default function ProductDetailPage() {
 
   const { product, loading } = useProduct(productId);
   const { products: allProducts } = useCatalog();
-  const { addItem, openCart, itemCount } = useCart();
+  const { addItem, openCart, itemCount, items, maxPerProduct } = useCart();
 
   const [activeImageIndex, setActiveImageIndex] = useState<number>(0);
   const [prevProductId, setPrevProductId] = useState<string>(productId);
@@ -33,15 +33,24 @@ export default function ProductDetailPage() {
   const [addedToast, setAddedToast] = useState<boolean>(false);
   const [copiedLink, setCopiedLink] = useState<boolean>(false);
 
+  const inCartQty = items.find((i) => i.productId === product?.id)?.quantity || 0;
+  const maxCap = maxPerProduct || 4;
+  const maxAllowedToAdd = Math.max(0, maxCap - inCartQty);
+  const isCapped = inCartQty >= maxCap;
+
   if (prevProductId !== productId) {
     setPrevProductId(productId);
     setActiveImageIndex(0);
+    setQuantity(1);
   }
 
   const handleAddToCart = () => {
-    if (!product) return;
-    addItem(product, quantity, product.specifications);
+    if (!product || isCapped) return;
+    const qtyToAdd = Math.min(quantity, maxAllowedToAdd);
+    if (qtyToAdd <= 0) return;
+    addItem(product, qtyToAdd, product.specifications);
     setAddedToast(true);
+    setQuantity(1);
     setTimeout(() => setAddedToast(false), 3000);
   };
 
@@ -210,14 +219,28 @@ export default function ProductDetailPage() {
                 <div className="flex items-center border border-[#d6d6d4] bg-[#ffffff]">
                   <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="px-3 py-3 text-[#747878] hover:text-[#111111] transition-colors"
+                    disabled={isCapped || quantity <= 1}
+                    aria-label="Decrease quantity"
+                    className={`px-3 py-3 transition-colors ${
+                      isCapped || quantity <= 1
+                        ? 'opacity-30 cursor-not-allowed text-[#8c8c8c]'
+                        : 'text-[#747878] hover:text-[#111111] cursor-pointer'
+                    }`}
                   >
                     -
                   </button>
-                  <span className="px-4 py-3 font-mono text-[13px]">{quantity}</span>
+                  <span className="px-4 py-3 font-mono text-[13px]">
+                    {isCapped ? inCartQty : Math.min(quantity, maxAllowedToAdd)}
+                  </span>
                   <button
-                    onClick={() => setQuantity(quantity + 1)}
-                    className="px-3 py-3 text-[#747878] hover:text-[#111111] transition-colors"
+                    onClick={() => setQuantity(Math.min(maxAllowedToAdd, quantity + 1))}
+                    disabled={isCapped || quantity >= maxAllowedToAdd}
+                    aria-label="Increase quantity"
+                    className={`px-3 py-3 transition-colors ${
+                      isCapped || quantity >= maxAllowedToAdd
+                        ? 'opacity-30 cursor-not-allowed text-[#8c8c8c]'
+                        : 'text-[#747878] hover:text-[#111111] cursor-pointer'
+                    }`}
                   >
                     +
                   </button>
@@ -225,12 +248,31 @@ export default function ProductDetailPage() {
 
                 <button
                   onClick={handleAddToCart}
-                  className="flex-1 py-3.5 px-6 bg-[#111111] text-[#f9f9f7] text-[11px] uppercase tracking-[0.2em] font-medium hover:bg-[#2b2b2b] transition-all flex items-center justify-center space-x-2 cursor-pointer"
+                  disabled={isCapped}
+                  className={`flex-1 py-3.5 px-6 text-[11px] uppercase tracking-[0.2em] font-medium transition-all flex items-center justify-center space-x-2 ${
+                    isCapped
+                      ? 'bg-[#ecece9] border border-[#d6d6d4] text-[#8c8c8c] cursor-not-allowed'
+                      : 'bg-[#111111] text-[#f9f9f7] hover:bg-[#2b2b2b] cursor-pointer'
+                  }`}
                 >
-                  <ShoppingBag className="w-4 h-4 text-[#c5a059]" />
-                  <span>Acquire Edition · ${(product.price * quantity).toLocaleString()}</span>
+                  <ShoppingBag className={`w-4 h-4 ${isCapped ? 'text-[#8c8c8c]' : 'text-[#c5a059]'}`} />
+                  <span>
+                    {isCapped
+                      ? `Allocation Limit Reached (${maxCap} In Bag)`
+                      : `Acquire Edition · $${(product.price * Math.min(quantity, maxAllowedToAdd)).toLocaleString()}`}
+                  </span>
                 </button>
               </div>
+
+              {isCapped ? (
+                <p className="text-[10px] text-[#8c8c8c] italic font-light">
+                  Atelier allocation policy: Maximum {maxCap} exemplars allowed per edition per patron.
+                </p>
+              ) : inCartQty > 0 ? (
+                <p className="text-[10px] text-[#747878] font-light">
+                  Currently {inCartQty} exemplar{inCartQty > 1 ? 's' : ''} in your acquisition drawer (maximum {maxCap}).
+                </p>
+              ) : null}
 
               <div className="grid grid-cols-2 gap-3 text-[10px] uppercase tracking-[0.16em] text-[#747878] pt-2">
                 <div className="flex items-center space-x-1.5">

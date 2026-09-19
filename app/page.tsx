@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useCart } from '@/hooks/useCart';
 import { useCatalog } from '@/lib/catalog';
+import type { Product } from '@/types/store';
 import TopAnnouncement from '@/components/TopAnnouncement';
 import Navbar from '@/components/Navbar';
 import HeroSection from '@/components/HeroSection';
@@ -20,6 +21,7 @@ import RitualModal from '@/components/RitualModal';
 export default function Home() {
   const { openCart, itemCount } = useCart();
   const { products, loading: productsLoading } = useCatalog();
+  const [activeHeroProduct, setActiveHeroProduct] = useState<Product | null>(null);
   const [priorityModalOpen, setPriorityModalOpen] = useState(false);
   const [bagDrawerOpen, setBagDrawerOpen] = useState(false);
   const [bagCount, setBagCount] = useState(1);
@@ -71,7 +73,8 @@ export default function Home() {
         onOpenBag={openCart}
         onOpenAllocation={() => setPriorityModalOpen(true)}
         bagCount={itemCount}
-        productName={products[0]?.name}
+        activeProduct={activeHeroProduct || products[0]}
+        productName={(activeHeroProduct || products[0])?.name}
       />
 
       {/* Hero Section */}
@@ -80,6 +83,7 @@ export default function Home() {
         loading={productsLoading}
         onReserveClick={() => setPriorityModalOpen(true)}
         onDiscoverClick={scrollToPlate}
+        onActiveProductChange={(product) => setActiveHeroProduct(product)}
       />
 
       {/* 01 / The Glint Plate Showcase */}
@@ -105,10 +109,10 @@ export default function Home() {
         onSelectRitual={(ritual) => setSelectedRitual(ritual)}
       />
 
-      {/* Acquisition & Allocation Waitlist */}
+      {/* Newsletter Subscription */}
       <AcquisitionSection
         product={products[0]}
-        onSuccessfulAllocation={handleSuccessfulAllocation}
+        onSubscribe={(email) => showToast(`Newsletter subscription registered for ${email}`)}
       />
 
       {/* Atelier Footer */}
@@ -119,6 +123,8 @@ export default function Home() {
         isOpen={priorityModalOpen}
         onClose={() => setPriorityModalOpen(false)}
         onSuccess={handleSuccessfulAllocation}
+        products={products}
+        selectedProductId={(activeHeroProduct || products[0])?.id}
       />
 
       {/* Acquisition Bag Drawer */}

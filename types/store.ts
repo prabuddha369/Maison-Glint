@@ -48,6 +48,7 @@ export interface ProductFinishPreset {
   angle: number;
   roughness: string;
   dispersion: string;
+  imageUrl?: string;
   sortOrder: number;
 }
 
@@ -147,6 +148,7 @@ export interface Product {
   inStock: boolean;
   editionTotal?: number;
   editionRemaining?: number;
+  editionReserved?: number;
   createdAt?: string;
   editorial?: ProductEditorialContent;
 }
@@ -236,3 +238,39 @@ export interface UserProfile {
   createdAt?: string;
   updatedAt?: string;
 }
+
+export type ReservationStatus =
+  | 'allocated'
+  | 'pending_verification'
+  | 'waitlist'
+  | 'converted_to_order'
+  | 'deallocated'
+  | 'cancelled';
+
+export interface Reservation {
+  id: string;
+  userId?: string | null;
+  productId: string;
+  productName?: string;
+  serialNumber: string;
+  serialIndex: number;
+  collectorName: string;
+  collectorEmail: string;
+  destination: string;
+  ritual: string;
+  status: ReservationStatus;
+  expiresAt: string;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface NewsletterSubscriber {
+  id: string;
+  email: string;
+  isSubscribed: boolean;
+  source: string;
+  createdAt: string;
+  unsubscribedAt?: string | null;
+}
+
+

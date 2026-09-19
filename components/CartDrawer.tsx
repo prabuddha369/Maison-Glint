@@ -18,6 +18,9 @@ export default function CartDrawer() {
     taxEstimate,
     total,
     itemCount,
+    maxPerProduct,
+    notice,
+    clearNotice,
   } = useCart();
 
   // Close on Escape key
@@ -61,11 +64,25 @@ export default function CartDrawer() {
             <button
               onClick={closeCart}
               aria-label="Close acquisition drawer"
-              className="p-2 text-[#111111] hover:text-[#c5a059] transition-colors border border-transparent hover:border-[#e5e5e3]"
+              className="p-2 text-[#111111] hover:text-[#c5a059] transition-colors border border-transparent hover:border-[#e5e5e3] cursor-pointer"
             >
               <X className="w-5 h-5 stroke-[1.5]" />
             </button>
           </div>
+
+          {/* Allocation Notice Banner */}
+          {notice && (
+            <div className="bg-[#fff9ee] border-b border-[#ebd7b2] px-6 py-2.5 text-[11px] text-[#8a681c] flex items-center justify-between">
+              <span className="font-light">{notice}</span>
+              <button
+                onClick={clearNotice}
+                aria-label="Dismiss notice"
+                className="p-1 text-[#8a681c] hover:text-[#111111] transition-colors cursor-pointer"
+              >
+                <X className="w-3 h-3" />
+              </button>
+            </div>
+          )}
 
           {/* Cart Items List */}
           <div className="flex-1 overflow-y-auto px-6 py-6 divide-y divide-[#e5e5e3]">
@@ -82,7 +99,7 @@ export default function CartDrawer() {
                 </p>
                 <button
                   onClick={closeCart}
-                  className="px-6 py-3 bg-[#111111] text-[#f9f9f7] text-[10px] uppercase tracking-[0.2em] font-medium hover:bg-[#2b2b2b] transition-colors"
+                  className="px-6 py-3 bg-[#111111] text-[#f9f9f7] text-[10px] uppercase tracking-[0.2em] font-medium hover:bg-[#2b2b2b] transition-colors cursor-pointer"
                 >
                   Return to Atelier
                 </button>
@@ -112,7 +129,7 @@ export default function CartDrawer() {
                         <button
                           onClick={() => removeItem(item.id)}
                           aria-label="Remove item"
-                          className="text-[#8c8c8c] hover:text-[#d9534f] transition-colors p-1"
+                          className="text-[#8c8c8c] hover:text-[#d9534f] transition-colors p-1 cursor-pointer"
                         >
                           <Trash2 className="w-3.5 h-3.5 stroke-[1.5]" />
                         </button>
@@ -125,32 +142,50 @@ export default function CartDrawer() {
                       )}
                     </div>
 
-                    <div className="flex items-center justify-between mt-3 pt-2 border-t border-[#f0f0ee]">
-                      {/* Quantity Controls */}
-                      <div className="flex items-center border border-[#d6d6d4] bg-[#ffffff]">
-                        <button
-                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                          aria-label="Decrease quantity"
-                          className="p-1.5 hover:bg-[#ecece9] text-[#111111] transition-colors"
-                        >
-                          <Minus className="w-3 h-3" />
-                        </button>
-                        <span className="px-3 text-[11px] font-medium text-[#111111]">
-                          {item.quantity}
+                    <div className="mt-3 pt-2 border-t border-[#f0f0ee]">
+                      <div className="flex items-center justify-between">
+                        {/* Quantity Controls */}
+                        <div className="flex items-center border border-[#d6d6d4] bg-[#ffffff]">
+                          <button
+                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                            aria-label="Decrease quantity"
+                            className="p-1.5 hover:bg-[#ecece9] text-[#111111] transition-colors cursor-pointer"
+                          >
+                            <Minus className="w-3 h-3" />
+                          </button>
+                          <span className="px-3 text-[11px] font-medium text-[#111111]">
+                            {item.quantity}
+                          </span>
+                          <button
+                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                            disabled={item.quantity >= (maxPerProduct || 4)}
+                            aria-label="Increase quantity"
+                            title={
+                              item.quantity >= (maxPerProduct || 4)
+                                ? 'Atelier allocation limit: 4 pieces per patron'
+                                : 'Increase quantity'
+                            }
+                            className={`p-1.5 transition-colors ${
+                              item.quantity >= (maxPerProduct || 4)
+                                ? 'opacity-25 cursor-not-allowed text-[#8c8c8c]'
+                                : 'hover:bg-[#ecece9] text-[#111111] cursor-pointer'
+                            }`}
+                          >
+                            <Plus className="w-3 h-3" />
+                          </button>
+                        </div>
+
+                        {/* Price */}
+                        <span className="font-[family-name:var(--font-cormorant)] text-[17px] text-[#111111] font-semibold">
+                          ${(item.price * item.quantity).toLocaleString()} USD
                         </span>
-                        <button
-                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                          aria-label="Increase quantity"
-                          className="p-1.5 hover:bg-[#ecece9] text-[#111111] transition-colors"
-                        >
-                          <Plus className="w-3 h-3" />
-                        </button>
                       </div>
 
-                      {/* Price */}
-                      <span className="font-[family-name:var(--font-cormorant)] text-[17px] text-[#111111] font-semibold">
-                        ${(item.price * item.quantity).toLocaleString()} USD
-                      </span>
+                      {item.quantity >= (maxPerProduct || 4) && (
+                        <p className="text-[10px] text-[#8c8c8c] italic mt-1.5 font-light">
+                          Atelier allocation limit: Maximum 4 exemplars per edition
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>

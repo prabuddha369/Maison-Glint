@@ -3,6 +3,8 @@
 import React, { createContext, useContext, useEffect, useState, useMemo } from 'react';
 import type { CartItem, Product, ProductSpecifications } from '../types/store';
 
+export const MAX_ITEMS_PER_PRODUCT = 4;
+
 interface CartContextType {
   items: CartItem[];
   addItem: (product: Product, quantity?: number, specifications?: ProductSpecifications) => void;
@@ -18,6 +20,10 @@ interface CartContextType {
   openCart: () => void;
   closeCart: () => void;
   toggleCart: () => void;
+  maxPerProduct: number;
+  notice: string | null;
+  clearNotice: () => void;
+  isHydrated: boolean;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -27,29 +33,51 @@ const ESTIMATED_TAX_RATE = 0.08; // 8% luxury cross-border tax estimate
 const STANDARD_SHIPPING_FLAT = 45; // Complimentary over $1000, flat $45 otherwise
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
-  const [items, setItems] = useState<CartItem[]>(() => {
-    if (typeof window === 'undefined') return [];
+  const [notice, setNoticeState] = useState<string | null>(null);
+  const [isHydrated, setIsHydrated] = useState<boolean>(false);
+  const [items, setItems] = useState<CartItem[]>([]);
+  const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
+
+  const setNotice = (msg: string) => {
+    setNoticeState(msg);
+    setTimeout(() => {
+      setNoticeState((curr) => (curr === msg ? null : curr));
+    }, 4500);
+  };
+
+  const clearNotice = () => setNoticeState(null);
+
+  // Client-side hydration from localStorage (prevents SSR hydration mismatch)
+  useEffect(() => {
     try {
       const saved = localStorage.getItem(CART_STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed)) return parsed;
+        if (Array.isArray(parsed)) {
+          // Auto-clamp any pre-existing cart items exceeding MAX_ITEMS_PER_PRODUCT
+          setItems(
+            parsed.map((item: CartItem) => ({
+              ...item,
+              quantity: Math.min(MAX_ITEMS_PER_PRODUCT, Math.max(1, item.quantity)),
+            }))
+          );
+        }
       }
     } catch {
       // ignore
     }
-    return [];
-  });
-  const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
+    setIsHydrated(true);
+  }, []);
 
-  // Save cart to localStorage upon changes
+  // Save cart to localStorage upon changes (only after initial hydration to prevent overwriting)
   useEffect(() => {
+    if (!isHydrated) return;
     try {
       localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
     } catch (e) {
       console.warn('Cart sync warning:', e);
     }
-  }, [items]);
+  }, [items, isHydrated]);
 
   const addItem = (
     product: Product,
@@ -59,9 +87,28 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setItems((prev) => {
       const existingIndex = prev.findIndex((item) => item.productId === product.id);
       if (existingIndex > -1) {
+        const currentQty = prev[existingIndex].quantity;
+        if (currentQty >= MAX_ITEMS_PER_PRODUCT) {
+          setNotice(`Atelier allocation cap reached: Maximum ${MAX_ITEMS_PER_PRODUCT} exemplars per edition.`);
+          return prev;
+        }
+
+        const allowedAdd = Math.min(quantity, MAX_ITEMS_PER_PRODUCT - currentQty);
+        if (allowedAdd < quantity) {
+          setNotice(`Allocation adjusted: Maximum ${MAX_ITEMS_PER_PRODUCT} exemplars allowed per patron.`);
+        }
+
         const next = [...prev];
-        next[existingIndex].quantity += quantity;
+        next[existingIndex] = {
+          ...next[existingIndex],
+          quantity: currentQty + allowedAdd,
+        };
         return next;
+      }
+
+      const clampedQty = Math.min(MAX_ITEMS_PER_PRODUCT, Math.max(1, quantity));
+      if (clampedQty < quantity) {
+        setNotice(`Allocation adjusted: Maximum ${MAX_ITEMS_PER_PRODUCT} exemplars allowed per patron.`);
       }
 
       const newItem: CartItem = {
@@ -70,7 +117,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         name: product.name,
         price: product.price,
         currency: product.currency || 'USD',
-        quantity,
+        quantity: clampedQty,
         image: product.images[0] || '/images/fig-01-table.png',
         specifications: specifications || product.specifications,
       };
@@ -89,8 +136,12 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       removeItem(itemId);
       return;
     }
+    const clampedQty = Math.min(MAX_ITEMS_PER_PRODUCT, quantity);
+    if (quantity > MAX_ITEMS_PER_PRODUCT) {
+      setNotice(`Atelier allocation limit: Maximum ${MAX_ITEMS_PER_PRODUCT} exemplars per edition.`);
+    }
     setItems((prev) =>
-      prev.map((item) => (item.id === itemId ? { ...item, quantity } : item))
+      prev.map((item) => (item.id === itemId ? { ...item, quantity: clampedQty } : item))
     );
   };
 
@@ -147,6 +198,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         openCart,
         closeCart,
         toggleCart,
+        maxPerProduct: MAX_ITEMS_PER_PRODUCT,
+        notice,
+        clearNotice,
+        isHydrated,
       }}
     >
       {children}

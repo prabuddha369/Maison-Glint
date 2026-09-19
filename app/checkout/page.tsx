@@ -20,6 +20,9 @@ import {
 import { useCart } from '../../hooks/useCart';
 import { useAuth } from '../../context/AuthContext';
 import { createStorefrontOrder } from '../../lib/payment';
+import { checkProductReservationEntitlement } from '../../lib/reservations';
+import { getProducts } from '../../lib/products';
+import { getSupabaseBrowser } from '../../lib/supabase/client';
 import {
   validateFullName,
   validateEmail,
@@ -471,6 +474,40 @@ export default function CheckoutPage() {
     setOrderError('');
 
     try {
+      // 0. Max 4 Exemplars per Edition Allocation Guard
+      for (const item of items) {
+        if (item.quantity > 4) {
+          setOrderError(
+            `Atelier allocation policy restricts acquisitions to a maximum of 4 exemplars per edition (${item.name}). Please adjust your selection.`
+          );
+          setIsSubmitting(false);
+          return;
+        }
+      }
+
+      // 1. Gated Priority Reservation & Inventory Limit Check
+      // Block general orders if (edition_remaining - edition_reserved <= 0) unless collector holds active reservation
+      const currentProducts = await getProducts();
+      for (const item of items) {
+        const prod = currentProducts.find((p) => p.id === item.productId);
+        if (prod) {
+          const entitlement = await checkProductReservationEntitlement(
+            prod,
+            item.quantity,
+            user?.email || profile?.email || authEmail,
+            user?.uid
+          );
+          if (!entitlement.canOrder) {
+            setOrderError(
+              entitlement.reason ||
+                `${item.name} is currently fully committed under priority allocations. All remaining units are held for active reservations.`
+            );
+            setIsSubmitting(false);
+            return;
+          }
+        }
+      }
+
       const customerInfo: CustomerInfo = {
         fullName: address.fullName || profile?.displayName || user?.displayName || 'Verified Collector',
         email: user?.email || profile?.email || authEmail,
@@ -508,6 +545,22 @@ export default function CheckoutPage() {
         notes: `Authenticated Atelier Order with Ola Maps & SMS verification.`,
         verificationMetadata,
       });
+
+      // 2. Convert any active reservations held by this user for the purchased items
+      try {
+        const supabase = getSupabaseBrowser();
+        const buyerEmail = (user?.email || profile?.email || authEmail).toLowerCase();
+        for (const item of items) {
+          await supabase
+            .from('reservations')
+            .update({ status: 'converted_to_order' })
+            .eq('product_id', item.productId)
+            .eq('collector_email', buyerEmail)
+            .in('status', ['allocated', 'pending_verification']);
+        }
+      } catch (convErr) {
+        console.warn('Reservation conversion notice:', convErr);
+      }
 
       // Clear cart
       clearCart();
@@ -614,13 +667,12 @@ export default function CheckoutPage() {
                           setActiveStage(s.step);
                         }
                       }}
-                      className={`text-left p-2 transition-all border-b-2 ${
-                        isCurrent
-                          ? 'border-[#111111] bg-[#f9f9f7]'
-                          : isDone
+                      className={`text-left p-2 transition-all border-b-2 ${isCurrent
+                        ? 'border-[#111111] bg-[#f9f9f7]'
+                        : isDone
                           ? 'border-[#d4af37] bg-[#ffffff]'
                           : 'border-[#e5e5e3] bg-[#ffffff] opacity-60'
-                      }`}
+                        }`}
                     >
                       <div className="flex items-center justify-between">
                         <span className="text-[9px] font-mono tracking-widest text-[#8c8c8c]">0{s.step}</span>
@@ -640,9 +692,8 @@ export default function CheckoutPage() {
             {/* --------------------------------------------------------------------- */}
             <div
               id="stage-1-auth"
-              className={`bg-[#ffffff] border transition-all ${
-                activeStage === 1 ? 'border-[#111111] shadow-sm' : 'border-[#e5e5e3]'
-              }`}
+              className={`bg-[#ffffff] border transition-all ${activeStage === 1 ? 'border-[#111111] shadow-sm' : 'border-[#e5e5e3]'
+                }`}
             >
               <div
                 className="p-6 flex items-center justify-between cursor-pointer"
@@ -650,11 +701,10 @@ export default function CheckoutPage() {
               >
                 <div className="flex items-center space-x-3">
                   <div
-                    className={`w-6 h-6 flex items-center justify-center text-xs font-mono border ${
-                      user
-                        ? 'bg-[#111111] text-[#ffffff] border-[#111111]'
-                        : 'border-[#111111] text-[#111111]'
-                    }`}
+                    className={`w-6 h-6 flex items-center justify-center text-xs font-mono border ${user
+                      ? 'bg-[#111111] text-[#ffffff] border-[#111111]'
+                      : 'border-[#111111] text-[#111111]'
+                      }`}
                   >
                     {user ? '✓' : '1'}
                   </div>
@@ -725,18 +775,16 @@ export default function CheckoutPage() {
                         <button
                           type="button"
                           onClick={() => setAuthMode('register')}
-                          className={`flex-1 py-2.5 text-[11px] uppercase tracking-[0.2em] font-medium transition-colors ${
-                            authMode === 'register' ? 'bg-[#111111] text-[#ffffff]' : 'text-[#8c8c8c] hover:text-[#111111]'
-                          }`}
+                          className={`flex-1 py-2.5 text-[11px] uppercase tracking-[0.2em] font-medium transition-colors ${authMode === 'register' ? 'bg-[#111111] text-[#ffffff]' : 'text-[#8c8c8c] hover:text-[#111111]'
+                            }`}
                         >
                           New Client Registration
                         </button>
                         <button
                           type="button"
                           onClick={() => setAuthMode('signin')}
-                          className={`flex-1 py-2.5 text-[11px] uppercase tracking-[0.2em] font-medium transition-colors ${
-                            authMode === 'signin' ? 'bg-[#111111] text-[#ffffff]' : 'text-[#8c8c8c] hover:text-[#111111]'
-                          }`}
+                          className={`flex-1 py-2.5 text-[11px] uppercase tracking-[0.2em] font-medium transition-colors ${authMode === 'signin' ? 'bg-[#111111] text-[#ffffff]' : 'text-[#8c8c8c] hover:text-[#111111]'
+                            }`}
                         >
                           Existing Client Sign-In
                         </button>
@@ -814,8 +862,8 @@ export default function CheckoutPage() {
                           {authLoading
                             ? 'Verifying Dossier...'
                             : authMode === 'register'
-                            ? 'Register Atelier Client Dossier'
-                            : 'Sign In to Client Vault'}
+                              ? 'Register Atelier Client Dossier'
+                              : 'Sign In to Client Vault'}
                         </button>
                       </form>
                     </div>
@@ -829,9 +877,8 @@ export default function CheckoutPage() {
             {/* --------------------------------------------------------------------- */}
             <div
               id="stage-2-passkey"
-              className={`bg-[#ffffff] border transition-all ${
-                activeStage === 2 ? 'border-[#111111] shadow-sm' : 'border-[#e5e5e3]'
-              }`}
+              className={`bg-[#ffffff] border transition-all ${activeStage === 2 ? 'border-[#111111] shadow-sm' : 'border-[#e5e5e3]'
+                }`}
             >
               <div
                 className="p-6 flex items-center justify-between cursor-pointer"
@@ -839,11 +886,10 @@ export default function CheckoutPage() {
               >
                 <div className="flex items-center space-x-3">
                   <div
-                    className={`w-6 h-6 flex items-center justify-center text-xs font-mono border ${
-                      isEmailVerified
-                        ? 'bg-[#111111] text-[#ffffff] border-[#111111]'
-                        : 'border-[#111111] text-[#111111]'
-                    }`}
+                    className={`w-6 h-6 flex items-center justify-center text-xs font-mono border ${isEmailVerified
+                      ? 'bg-[#111111] text-[#ffffff] border-[#111111]'
+                      : 'border-[#111111] text-[#111111]'
+                      }`}
                   >
                     {isEmailVerified ? '✓' : '2'}
                   </div>
@@ -960,9 +1006,8 @@ export default function CheckoutPage() {
             {/* --------------------------------------------------------------------- */}
             <div
               id="stage-3-address"
-              className={`bg-[#ffffff] border transition-all ${
-                activeStage === 3 ? 'border-[#111111] shadow-sm' : 'border-[#e5e5e3]'
-              }`}
+              className={`bg-[#ffffff] border transition-all ${activeStage === 3 ? 'border-[#111111] shadow-sm' : 'border-[#e5e5e3]'
+                }`}
             >
               <div
                 className="p-6 flex items-center justify-between cursor-pointer"
@@ -970,31 +1015,30 @@ export default function CheckoutPage() {
               >
                 <div className="flex items-center space-x-3">
                   <div
-                    className={`w-6 h-6 flex items-center justify-center text-xs font-mono border ${
-                      addressStatus === 'validated' || addressStatus === 'acknowledged'
-                        ? 'bg-[#111111] text-[#ffffff] border-[#111111]'
-                        : 'border-[#111111] text-[#111111]'
-                    }`}
+                    className={`w-6 h-6 flex items-center justify-center text-xs font-mono border ${addressStatus === 'validated' || addressStatus === 'acknowledged'
+                      ? 'bg-[#111111] text-[#ffffff] border-[#111111]'
+                      : 'border-[#111111] text-[#111111]'
+                      }`}
                   >
                     {addressStatus === 'validated' || addressStatus === 'acknowledged' ? '✓' : '3'}
                   </div>
                   <div>
                     <h3 className="font-[family-name:var(--font-cormorant)] text-xl font-medium text-[#111111]">
-                      Sovereign Address Coordinates & Ola Maps Cross-Check
+                      Sovereign Address Coordinates
                     </h3>
                     <p className="text-[11px] uppercase tracking-[0.15em] text-[#8c8c8c]">
                       {addressStatus === 'validated'
                         ? 'Coordinates and Postal Alignment Verified via Ola Maps'
                         : addressStatus === 'acknowledged'
-                        ? 'Coordinates Acknowledged by Client'
-                        : 'Cross-matching Postal Code vs. State vs. Country'}
+                          ? 'Coordinates Acknowledged by Client'
+                          : 'Enter coordinates below'}
                     </p>
                   </div>
                 </div>
 
                 {(addressStatus === 'validated' || addressStatus === 'acknowledged') && (
                   <span className="text-[10px] uppercase tracking-[0.2em] font-semibold text-[#d4af37] px-2.5 py-1 border border-[#d4af37]">
-                    {addressStatus === 'validated' ? 'Ola Maps Verified' : 'Acknowledged'}
+                    {addressStatus === 'validated' ? 'Verified' : 'Acknowledged'}
                   </span>
                 )}
               </div>
@@ -1106,15 +1150,14 @@ export default function CheckoutPage() {
                   {/* Address Validation Feedback */}
                   {addressValidationMsg && (
                     <div
-                      className={`p-4 border text-xs leading-relaxed flex items-start space-x-3 ${
-                        addressStatus === 'validated'
-                          ? 'bg-[#f7f9f7] border-[#2e7d32] text-[#1b5e20]'
-                          : addressStatus === 'mismatch'
+                      className={`p-4 border text-xs leading-relaxed flex items-start space-x-3 ${addressStatus === 'validated'
+                        ? 'bg-[#f7f9f7] border-[#2e7d32] text-[#1b5e20]'
+                        : addressStatus === 'mismatch'
                           ? 'bg-[#fffbf0] border-[#d4af37] text-[#8a6d3b]'
                           : addressStatus === 'acknowledged'
-                          ? 'bg-[#f9f9f7] border-[#8c8c8c] text-[#111111]'
-                          : 'bg-[#fff8f8] border-[#f5c6cb] text-[#721c24]'
-                      }`}
+                            ? 'bg-[#f9f9f7] border-[#8c8c8c] text-[#111111]'
+                            : 'bg-[#fff8f8] border-[#f5c6cb] text-[#721c24]'
+                        }`}
                     >
                       {addressStatus === 'validated' ? (
                         <CheckCircle2 className="w-4 h-4 shrink-0 text-[#2e7d32] mt-0.5" />
@@ -1126,10 +1169,10 @@ export default function CheckoutPage() {
                       <div>
                         <span className="font-semibold block uppercase text-[10px] tracking-wider">
                           {addressStatus === 'validated'
-                            ? 'Ola Maps Validation Passed'
+                            ? 'Validation Passed'
                             : addressStatus === 'mismatch'
-                            ? 'Geographical Boundary Discrepancy'
-                            : 'Address Verification Status'}
+                              ? 'Geographical Boundary Discrepancy'
+                              : 'Address Verification Status'}
                         </span>
                         <span>{addressValidationMsg}</span>
                       </div>
@@ -1152,7 +1195,7 @@ export default function CheckoutPage() {
                       ) : (
                         <>
                           <MapPin className="w-3.5 h-3.5 text-[#d4af37]" />
-                          <span>Validate Coordinates (Ola Maps)</span>
+                          <span>Validate Coordinates</span>
                         </>
                       )}
                     </button>
@@ -1187,9 +1230,8 @@ export default function CheckoutPage() {
             {/* --------------------------------------------------------------------- */}
             <div
               id="stage-4-phone"
-              className={`bg-[#ffffff] border transition-all ${
-                activeStage === 4 ? 'border-[#111111] shadow-sm' : 'border-[#e5e5e3]'
-              }`}
+              className={`bg-[#ffffff] border transition-all ${activeStage === 4 ? 'border-[#111111] shadow-sm' : 'border-[#e5e5e3]'
+                }`}
             >
               <div
                 className="p-6 flex items-center justify-between cursor-pointer"
@@ -1199,11 +1241,10 @@ export default function CheckoutPage() {
               >
                 <div className="flex items-center space-x-3">
                   <div
-                    className={`w-6 h-6 flex items-center justify-center text-xs font-mono border ${
-                      isPhoneVerified
-                        ? 'bg-[#111111] text-[#ffffff] border-[#111111]'
-                        : 'border-[#111111] text-[#111111]'
-                    }`}
+                    className={`w-6 h-6 flex items-center justify-center text-xs font-mono border ${isPhoneVerified
+                      ? 'bg-[#111111] text-[#ffffff] border-[#111111]'
+                      : 'border-[#111111] text-[#111111]'
+                      }`}
                   >
                     {isPhoneVerified ? '✓' : '4'}
                   </div>
@@ -1381,9 +1422,8 @@ export default function CheckoutPage() {
             {/* --------------------------------------------------------------------- */}
             <div
               id="stage-5-clearing"
-              className={`bg-[#ffffff] border transition-all ${
-                activeStage === 5 ? 'border-[#111111] shadow-sm' : 'border-[#e5e5e3]'
-              }`}
+              className={`bg-[#ffffff] border transition-all ${activeStage === 5 ? 'border-[#111111] shadow-sm' : 'border-[#e5e5e3]'
+                }`}
             >
               <div
                 className="p-6 flex items-center justify-between cursor-pointer"
@@ -1421,11 +1461,10 @@ export default function CheckoutPage() {
                         <div
                           key={method.id}
                           onClick={() => setSelectedMethodId(method.id)}
-                          className={`p-4 border cursor-pointer transition-all ${
-                            selectedMethodId === method.id
-                              ? 'border-[#111111] bg-[#f9f9f7]'
-                              : 'border-[#e5e5e3] hover:border-[#8c8c8c] bg-[#ffffff]'
-                          }`}
+                          className={`p-4 border cursor-pointer transition-all ${selectedMethodId === method.id
+                            ? 'border-[#111111] bg-[#f9f9f7]'
+                            : 'border-[#e5e5e3] hover:border-[#8c8c8c] bg-[#ffffff]'
+                            }`}
                         >
                           <div className="flex items-start justify-between">
                             <div className="flex items-center space-x-3">
@@ -1485,7 +1524,7 @@ export default function CheckoutPage() {
                           <AlertCircle className="w-4 h-4 text-[#d9534f]" />
                         )}
                         <span className="text-[#111111]">
-                          Postal Coordinates: {addressStatus === 'validated' ? 'Ola Maps Verified' : addressStatus === 'acknowledged' ? 'Acknowledged' : 'Pending'}
+                          Postal Coordinates: {addressStatus === 'validated' ? 'Verified' : addressStatus === 'acknowledged' ? 'Acknowledged' : 'Pending'}
                         </span>
                       </div>
 
@@ -1521,8 +1560,8 @@ export default function CheckoutPage() {
                       {isSubmitting
                         ? 'Staging Order with Vault Gateway...'
                         : isAllGatesPassed
-                        ? 'PROCEED TO TRANSACTIONAL CLEARING'
-                        : 'COMPLETE 4-STAGE CLIENT VERIFICATION ABOVE'}
+                          ? 'PROCEED TO TRANSACTIONAL CLEARING'
+                          : 'COMPLETE 4-STAGE CLIENT VERIFICATION ABOVE'}
                     </span>
                   </button>
 
