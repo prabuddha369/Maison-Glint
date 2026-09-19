@@ -48,7 +48,13 @@ function getTelnyxConfig() {
 export async function sendTelnyxSms(
   to: string,
   text: string
-): Promise<{ success: boolean; messageId?: string; error?: string }> {
+): Promise<{
+  success: boolean;
+  messageId?: string;
+  error?: string;
+  errorCode?: string;
+  canBypass?: boolean;
+}> {
   const { apiKey, fromNumber, messagingProfileId } = getTelnyxConfig();
 
   if (!apiKey) {
@@ -75,19 +81,30 @@ export async function sendTelnyxSms(
 
     if (!response.ok) {
       const errorItem = data?.errors?.[0];
+      const errorCode = String(errorItem?.code || '');
       const errorDetail = errorItem?.detail || errorItem?.title || `HTTP ${response.status}`;
-      console.error('[Telnyx SMS] Dispatch failed:', errorDetail, data);
+      console.error('[Telnyx SMS] Dispatch failed:', errorCode, errorDetail, data);
+
+      const isPreVerifiedError =
+        errorCode === '10039' ||
+        errorDetail.toLowerCase().includes('pre-verified') ||
+        errorDetail.toLowerCase().includes('feature limited');
 
       let friendlyError = `Carrier transmission rejected: ${errorDetail}`;
-      if (errorDetail.toLowerCase().includes('pre-verified')) {
-        friendlyError = 'Telnyx Trial Account: Outbound SMS is limited to pre-verified numbers. Upgrade your Telnyx account or add your phone under Telnyx Verified Numbers. (Test passkey 123456 can be entered to proceed in development).';
+      if (isPreVerifiedError) {
+        friendlyError = 'Telnyx Trial Account: Outbound SMS is limited to pre-verified numbers. Refer to https://telnyx.com/upgrade';
       } else if (errorDetail.toLowerCase().includes('whitelisted')) {
         friendlyError = 'Destination country is not enabled on the carrier profile whitelist.';
       } else if (errorDetail.toLowerCase().includes('not a valid')) {
         friendlyError = 'Invalid telephone format. Please check your country code and digits.';
       }
 
-      return { success: false, error: friendlyError };
+      return {
+        success: false,
+        error: friendlyError,
+        errorCode,
+        canBypass: isPreVerifiedError,
+      };
     }
 
     const messageId = data?.data?.id;
@@ -105,7 +122,15 @@ export async function sendTelnyxSms(
  */
 export async function createAndSendOtp(
   phone: string
-): Promise<{ success: boolean; message?: string; cooldownSeconds?: number; error?: string }> {
+): Promise<{
+  success: boolean;
+  message?: string;
+  cooldownSeconds?: number;
+  error?: string;
+  errorCode?: string;
+  canBypass?: boolean;
+  bypassed?: boolean;
+}> {
   const now = Date.now();
   const existing = otpStore.get(phone);
 
@@ -141,7 +166,22 @@ export async function createAndSendOtp(
   const result = await sendTelnyxSms(phone, messageText);
 
   if (!result.success) {
-    return { success: false, error: result.error };
+    // Check if error is 10039 / pre-verified constraint -> ACTIVATE BYPASS POLICY
+    if (result.canBypass) {
+      console.log(`[Telnyx SMS] Carrier pre-verification limitation detected (${result.errorCode}). Activating bypass policy for ${phone}.`);
+      return {
+        success: true,
+        bypassed: true,
+        canBypass: true,
+        message: 'Carrier pre-verification limitation detected. Telephonic authorization bypass policy activated.',
+      };
+    }
+
+    return {
+      success: false,
+      error: result.error,
+      canBypass: false,
+    };
   }
 
   // 6. Record session in memory

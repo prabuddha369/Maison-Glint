@@ -7,6 +7,8 @@ export interface PhoneVerificationResult {
   message?: string;
   verificationId?: string;
   simulated?: boolean;
+  bypassed?: boolean;
+  canBypass?: boolean;
   error?: string;
 }
 
@@ -78,9 +80,19 @@ export async function sendPhoneVerificationCode(
 
     const data = await res.json();
 
+    if (data.bypassed) {
+      return {
+        success: true,
+        bypassed: true,
+        canBypass: true,
+        message: data.message || 'Carrier pre-verification bypass activated.',
+      };
+    }
+
     if (!res.ok || !data.success) {
       return {
         success: false,
+        canBypass: data.canBypass || false,
         error: data.error || 'Carrier dispatch rejected.',
         message: data.error || 'Carrier dispatch rejected.',
       };

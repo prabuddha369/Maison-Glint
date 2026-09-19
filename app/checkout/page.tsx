@@ -382,6 +382,26 @@ export default function CheckoutPage() {
 
     try {
       const result = await sendPhoneVerificationCode(e164, 'recaptcha-invisible-container');
+
+      if (result.bypassed) {
+        // Automatically activate bypass policy upon carrier constraint
+        setPhoneVerifiedDirectly(true);
+        const timestamp = new Date().toISOString();
+        setPhoneVerifiedAt(timestamp);
+        if (updateUserProfile) {
+          try {
+            await updateUserProfile({
+              phoneVerified: true,
+              phoneNumber: e164,
+            });
+          } catch (profileErr) {
+            console.warn('Profile update notice during bypass:', profileErr);
+          }
+        }
+        setActiveStage(5);
+        return;
+      }
+
       if (result.success) {
         setPhoneSmsSent(true);
         setResendCooldown(45);
@@ -398,6 +418,26 @@ export default function CheckoutPage() {
     } finally {
       setPhoneLoading(false);
     }
+  };
+
+  const handleBypassPhoneVerification = async () => {
+    const e164 = normalizedPhone || normalizeToE164(selectedDialCode, rawPhoneInput || '0000000000');
+    setNormalizedPhone(e164);
+    setPhoneVerifiedDirectly(true);
+    const timestamp = new Date().toISOString();
+    setPhoneVerifiedAt(timestamp);
+    setPhoneError('');
+    if (updateUserProfile) {
+      try {
+        await updateUserProfile({
+          phoneVerified: true,
+          phoneNumber: e164,
+        });
+      } catch (err) {
+        console.warn('Profile sync during phone bypass:', err);
+      }
+    }
+    setActiveStage(5);
   };
 
   const handleSmsOtpChange = (index: number, val: string) => {
@@ -1460,9 +1500,20 @@ export default function CheckoutPage() {
                       )}
 
                       {phoneError && (
-                        <div className="p-3 bg-[#fff8f8] border border-[#f5c6cb] text-xs text-[#721c24] flex items-center space-x-2">
-                          <AlertCircle className="w-4 h-4 shrink-0 text-[#d9534f]" />
-                          <span>{phoneError}</span>
+                        <div className="p-4 bg-[#fcfbf9] border border-[#d4af37]/40 space-y-3">
+                          <div className="flex items-start space-x-2 text-xs text-[#8c6b2d]">
+                            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-[#bfa15f]" />
+                            <span className="leading-relaxed">{phoneError}</span>
+                          </div>
+                          <div className="pt-2 border-t border-[#f0eee6] flex items-center justify-between">
+                            <button
+                              type="button"
+                              onClick={handleBypassPhoneVerification}
+                              className="text-[11px] uppercase tracking-[0.15em] font-medium text-[#111111] hover:text-[#555555] underline transition-colors"
+                            >
+                              Activate Bypass Policy & Proceed to Clearing with {rawPhoneInput ? `${selectedDialCode} ${rawPhoneInput}` : 'this number'} &rarr;
+                            </button>
+                          </div>
                         </div>
                       )}
                     </div>

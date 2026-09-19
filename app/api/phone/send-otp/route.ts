@@ -31,9 +31,23 @@ export async function POST(req: NextRequest) {
 
     const result = await createAndSendOtp(normalized);
 
+    if (result.bypassed) {
+      return NextResponse.json({
+        success: true,
+        bypassed: true,
+        canBypass: true,
+        message: result.message || 'Carrier constraint detected. Verification bypass policy activated.',
+      });
+    }
+
     if (!result.success) {
       return NextResponse.json(
-        { success: false, error: result.error, cooldownSeconds: result.cooldownSeconds },
+        {
+          success: false,
+          error: result.error,
+          canBypass: result.canBypass || false,
+          cooldownSeconds: result.cooldownSeconds,
+        },
         { status: 422 }
       );
     }
