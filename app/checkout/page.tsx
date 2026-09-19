@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import Script from 'next/script';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -16,6 +17,7 @@ import {
   UserCheck,
   RefreshCw,
   Info,
+  ChevronDown,
 } from 'lucide-react';
 import { useCart } from '../../hooks/useCart';
 import { useAuth } from '../../context/AuthContext';
@@ -450,8 +452,15 @@ export default function CheckoutPage() {
     }
   };
 
+  /**
+   * Stage 5: Initiate real Cashfree payment
+   * 1. Create order in Supabase (status: pending_payment)
+   * 2. Call /api/payment/create-order to get Cashfree payment_session_id
+   * 3. Use Cashfree.js SDK to open hosted payment page
+   */
+
   // ---------------------------------------------------------------------------
-  // Handlers for Stage 5: Final Order Assembly & Payment Gateway Handoff
+  // Stage 5: All-gates passed check
   // ---------------------------------------------------------------------------
   const isAllGatesPassed =
     Boolean(user?.uid) &&
@@ -460,6 +469,7 @@ export default function CheckoutPage() {
     (addressStatus === 'validated' || addressStatus === 'acknowledged');
 
   const handleProceedToTransactionalClearing = async () => {
+
     if (!isAllGatesPassed) {
       setOrderError('Your account must be active and email-confirmed before an order can be placed.');
       return;
@@ -486,7 +496,6 @@ export default function CheckoutPage() {
       }
 
       // 1. Gated Priority Reservation & Inventory Limit Check
-      // Block general orders if (edition_remaining - edition_reserved <= 0) unless collector holds active reservation
       const currentProducts = await getProducts();
       for (const item of items) {
         const prod = currentProducts.find((p) => p.id === item.productId);
@@ -500,7 +509,7 @@ export default function CheckoutPage() {
           if (!entitlement.canOrder) {
             setOrderError(
               entitlement.reason ||
-                `${item.name} is currently fully committed under priority allocations. All remaining units are held for active reservations.`
+              `${item.name} is currently fully committed under priority allocations.`
             );
             setIsSubmitting(false);
             return;
@@ -523,6 +532,7 @@ export default function CheckoutPage() {
         passkeyUsed: 'VERIFIED_EDITORIAL_WORDKEY',
       };
 
+      // 2. Create order in Supabase (status: pending_payment)
       const newOrder = await createStorefrontOrder({
         userId: user!.uid,
         customer: customerInfo,
@@ -546,7 +556,7 @@ export default function CheckoutPage() {
         verificationMetadata,
       });
 
-      // 2. Convert any active reservations held by this user for the purchased items
+      // 3. Convert any active reservations held by this user for the purchased items
       try {
         const supabase = getSupabaseBrowser();
         const buyerEmail = (user?.email || profile?.email || authEmail).toLowerCase();
@@ -562,20 +572,58 @@ export default function CheckoutPage() {
         console.warn('Reservation conversion notice:', convErr);
       }
 
-      // Clear cart
+      // 4. Call server-side API to create Cashfree payment session
+      const sessionRes = await fetch('/api/payment/create-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          orderId: newOrder.orderId,
+          amount: calculatedTotal,
+          currency: 'USD',
+          customerName: customerInfo.fullName,
+          customerEmail: customerInfo.email,
+          customerPhone: customerInfo.phone || '+10000000000',
+        }),
+      });
+
+      if (!sessionRes.ok) {
+        const errData = await sessionRes.json();
+        throw new Error(errData.error || 'Failed to initiate payment session.');
+      }
+
+      const { paymentSessionId } = await sessionRes.json();
+
+      // 5. Open Cashfree hosted payment page via the JS SDK
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const cashfree = (window as any).Cashfree({
+        mode: 'sandbox', // Change to 'production' for live
+      });
+
+      // Clear cart before redirect (so it's not doubled on return)
       clearCart();
 
-      // Transition to Order Confirmation
-      router.push(`/order-success/${newOrder.orderId}`);
+      const returnUrl = `${window.location.origin}/api/payment/return?mg_order_id=${newOrder.orderId}&order_id={order_id}`;
+
+      cashfree.checkout({
+        paymentSessionId,
+        returnUrl,
+        redirectTarget: '_self',
+      });
     } catch (err: unknown) {
       console.error('Order creation error:', err);
-      setOrderError('Unable to stage order with transactional clearing. Please review your connection.');
+      const msg = err instanceof Error ? err.message : 'Unable to stage order with payment gateway.';
+      setOrderError(msg);
       setIsSubmitting(false);
     }
   };
 
   return (
     <div className="min-h-screen bg-[#f5f5f3] text-[#111111] font-[family-name:var(--font-inter)] antialiased pt-24 pb-20 px-4 sm:px-6 lg:px-12">
+      {/* Cashfree JS SDK — sandbox mode */}
+      <Script
+        src="https://sdk.cashfree.com/js/v3/cashfree.js"
+        strategy="lazyOnload"
+      />
       {/* Invisible reCAPTCHA container */}
       <div id="recaptcha-invisible-container" className="hidden" />
 
@@ -1300,31 +1348,37 @@ export default function CheckoutPage() {
                         To guarantee secure courier dispatch hand-off and customs contact, every order requires direct carrier confirmation through an SMS one-time passkey.
                       </p>
 
-                      {/* Phone Entry */}
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                        <div>
-                          <label className="block text-[10px] uppercase tracking-[0.2em] text-[#8c8c8c] mb-1 font-medium">
-                            Priority Region Dialing Code *
+                      {/* Phone Entry — Unified Luxury Input Bar */}
+                      <div>
+                        <div className="flex items-center justify-between mb-1.5">
+                          <label className="block text-[10px] uppercase tracking-[0.2em] text-[#8c8c8c] font-medium">
+                            Cellular Number & Region Code *
                           </label>
-                          <select
-                            value={selectedDialCode}
-                            onChange={(e) => setSelectedDialCode(e.target.value)}
-                            className="w-full px-3 py-3 bg-[#ffffff] border border-[#d6d6d4] focus:border-[#111111] outline-none text-xs text-[#111111] tracking-wider rounded-none"
-                          >
-                            {PRIORITY_DIAL_CODES.map((d) => (
-                              <option key={d.code + d.name} value={d.code}>
-                                {d.flag} {d.name} ({d.code})
-                              </option>
-                            ))}
-                          </select>
+                          <span className="text-[10px] text-[#8c8c8c] font-mono">
+                            E.164 International Format
+                          </span>
                         </div>
 
-                        <div className="sm:col-span-2">
-                          <label className="block text-[10px] uppercase tracking-[0.2em] text-[#8c8c8c] mb-1 font-medium">
-                            Cellular Number *
-                          </label>
-                          <div className="flex">
-                            <span className="inline-flex items-center px-4 bg-[#f9f9f7] border border-r-0 border-[#d6d6d4] text-xs font-mono text-[#111111]">
+                        <div className="flex border border-[#d6d6d4] focus-within:border-[#111111] bg-[#ffffff] transition-colors">
+                          {/* Region Dialing Code Selector */}
+                          <div className="relative border-r border-[#d6d6d4] bg-[#fafaf8] flex items-center shrink-0">
+                            <select
+                              value={selectedDialCode}
+                              onChange={(e) => setSelectedDialCode(e.target.value)}
+                              className="appearance-none bg-transparent pl-3 pr-8 py-3.5 text-xs text-[#111111] font-mono tracking-wider outline-none cursor-pointer"
+                            >
+                              {PRIORITY_DIAL_CODES.map((d) => (
+                                <option key={d.code + d.name} value={d.code}>
+                                  {d.flag} {d.code} · {d.name}
+                                </option>
+                              ))}
+                            </select>
+                            <ChevronDown className="w-3.5 h-3.5 text-[#8c8c8c] absolute right-2.5 pointer-events-none" />
+                          </div>
+
+                          {/* Dial Code Prefix + Number Input */}
+                          <div className="relative flex-1 flex items-center">
+                            <span className="pl-3.5 text-xs font-mono text-[#8c8c8c] select-none pointer-events-none">
                               {selectedDialCode}
                             </span>
                             <input
@@ -1335,7 +1389,7 @@ export default function CheckoutPage() {
                                 PRIORITY_DIAL_CODES.find((d) => d.code === selectedDialCode)?.samplePlaceholder ||
                                 '415 555 2671'
                               }
-                              className="w-full px-4 py-3 bg-[#ffffff] border border-[#d6d6d4] focus:border-[#111111] outline-none text-xs text-[#111111] tracking-wider font-mono rounded-none"
+                              className="w-full pl-2 pr-4 py-3.5 bg-transparent outline-none text-xs text-[#111111] font-mono tracking-wider"
                             />
                           </div>
                         </div>
@@ -1558,15 +1612,15 @@ export default function CheckoutPage() {
                     <Lock className="w-4 h-4 text-[#d4af37]" />
                     <span>
                       {isSubmitting
-                        ? 'Staging Order with Vault Gateway...'
+                        ? 'Initiating Secured Payment Vault...'
                         : isAllGatesPassed
-                          ? 'PROCEED TO TRANSACTIONAL CLEARING'
+                          ? 'PROCEED TO PAYMENT CLEARING'
                           : 'COMPLETE 4-STAGE CLIENT VERIFICATION ABOVE'}
                     </span>
                   </button>
 
                   <p className="text-[10px] text-center text-[#8c8c8c] tracking-wider uppercase">
-                    Order is securely recorded with status pending_payment prior to gateway clearing.
+                    Secured by Cashfree Payments · 256-bit TLS · PCI DSS Compliant
                   </p>
                 </div>
               )}

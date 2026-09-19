@@ -59,35 +59,84 @@ export function formatPhoneNumber(phone: string): string {
 }
 
 /**
- * Initiates phone verification code dispatch.
+ * Initiates phone verification code dispatch via Telnyx SMS service.
  */
 export async function sendPhoneVerificationCode(
   phone: string,
   _recaptchaContainerId?: string
 ): Promise<PhoneVerificationResult> {
   if (!validatePhoneNumber(phone)) {
-    return { success: false, message: 'Invalid phone number format.' };
+    return { success: false, message: 'Invalid telephone number format.' };
   }
 
-  // Graceful simulated / prepared auth handoff
-  return {
-    success: true,
-    verificationId: `verify_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`,
-    message: 'Verification code dispatched to recipient handset.',
-    simulated: true,
-  };
+  try {
+    const res = await fetch('/api/phone/send-otp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok || !data.success) {
+      return {
+        success: false,
+        error: data.error || 'Carrier dispatch rejected.',
+        message: data.error || 'Carrier dispatch rejected.',
+      };
+    }
+
+    return {
+      success: true,
+      message: data.message || 'Passkey dispatched to recipient handset.',
+    };
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : 'Network error';
+    return {
+      success: false,
+      error: `Telephonic service unreachable: ${msg}`,
+      message: `Telephonic service unreachable: ${msg}`,
+    };
+  }
 }
 
 export async function confirmPhoneVerificationCode(
   _uid: string,
-  _phone: string,
+  phone: string,
   code: string
 ): Promise<PhoneVerificationResult> {
-  if (code !== '123456') {
-    return { success: false, error: 'Invalid SMS verification code.' };
+  const trimmed = code.trim();
+  if (trimmed.length !== 6) {
+    return { success: false, error: 'Passkey must be exactly 6 digits.' };
   }
 
-  return { success: true, message: 'Phone verification confirmed.' };
+  try {
+    const res = await fetch('/api/phone/verify-otp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone, code: trimmed }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok || !data.success) {
+      return {
+        success: false,
+        error: data.error || 'Invalid telephonic passkey.',
+      };
+    }
+
+    return {
+      success: true,
+      message: data.message || 'Telephonic carrier authorization cleared.',
+    };
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : 'Network error';
+    return {
+      success: false,
+      error: `Passkey confirmation service error: ${msg}`,
+    };
+  }
 }
 
 /**

@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
+import Script from 'next/script';
 import { useRouter } from 'next/navigation';
 import {
   User as UserIcon,
@@ -16,6 +17,8 @@ import {
   Bookmark,
   Copy,
   Check,
+  CreditCard,
+  RefreshCw,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
@@ -37,6 +40,62 @@ export default function AccountPage() {
   const [confirmationNotice, setConfirmationNotice] = useState<string>('');
   const [activeTab, setActiveTab] = useState<'orders' | 'allocations' | 'addresses'>('orders');
   const [copiedSerial, setCopiedSerial] = useState<string | null>(null);
+  const [retryingOrderId, setRetryingOrderId] = useState<string | null>(null);
+  const [retryError, setRetryError] = useState<{ orderId: string; message: string } | null>(null);
+
+  const handleCompletePayment = useCallback(async (order: Order) => {
+    setRetryingOrderId(order.orderId);
+    setRetryError(null);
+
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const CashfreeSDK = (window as any).Cashfree;
+      if (!CashfreeSDK) {
+        throw new Error('Payment gateway is loading. Please retry in a moment.');
+      }
+
+      const sessionRes = await fetch('/api/payment/create-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          orderId: order.orderId,
+          amount: order.total,
+          currency: order.currency || 'USD',
+          customerName: order.customer.fullName || profile?.displayName || user?.displayName || 'Maison Glint Collector',
+          customerEmail: order.customer.email || user?.email || '',
+          customerPhone: order.customer.phone || order.shippingAddress.phone || '+10000000000',
+        }),
+      });
+
+      if (!sessionRes.ok) {
+        const errData = await sessionRes.json();
+        throw new Error(errData.error || 'Failed to initiate payment gateway.');
+      }
+
+      const { paymentSessionId, isSandbox } = await sessionRes.json();
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const cashfree = CashfreeSDK({
+        mode: isSandbox ? 'sandbox' : 'production',
+      });
+
+      const returnUrl = `${window.location.origin}/api/payment/return?mg_order_id=${order.orderId}&order_id={order_id}`;
+
+      cashfree.checkout({
+        paymentSessionId,
+        returnUrl,
+        redirectTarget: '_self',
+      });
+    } catch (err: unknown) {
+      console.error('Failed to initiate payment retry:', err);
+      const msg = err instanceof Error ? err.message : 'Unable to open payment gateway.';
+      setRetryError({ orderId: order.orderId, message: msg });
+      setRetryingOrderId(null);
+      setTimeout(() => {
+        setRetryError((prev) => (prev?.orderId === order.orderId ? null : prev));
+      }, 5000);
+    }
+  }, [profile, user]);
 
   const handleAcquireReserved = (productId: string) => {
     const matchedProduct = INITIAL_PRODUCTS.find((p) => p.id === productId) || INITIAL_PRODUCTS[0];
@@ -177,6 +236,11 @@ export default function AccountPage() {
 
   return (
     <div className="min-h-screen bg-[#f9f9f7] text-[#111111]">
+      {/* Cashfree JS SDK */}
+      <Script
+        src="https://sdk.cashfree.com/js/v3/cashfree.js"
+        strategy="afterInteractive"
+      />
       {/* Header */}
       <header className="border-b border-[#e5e5e3] bg-[#ffffff] sticky top-0 z-30">
         <div className="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
@@ -308,16 +372,48 @@ export default function AccountPage() {
                         </span>
                       </div>
 
-                      <div className="flex items-center space-x-4">
-                        <span className="font-[family-name:var(--font-cormorant)] text-2xl font-semibold text-[#111111]">
-                          ${order.total.toLocaleString()} USD
-                        </span>
-                        <Link
-                          href={`/order-success/${order.orderId}`}
-                          className="px-3.5 py-1.5 border border-[#d6d6d4] hover:border-[#111111] text-[10px] uppercase tracking-[0.15em] font-medium text-[#111111] transition-colors"
-                        >
-                          Inspect Receipt
-                        </Link>
+                      <div className="flex flex-col sm:items-end gap-1.5">
+                        <div className="flex flex-wrap items-center gap-3">
+                          <span className="font-[family-name:var(--font-cormorant)] text-2xl font-semibold text-[#111111]">
+                            ${order.total.toLocaleString()} USD
+                          </span>
+
+                          {/* Complete Payment button for orders with pending or failed payment */}
+                          {['pending_payment', 'payment_failed', 'payment_pending'].includes(order.status) && (
+                            <button
+                              type="button"
+                              onClick={() => handleCompletePayment(order)}
+                              disabled={retryingOrderId === order.orderId}
+                              className="px-4 py-1.5 bg-[#111111] hover:bg-[#2b2b2b] text-[#f9f9f7] text-[10px] uppercase tracking-[0.16em] font-medium transition-all disabled:opacity-50 flex items-center space-x-1.5 cursor-pointer shadow-sm"
+                            >
+                              {retryingOrderId === order.orderId ? (
+                                <>
+                                  <RefreshCw className="w-3 h-3 animate-spin" />
+                                  <span>Opening Vault...</span>
+                                </>
+                              ) : (
+                                <>
+                                  <CreditCard className="w-3 h-3 text-[#d4af37]" />
+                                  <span>Complete Payment</span>
+                                </>
+                              )}
+                            </button>
+                          )}
+
+                          <Link
+                            href={`/order-success/${order.orderId}`}
+                            className="px-3.5 py-1.5 border border-[#d6d6d4] hover:border-[#111111] text-[10px] uppercase tracking-[0.15em] font-medium text-[#111111] transition-colors"
+                          >
+                            Inspect Receipt
+                          </Link>
+                        </div>
+
+                        {/* Inline error notice */}
+                        {retryError?.orderId === order.orderId && (
+                          <span className="text-[11px] text-[#b91c1c] font-light">
+                            {retryError.message}
+                          </span>
+                        )}
                       </div>
                     </div>
 

@@ -340,3 +340,216 @@ Unsubscribe: ${unsubLink}
 `;
 }
 
+// ---------------------------------------------------------------------------
+// Order Confirmation Email
+// ---------------------------------------------------------------------------
+
+export interface OrderConfirmationEmailData {
+  orderId: string;
+  customerName: string;
+  customerEmail: string;
+  items: Array<{
+    name: string;
+    quantity: number;
+    price: number;
+  }>;
+  subtotal: number;
+  shippingCost: number;
+  taxEstimate: number;
+  total: number;
+  currency: string;
+  shippingAddress: {
+    fullName: string;
+    line1: string;
+    line2?: string;
+    city: string;
+    state: string;
+    postalCode: string;
+    country: string;
+  };
+  shippingMethod: {
+    title: string;
+    estimatedDelivery: string;
+  };
+  paymentMethod?: string;
+  cashfreePaymentId?: string;
+}
+
+export function buildOrderConfirmationEmail(data: OrderConfirmationEmailData): {
+  subject: string;
+  html: string;
+  text: string;
+} {
+  const subject = `Maison Glint · Acquisition Confirmed — ${data.orderId}`;
+
+  const itemRows = data.items
+    .map(
+      (item) => `
+        <tr>
+          <td style="padding: 12px 0; border-bottom: 1px solid #f0f0ee; font-family: Georgia, serif; font-size: 14px; color: #111111;">${item.name}</td>
+          <td style="padding: 12px 0; border-bottom: 1px solid #f0f0ee; text-align: center; font-size: 12px; color: #8c8c8c;">${item.quantity}</td>
+          <td style="padding: 12px 0; border-bottom: 1px solid #f0f0ee; text-align: right; font-family: 'Courier New', monospace; font-size: 13px; font-weight: 600; color: #111111;">$${(item.price * item.quantity).toLocaleString()} ${data.currency}</td>
+        </tr>`
+    )
+    .join('');
+
+  const addressLines = [
+    data.shippingAddress.fullName,
+    data.shippingAddress.line1,
+    data.shippingAddress.line2,
+    `${data.shippingAddress.city}, ${data.shippingAddress.state} ${data.shippingAddress.postalCode}`,
+    data.shippingAddress.country,
+  ]
+    .filter(Boolean)
+    .join('<br />');
+
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${subject}</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f5f5f3; font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f5f3; padding: 40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="max-width: 600px; width: 100%; background-color: #ffffff; border: 1px solid #e5e5e3;">
+
+          <!-- Header -->
+          <tr>
+            <td style="padding: 40px 48px 32px; border-bottom: 1px solid #e5e5e3;">
+              <p style="margin: 0 0 6px; font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase; color: #8c8c8c;">Authorized Allocation Ledger</p>
+              <h1 style="margin: 0; font-family: Georgia, 'Times New Roman', serif; font-size: 26px; font-weight: 400; color: #111111; letter-spacing: 0.05em;">Maison Glint</h1>
+            </td>
+          </tr>
+
+          <!-- Confirmation Banner -->
+          <tr>
+            <td style="padding: 32px 48px; background-color: #111111; border-bottom: 1px solid #d4af37;">
+              <p style="margin: 0 0 4px; font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; color: #8c8c8c;">Acquisition Confirmed</p>
+              <p style="margin: 0 0 12px; font-family: Georgia, serif; font-size: 22px; color: #f5f5f3; font-weight: 300;">${data.orderId}</p>
+              <p style="margin: 0; font-size: 11px; color: #8c8c8c; letter-spacing: 0.1em;">Your object has been formally allocated to your atelier dossier.</p>
+            </td>
+          </tr>
+
+          <!-- Greeting -->
+          <tr>
+            <td style="padding: 32px 48px 24px;">
+              <p style="margin: 0; font-size: 14px; color: #111111; line-height: 1.7;">Dear ${data.customerName},</p>
+              <p style="margin: 12px 0 0; font-size: 13px; color: #555555; line-height: 1.8;">Your payment has been confirmed and your acquisition is registered in the Maison Glint ledger. Each piece is produced to order — your allocation is now secured.</p>
+            </td>
+          </tr>
+
+          <!-- Order Items -->
+          <tr>
+            <td style="padding: 0 48px 24px;">
+              <p style="margin: 0 0 16px; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: #8c8c8c; border-bottom: 1px solid #e5e5e3; padding-bottom: 8px;">Secured Objects</p>
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <thead>
+                  <tr>
+                    <th style="text-align: left; font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: #8c8c8c; padding-bottom: 8px; font-weight: 500;">Object</th>
+                    <th style="text-align: center; font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: #8c8c8c; padding-bottom: 8px; font-weight: 500;">Qty</th>
+                    <th style="text-align: right; font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: #8c8c8c; padding-bottom: 8px; font-weight: 500;">Value</th>
+                  </tr>
+                </thead>
+                <tbody>${itemRows}</tbody>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Financial Summary -->
+          <tr>
+            <td style="padding: 0 48px 32px;">
+              <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f9f9f7; border: 1px solid #e5e5e3; padding: 20px;">
+                <tr>
+                  <td style="padding: 4px 20px;"><p style="margin: 0; font-size: 11px; color: #8c8c8c;">Subtotal</p></td>
+                  <td style="padding: 4px 20px; text-align: right;"><p style="margin: 0; font-family: 'Courier New', monospace; font-size: 12px; color: #111111;">$${data.subtotal.toLocaleString()} ${data.currency}</p></td>
+                </tr>
+                <tr>
+                  <td style="padding: 4px 20px;"><p style="margin: 0; font-size: 11px; color: #8c8c8c;">Insured Transit</p></td>
+                  <td style="padding: 4px 20px; text-align: right;"><p style="margin: 0; font-family: 'Courier New', monospace; font-size: 12px; color: #111111;">${data.shippingCost === 0 ? 'Complimentary' : `$${data.shippingCost} ${data.currency}`}</p></td>
+                </tr>
+                <tr>
+                  <td style="padding: 4px 20px;"><p style="margin: 0; font-size: 11px; color: #8c8c8c;">Import Duties & Tax (est.)</p></td>
+                  <td style="padding: 4px 20px; text-align: right;"><p style="margin: 0; font-family: 'Courier New', monospace; font-size: 12px; color: #111111;">$${data.taxEstimate.toLocaleString()} ${data.currency}</p></td>
+                </tr>
+                <tr>
+                  <td style="padding: 12px 20px 4px; border-top: 1px solid #e5e5e3;"><p style="margin: 0; font-size: 12px; font-weight: 600; color: #111111; letter-spacing: 0.05em;">Total Investment</p></td>
+                  <td style="padding: 12px 20px 4px; border-top: 1px solid #e5e5e3; text-align: right;"><p style="margin: 0; font-family: Georgia, serif; font-size: 18px; font-weight: 700; color: #111111;">$${data.total.toLocaleString()} ${data.currency}</p></td>
+                </tr>
+                ${data.paymentMethod ? `
+                <tr>
+                  <td style="padding: 4px 20px;"><p style="margin: 0; font-size: 11px; color: #8c8c8c;">Paid via</p></td>
+                  <td style="padding: 4px 20px; text-align: right;"><p style="margin: 0; font-size: 11px; color: #555555;">${data.paymentMethod}</p></td>
+                </tr>` : ''}
+              </table>
+            </td>
+          </tr>
+
+          <!-- Delivery Address -->
+          <tr>
+            <td style="padding: 0 48px 32px;">
+              <p style="margin: 0 0 12px; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: #8c8c8c; border-bottom: 1px solid #e5e5e3; padding-bottom: 8px;">Dispatch Destination</p>
+              <p style="margin: 0; font-size: 13px; color: #111111; line-height: 1.8;">${addressLines}</p>
+              <p style="margin: 12px 0 0; font-size: 12px; color: #8c8c8c;">${data.shippingMethod.title}</p>
+              <p style="margin: 4px 0 0; font-size: 12px; color: #555555;">${data.shippingMethod.estimatedDelivery}</p>
+            </td>
+          </tr>
+
+          <!-- What Happens Next -->
+          <tr>
+            <td style="padding: 24px 48px; background-color: #f9f9f7; border-top: 1px solid #e5e5e3; border-bottom: 1px solid #e5e5e3;">
+              <p style="margin: 0 0 12px; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: #8c8c8c;">What Happens Next</p>
+              <p style="margin: 0 0 8px; font-size: 12px; color: #555555; line-height: 1.7;">— Your object enters the Maison Glint production queue.</p>
+              <p style="margin: 0 0 8px; font-size: 12px; color: #555555; line-height: 1.7;">— You will receive a dispatch notification with tracking when your consignment is released.</p>
+              <p style="margin: 0; font-size: 12px; color: #555555; line-height: 1.7;">— For enquiries, respond to this email or contact <a href="mailto:founder@maisonglint.com" style="color: #111111;">founder@maisonglint.com</a>.</p>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="padding: 32px 48px; text-align: center;">
+              <p style="margin: 0 0 8px; font-family: Georgia, serif; font-size: 16px; letter-spacing: 0.15em; color: #111111;">Maison Glint</p>
+              <p style="margin: 0; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: #8c8c8c;">Modernist Chromeware</p>
+              ${data.cashfreePaymentId ? `<p style="margin: 16px 0 0; font-size: 9px; font-family: 'Courier New', monospace; color: #cccccc;">Payment Ref: ${data.cashfreePaymentId}</p>` : ''}
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+
+  const text = `MAISON GLINT — ACQUISITION CONFIRMED
+Order: ${data.orderId}
+
+Dear ${data.customerName},
+
+Your payment has been confirmed. Your acquisition is registered in the Maison Glint ledger.
+
+SECURED OBJECTS
+${data.items.map((i) => `${i.name} × ${i.quantity} — $${(i.price * i.quantity).toLocaleString()} ${data.currency}`).join('\n')}
+
+Subtotal: $${data.subtotal.toLocaleString()} ${data.currency}
+Transit: ${data.shippingCost === 0 ? 'Complimentary' : `$${data.shippingCost} ${data.currency}`}
+Duties & Tax: $${data.taxEstimate.toLocaleString()} ${data.currency}
+Total: $${data.total.toLocaleString()} ${data.currency}
+${data.paymentMethod ? `Paid via: ${data.paymentMethod}` : ''}
+
+DELIVERY ADDRESS
+${[data.shippingAddress.fullName, data.shippingAddress.line1, data.shippingAddress.line2, `${data.shippingAddress.city}, ${data.shippingAddress.state} ${data.shippingAddress.postalCode}`, data.shippingAddress.country].filter(Boolean).join('\n')}
+
+Shipping: ${data.shippingMethod.title}
+Estimated: ${data.shippingMethod.estimatedDelivery}
+
+For enquiries: founder@maisonglint.com
+
+--
+Maison Glint · Modernist Chromeware
+`;
+
+  return { subject, html, text };
+}

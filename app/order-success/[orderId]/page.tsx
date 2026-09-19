@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import {
@@ -13,13 +13,21 @@ import {
   Mail,
   ShieldCheck,
   CreditCard,
+  BadgeCheck,
 } from 'lucide-react';
-import { getOrderById } from '../../../lib/payment';
+import { getOrderById, updateLocalOrder } from '../../../lib/payment';
 import type { Order } from '../../../types/store';
 
 export default function OrderSuccessPage() {
   const params = useParams();
+  const searchParams = useSearchParams();
   const orderId = params?.orderId as string;
+
+  const paymentConfirmed = searchParams?.get('payment') === 'confirmed';
+  const paymentMethod = searchParams?.get('method')
+    ? decodeURIComponent(searchParams.get('method')!)
+    : null;
+
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -27,6 +35,13 @@ export default function OrderSuccessPage() {
     async function loadOrder() {
       if (!orderId) return;
       try {
+        if (paymentConfirmed) {
+          updateLocalOrder(orderId, {
+            status: 'paid',
+            cashfreePaymentMethod: paymentMethod || undefined,
+            paidAt: new Date().toISOString(),
+          });
+        }
         const found = await getOrderById(orderId);
         setOrder(found);
       } catch (e) {
@@ -36,7 +51,7 @@ export default function OrderSuccessPage() {
       }
     }
     loadOrder();
-  }, [orderId]);
+  }, [orderId, paymentConfirmed, paymentMethod]);
 
   if (loading) {
     return (
@@ -47,6 +62,8 @@ export default function OrderSuccessPage() {
       </div>
     );
   }
+
+  const isPaid = paymentConfirmed || order?.status === 'paid';
 
   return (
     <div className="min-h-screen bg-[#f9f9f7] text-[#111111]">
@@ -72,19 +89,30 @@ export default function OrderSuccessPage() {
         {/* Banner */}
         <div className="bg-[#ffffff] border border-[#e5e5e3] p-8 sm:p-12 mb-8 shadow-sm">
           <div className="flex items-start space-x-4 sm:space-x-6">
-            <div className="w-12 h-12 border border-[#111111] bg-[#111111] text-[#f9f9f7] flex items-center justify-center shrink-0">
-              <CheckCircle2 className="w-6 h-6 text-[#c5a059]" />
+            <div className={`w-12 h-12 border flex items-center justify-center shrink-0 ${isPaid ? 'bg-[#111111] border-[#d4af37]' : 'bg-[#111111] border-[#111111]'}`}>
+              {isPaid ? (
+                <BadgeCheck className="w-6 h-6 text-[#d4af37]" />
+              ) : (
+                <CheckCircle2 className="w-6 h-6 text-[#c5a059]" />
+              )}
             </div>
 
             <div className="flex-1">
               <div className="flex flex-wrap items-center gap-3 mb-2">
                 <span className="text-[10px] uppercase tracking-[0.24em] font-semibold text-[#747878]">
-                  Order Registered
+                  {isPaid ? 'Payment Confirmed' : 'Order Registered'}
                 </span>
-                <span className="inline-flex items-center space-x-1.5 px-2.5 py-1 bg-[#fff8e7] border border-[#e8d5aa] text-[#8a681c] text-[10px] uppercase tracking-[0.15em] font-medium">
-                  <Clock className="w-3 h-3 text-[#c5a059]" />
-                  <span>Pending Gateway Settlement</span>
-                </span>
+                {isPaid ? (
+                  <span className="inline-flex items-center space-x-1.5 px-2.5 py-1 bg-[#f0fff4] border border-[#a3e4b0] text-[#1a6b2e] text-[10px] uppercase tracking-[0.15em] font-medium">
+                    <CheckCircle2 className="w-3 h-3 text-[#2e7d32]" />
+                    <span>Acquisition Secured</span>
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center space-x-1.5 px-2.5 py-1 bg-[#fff8e7] border border-[#e8d5aa] text-[#8a681c] text-[10px] uppercase tracking-[0.15em] font-medium">
+                    <Clock className="w-3 h-3 text-[#c5a059]" />
+                    <span>Pending Gateway Settlement</span>
+                  </span>
+                )}
               </div>
 
               <h1 className="font-[family-name:var(--font-cormorant)] text-3xl sm:text-4xl font-light text-[#111111]">
@@ -92,12 +120,14 @@ export default function OrderSuccessPage() {
               </h1>
 
               <p className="text-[13px] text-[#747878] font-light mt-3 leading-relaxed">
-                Your bespoke allocation has been registered in the Maison Glint ledger. All units are currently allocated to your reservation docket.
+                {isPaid
+                  ? 'Your payment has been confirmed. Your bespoke allocation is formally registered in the Maison Glint atelier ledger and enters the production queue.'
+                  : 'Your bespoke allocation has been registered in the Maison Glint ledger. All units are currently allocated to your reservation docket.'}
               </p>
             </div>
           </div>
 
-          {/* Payment Gateway Handoff Info */}
+          {/* Payment Gateway Info */}
           <div className="mt-8 pt-8 border-t border-[#e5e5e3] grid grid-cols-1 sm:grid-cols-3 gap-6 text-[11px]">
             <div>
               <span className="uppercase tracking-[0.16em] text-[#747878] block mb-1">
@@ -113,9 +143,21 @@ export default function OrderSuccessPage() {
                 Settlement Status
               </span>
               <span className="font-medium text-[#111111] flex items-center space-x-1.5">
-                <CreditCard className="w-3.5 h-3.5 text-[#c5a059]" />
-                <span>Pending Gateway Callback</span>
+                {isPaid ? (
+                  <>
+                    <CheckCircle2 className="w-3.5 h-3.5 text-[#2e7d32]" />
+                    <span>Payment Confirmed</span>
+                  </>
+                ) : (
+                  <>
+                    <CreditCard className="w-3.5 h-3.5 text-[#c5a059]" />
+                    <span>Pending Gateway Callback</span>
+                  </>
+                )}
               </span>
+              {paymentMethod && isPaid && (
+                <span className="block text-[10px] text-[#8c8c8c] mt-1">via {paymentMethod}</span>
+              )}
             </div>
 
             <div>
@@ -127,6 +169,15 @@ export default function OrderSuccessPage() {
               </span>
             </div>
           </div>
+
+          {/* Cashfree Payment ID (if available) */}
+          {order?.cashfreePaymentId && (
+            <div className="mt-4 pt-4 border-t border-[#f0f0ee]">
+              <p className="text-[9px] font-mono text-[#c0c0c0] tracking-wider">
+                Payment Ref: {order.cashfreePaymentId}
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Order Details & Summary */}
@@ -226,6 +277,23 @@ export default function OrderSuccessPage() {
                   <span>Telemetry Updates</span>
                 </h4>
                 <p className="text-[12px] text-[#111111]">{order?.customer?.email}</p>
+                {isPaid && (
+                  <p className="text-[11px] text-[#555555] mt-1">
+                    A confirmation email has been dispatched to your inbox.
+                  </p>
+                )}
+              </div>
+
+              {/* Trust Seals */}
+              <div className="mt-6 pt-6 border-t border-[#f0f0ee] space-y-2">
+                <div className="flex items-center space-x-2 text-[9px] uppercase tracking-[0.15em] text-[#c0c0c0]">
+                  <ShieldCheck className="w-3.5 h-3.5" />
+                  <span>Secured by Cashfree Payments</span>
+                </div>
+                <div className="flex items-center space-x-2 text-[9px] uppercase tracking-[0.15em] text-[#c0c0c0]">
+                  <Package className="w-3.5 h-3.5" />
+                  <span>Insured Direct Courier Hand-Delivery</span>
+                </div>
               </div>
             </div>
 

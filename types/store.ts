@@ -181,7 +181,7 @@ export interface CustomerInfo {
   phone?: string;
 }
 
-export type OrderStatus = 'pending_payment' | 'paid' | 'processing' | 'shipped' | 'cancelled';
+export type OrderStatus = 'pending_payment' | 'paid' | 'payment_failed' | 'payment_pending' | 'processing' | 'shipped' | 'cancelled';
 
 export interface OrderItem {
   productId: string;
@@ -220,11 +220,17 @@ export interface Order {
   currency: string;
   status: OrderStatus;
   paymentGateway: string;
+  // Cashfree-specific payment tracking
+  cashfreeOrderId?: string;
+  cashfreePaymentId?: string;
+  cashfreePaymentMethod?: string;
+  paidAt?: string;
   verificationMetadata?: OrderVerificationMetadata;
   notes?: string;
   createdAt: string;
   updatedAt?: string;
 }
+
 
 export interface UserProfile {
   uid: string;

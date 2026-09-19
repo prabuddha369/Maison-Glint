@@ -58,6 +58,17 @@ function saveLocalOrder(order: Order) {
   }
 }
 
+export function updateLocalOrder(orderId: string, updates: Partial<Order>) {
+  if (typeof window === 'undefined') return;
+  try {
+    const existing = getLocalOrders();
+    const updated = existing.map((o) => (o.orderId === orderId ? { ...o, ...updates } : o));
+    localStorage.setItem(LOCAL_ORDERS_KEY, JSON.stringify(updated));
+  } catch (e) {
+    console.warn('Local order update notice:', e);
+  }
+}
+
 export function getLocalOrders(): Order[] {
   if (typeof window === 'undefined') return [];
   try {
@@ -82,37 +93,23 @@ export function generateOrderReference(): string {
 }
 
 /**
- * Isolated modular placeholder callback function for external payment gateways
- * Inputs & outputs strictly typed for seamless future drop-in
+ * Isolated modular payment gateway handler.
+ * For Cashfree: This is now superseded by /api/payment/create-order route.
+ * Kept as a typed stub for admin/manual order override workflows.
  */
 export async function processPaymentGateway(
   input: PaymentGatewayInput
 ): Promise<PaymentGatewayOutput> {
-  // =========================================================================
-  // TODO: INTEGRATE SELECTED PAYMENT GATEWAY (Stripe / Razorpay / Cashfree)
-  //
-  // Example for Stripe:
-  // const session = await fetch('/api/stripe/checkout-session', {
-  //   method: 'POST',
-  //   body: JSON.stringify({ orderId: input.orderId, amount: input.amount }),
-  // }).then(res => res.json());
-  // return { success: true, redirectUrl: session.url, paymentStatus: 'pending' };
-  //
-  // Example for Razorpay:
-  // const rzpOrder = await createRazorpayOrder({ amount: input.amount, currency: input.currency });
-  // =========================================================================
-
-  // In Spark Free Tier client mode, we safely record the order as pending_payment
   console.log(
-    `[Maison Glint Gateway] Order ${input.orderReference} staged for payment gateway handoff:`,
-    input
+    `[Maison Glint Gateway] Order ${input.orderReference} staged for Cashfree handoff:`,
+    { orderId: input.orderId, amount: input.amount, currency: input.currency }
   );
 
   return {
     success: true,
-    gatewayTransactionId: `TXN-STUB-${Date.now()}`,
+    gatewayTransactionId: undefined,
     paymentStatus: 'pending',
-    message: 'Order recorded with status pending_payment. Ready for gateway connection.',
+    message: 'Order created. Cashfree payment session will be initiated on client.',
   };
 }
 
@@ -248,7 +245,12 @@ function fromOrderRow(item: Record<string, unknown>): Order {
     shippingAddress: item.shipping_address as Order['shippingAddress'], shippingMethod: item.shipping_method as Order['shippingMethod'],
     items: item.items as Order['items'], subtotal: Number(item.subtotal), shippingCost: Number(item.shipping_cost),
     taxEstimate: Number(item.tax_estimate), total: Number(item.total), currency: String(item.currency), status: item.status as OrderStatus,
-    paymentGateway: String(item.payment_gateway), verificationMetadata: item.verification_metadata as Order['verificationMetadata'],
+    paymentGateway: String(item.payment_gateway),
+    cashfreeOrderId: item.cashfree_order_id ? String(item.cashfree_order_id) : undefined,
+    cashfreePaymentId: item.cashfree_payment_id ? String(item.cashfree_payment_id) : undefined,
+    cashfreePaymentMethod: item.cashfree_payment_method ? String(item.cashfree_payment_method) : undefined,
+    paidAt: item.paid_at ? String(item.paid_at) : undefined,
+    verificationMetadata: item.verification_metadata as Order['verificationMetadata'],
     notes: String(item.notes || ''), createdAt: String(item.created_at), updatedAt: item.updated_at ? String(item.updated_at) : undefined,
   };
 }
