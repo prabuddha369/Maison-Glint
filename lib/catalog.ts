@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { INITIAL_PRODUCTS, getProducts, getProductById } from './products';
+import { getProducts, getProductById } from './products';
 import type { Product } from '../types/store';
 
 /**
@@ -10,11 +10,10 @@ export async function fetchActiveProducts(): Promise<Product[]> {
   try {
     const allProducts = await getProducts();
     const filtered = allProducts.filter((p) => p.inStock !== false);
-    return filtered.length > 0 ? filtered : INITIAL_PRODUCTS;
+    return filtered.length > 0 ? filtered : allProducts;
   } catch (error) {
     console.warn('[Maison Glint Catalog] Secure active products query fallback:', error);
-    const all = await getProducts();
-    return all.length > 0 ? all : INITIAL_PRODUCTS;
+    return [];
   }
 }
 
@@ -34,18 +33,14 @@ export async function fetchProductByIdOrPrefix(idOrPrefix: string): Promise<Prod
 
   if (matched) return matched;
 
-  // Fallback to INITIAL_PRODUCTS
-  const initialMatch = INITIAL_PRODUCTS.find(
-    (p) => p.id === idOrPrefix || p.id.startsWith(idOrPrefix) || p.name.toLowerCase().includes(idOrPrefix.toLowerCase())
-  );
-  return initialMatch || INITIAL_PRODUCTS[0];
+  return all[0] || null;
 }
 
 /**
  * React hook to access dynamic active products with state and refetch
  */
 export function useCatalog() {
-  const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [version, setVersion] = useState<number>(0);
@@ -68,7 +63,7 @@ export function useCatalog() {
       .catch((err: unknown) => {
         if (active) {
           setError(err instanceof Error ? err.message : 'Failed to load catalog');
-          setProducts(INITIAL_PRODUCTS);
+          setProducts([]);
           setLoading(false);
         }
       });
@@ -84,7 +79,7 @@ export function useCatalog() {
  * React hook to access a single product by ID or prefix
  */
 export function useProduct(idOrPrefix: string = 'object-01') {
-  const [product, setProduct] = useState<Product>(INITIAL_PRODUCTS[0]);
+  const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [version, setVersion] = useState<number>(0);
@@ -99,7 +94,7 @@ export function useProduct(idOrPrefix: string = 'object-01') {
     fetchProductByIdOrPrefix(idOrPrefix)
       .then((found) => {
         if (active) {
-          setProduct(found || INITIAL_PRODUCTS[0]);
+          setProduct(found || null);
           setError(null);
           setLoading(false);
         }
@@ -107,7 +102,7 @@ export function useProduct(idOrPrefix: string = 'object-01') {
       .catch((err: unknown) => {
         if (active) {
           setError(err instanceof Error ? err.message : 'Product load error');
-          setProduct(INITIAL_PRODUCTS[0]);
+          setProduct(null);
           setLoading(false);
         }
       });

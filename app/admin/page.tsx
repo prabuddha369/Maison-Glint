@@ -25,7 +25,7 @@ import {
   UserX,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { INITIAL_PRODUCTS, getProducts, saveProduct, deleteProduct, seedDefaultProducts } from '../../lib/products';
+import { EMPTY_EDITORIAL_TEMPLATE, getProducts, saveProduct, deleteProduct, seedDefaultProducts } from '../../lib/products';
 import { getAllOrders, updateOrderStatus } from '../../lib/payment';
 import { fetchAllSubscribers, toggleSubscriberStatus, deleteSubscriberRecord } from '../../lib/newsletter';
 import type { Product, Order, OrderStatus, NewsletterSubscriber } from '../../types/store';
@@ -63,7 +63,7 @@ export default function AdminPage() {
     inStock: true,
     editionTotal: 200,
     editionRemaining: 50,
-    editorial: INITIAL_PRODUCTS[0].editorial,
+    editorial: EMPTY_EDITORIAL_TEMPLATE,
   });
 
   const loadData = async () => {
@@ -153,11 +153,25 @@ export default function AdminPage() {
       editorial: parsedEditorial,
     };
 
-    await saveProduct(productToSave);
-    setIsEditingProduct(false);
-    setFeedback(`Product "${productToSave.name}" successfully registered in catalog.`);
-    await loadData();
-    setTimeout(() => setFeedback(''), 4000);
+    try {
+      await saveProduct(productToSave);
+      setIsEditingProduct(false);
+      setFeedback(`Product "${productToSave.name}" successfully registered in catalog.`);
+      await loadData();
+      setTimeout(() => setFeedback(''), 4000);
+    } catch (err: unknown) {
+      const errObj = err as Record<string, unknown> | null;
+      const msg =
+        err instanceof Error
+          ? err.message
+          : errObj && typeof errObj.message === 'string'
+          ? errObj.message
+          : typeof err === 'object' && err !== null
+          ? JSON.stringify(err, Object.getOwnPropertyNames(err))
+          : String(err);
+      console.error(`[Maison Glint] Failed to save product: ${msg}`);
+      alert(`Failed to save product: ${msg}`);
+    }
   };
 
   const handleAdminSignIn = async (event: React.FormEvent) => {
@@ -568,9 +582,9 @@ export default function AdminPage() {
                       inStock: true,
                       editionTotal: 100,
                       editionRemaining: 25,
-                      editorial: INITIAL_PRODUCTS[0].editorial,
+                      editorial: EMPTY_EDITORIAL_TEMPLATE,
                     });
-                    setEditorialJsonInput(JSON.stringify(INITIAL_PRODUCTS[0].editorial, null, 2));
+                    setEditorialJsonInput(JSON.stringify(EMPTY_EDITORIAL_TEMPLATE, null, 2));
                     setJsonError('');
                     setIsEditingProduct(true);
                   }}
@@ -797,7 +811,7 @@ export default function AdminPage() {
                       <button
                         onClick={() => {
                           setProductForm(p);
-                          setEditorialJsonInput(JSON.stringify(p.editorial || INITIAL_PRODUCTS[0].editorial, null, 2));
+                          setEditorialJsonInput(JSON.stringify(p.editorial || EMPTY_EDITORIAL_TEMPLATE, null, 2));
                           setJsonError('');
                           setIsEditingProduct(true);
                         }}

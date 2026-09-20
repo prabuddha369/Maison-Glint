@@ -3,7 +3,7 @@
 import { useState, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Plus, Minus, ShoppingBag, ArrowUpRight, Sparkles } from 'lucide-react';
+import { Plus, Minus, ShoppingBag, ArrowUpRight, Sparkles, ArrowLeft, ArrowRight } from 'lucide-react';
 import { motion, useScroll, useTransform } from 'motion/react';
 import { useCart } from '../hooks/useCart';
 import { useProductCarousel } from '../hooks/useProductCarousel';
@@ -13,16 +13,28 @@ interface ObjectShowcaseProps {
   products: Product[];
   loading: boolean;
   onRequestPriorityAccess: () => void;
+  activeProduct?: Product;
+  activeIndex?: number;
+  onNext?: () => void;
+  onPrevious?: () => void;
 }
 
 export default function ObjectShowcase({
   products,
   loading,
   onRequestPriorityAccess,
+  activeProduct: propActiveProduct,
+  activeIndex: propActiveIndex,
+  onNext,
+  onPrevious,
 }: ObjectShowcaseProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const { addItem } = useCart();
-  const { activeProduct: product } = useProductCarousel(products);
+  const carousel = useProductCarousel(products);
+  const product = propActiveProduct || carousel.activeProduct;
+  const activeIndex = typeof propActiveIndex === 'number' ? propActiveIndex : carousel.activeIndex;
+  const next = onNext || carousel.next;
+  const previous = onPrevious || carousel.previous;
   const [openAccordion, setOpenAccordion] = useState<string | null>('details');
 
   // Parallax Scroll Tracking for entering from Hero section
@@ -43,11 +55,20 @@ export default function ObjectShowcase({
 
   const luxuryEase = [0.16, 1, 0.3, 1] as const;
   const editorial = product?.editorial;
-  const showcaseImage = product?.images?.[product.images.length - 1];
+  const showcaseImage =
+    product?.images?.[product.images.length - 1] ||
+    product?.images?.[0] ||
+    '/images/fig-01-table.png';
   const priceDisplay = product ? `$${product.price}` : '';
 
-  if (loading || !product || !editorial || !showcaseImage) {
-    return <section ref={sectionRef} id="the-plate" className="min-h-[70vh] border-b border-[#e5e5e3]" />;
+  if (loading || !product || !editorial) {
+    return (
+      <section ref={sectionRef} id="the-plate" className="min-h-[50vh] border-b border-[#e5e5e3] flex items-center justify-center">
+        <div className="text-[11px] uppercase tracking-[0.2em] text-[#747878] animate-pulse font-mono">
+          Loading Object Monograph...
+        </div>
+      </section>
+    );
   }
 
   return (
@@ -67,8 +88,31 @@ export default function ObjectShowcase({
           className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-16 pb-8 sm:pb-12 md:pb-16 border-b border-[#e5e5e3]"
         >
           <div className="lg:col-span-7">
-            <div className="text-[10px] md:text-[11px] uppercase tracking-[0.2em] font-medium text-[#747878] mb-3 sm:mb-4">
-              {editorial.showcase.sectionLabel}
+            <div className="flex items-center justify-between mb-3 sm:mb-4">
+              <div className="text-[10px] md:text-[11px] uppercase tracking-[0.2em] font-medium text-[#747878]">
+                {editorial.showcase.sectionLabel}
+              </div>
+              {products && products.length > 1 && (
+                <div className="flex items-center gap-2">
+                  <button
+                    aria-label="Previous product"
+                    onClick={previous}
+                    className="p-1 text-[#747878] hover:text-[#111111] transition-colors cursor-pointer"
+                  >
+                    <ArrowLeft className="w-3.5 h-3.5" />
+                  </button>
+                  <span className="font-mono text-[9px] text-[#747878] whitespace-nowrap">
+                    {String(activeIndex + 1).padStart(2, '0')} / {String(products.length).padStart(2, '0')}
+                  </span>
+                  <button
+                    aria-label="Next product"
+                    onClick={next}
+                    className="p-1 text-[#747878] hover:text-[#111111] transition-colors cursor-pointer"
+                  >
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              )}
             </div>
             <h2 className="font-[family-name:var(--font-cormorant)] text-[30px] sm:text-[40px] md:text-[50px] font-light leading-[1.12] text-[#111111]">
               {editorial.showcase.title} <br className="hidden sm:inline" />

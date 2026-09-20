@@ -18,14 +18,38 @@ interface AtTheTableProps {
   products: Product[];
   loading: boolean;
   onSelectRitual: (ritual: RitualSelection) => void;
+  activeProduct?: Product;
+  activeIndex?: number;
+  onNext?: () => void;
+  onPrevious?: () => void;
 }
 
-export default function AtTheTable({ products, loading, onSelectRitual }: AtTheTableProps) {
-  const { activeProduct, activeIndex, next, previous, prefersReducedMotion } = useProductCarousel(products);
+export default function AtTheTable({
+  products,
+  loading,
+  onSelectRitual,
+  activeProduct: propActiveProduct,
+  activeIndex: propActiveIndex,
+  onNext,
+  onPrevious,
+}: AtTheTableProps) {
+  const carousel = useProductCarousel(products);
+  const activeProduct = propActiveProduct || carousel.activeProduct;
+  const activeIndex = typeof propActiveIndex === 'number' ? propActiveIndex : carousel.activeIndex;
+  const next = onNext || carousel.next;
+  const previous = onPrevious || carousel.previous;
+  const prefersReducedMotion = carousel.prefersReducedMotion;
+
   const editorial = activeProduct?.editorial?.table;
 
   if (loading || !activeProduct || !editorial || editorial.rituals.length === 0) {
-    return <section id="at-the-table" className="min-h-[60vh] border-b border-[#e5e5e3]" />;
+    return (
+      <section id="at-the-table" className="min-h-[40vh] border-b border-[#e5e5e3] flex items-center justify-center">
+        <div className="text-[11px] uppercase tracking-[0.2em] text-[#747878] animate-pulse font-mono">
+          Loading Rituals of the Table...
+        </div>
+      </section>
+    );
   }
 
   return (

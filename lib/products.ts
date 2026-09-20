@@ -38,214 +38,8 @@ export function formatGoogleDriveUrl(url?: string): string | undefined {
   return trimmed;
 }
 
-export const DEFAULT_FINISH_PRESETS: ProductFinishPreset[] = [
-  {
-    key: 'morning',
-    label: 'Morning Sun',
-    angle: 45,
-    roughness: 'Ra < 0.050 µm',
-    dispersion: '98.4%',
-    imageUrl: 'https://drive.google.com/file/d/10MrLj9sZ0g3rDmXhl1XATt3WbHymY-RI/view?usp=sharing',
-    sortOrder: 0,
-  },
-  {
-    key: 'candlelight',
-    label: 'Candlelight Grazing',
-    angle: 22,
-    roughness: 'Ra < 0.048 µm',
-    dispersion: '99.1%',
-    imageUrl: 'https://drive.google.com/file/d/1J6r_3beMMM8DGnMch3WVLIzncvKRUJrj/view?usp=sharing',
-    sortOrder: 1,
-  },
-  {
-    key: 'zenith',
-    label: 'Overhead Ambient',
-    angle: 70,
-    roughness: 'Ra < 0.045 µm',
-    dispersion: '98.8%',
-    imageUrl: 'https://drive.google.com/file/d/1rgJEFBuH17GLAhCK6i-2Kcd0MoGmDFPu/view?usp=sharing',
-    sortOrder: 2,
-  },
-];
-
-function createEditorialContent(name: string, images: string[], editionLabel: string): ProductEditorialContent {
-  return {
-    hero: {
-      eyebrow: 'Objects for the Everyday Ritual', editionLabel, description: 'A considered object with a reflective surface, clean geometry, and a quiet presence at the table.',
-      discoverLabel: 'Discover Object', reserveLabel: 'Request Priority Access', materialLabel: 'Material', materialValue: 'Surgical Stainless',
-      craftLabel: 'Craft', craftValue: 'Optical Hand Finish', editionLabelMeta: 'Edition', editionValue: editionLabel,
-      slides: images.slice(0, 2).map((imageUrl, index) => ({ imageUrl, alt: `${name} perspective ${index + 1}`, category: index === 0 ? 'Table Setting' : 'Side Elevation', title: index === 0 ? 'A considered presence at the table' : 'Profile, edge, and reflected light', figureLabel: `FIG. 0${index + 1}`, tabLabel: `Fig. 0${index + 1}`, badge: index === 0 ? 'Atmosphere' : 'Profile', sortOrder: index })),
-    },
-    showcase: {
-      sectionLabel: '01 / Object Showcase', title: name, titleEmphasis: 'Endless possibilities.', description: 'A simple form, a reflective surface, and a different way to set the table.',
-      finishBadge: 'Optical Hand Finish', statusLabel: 'Status', statusDescription: 'Serialized atelier allocation with edition verification and provenance documentation included.',
-      provenanceLabel: 'Provenance', monographLabel: 'Monograph View', acquireLabel: 'Acquire Edition', priorityLabel: 'Priority Access',
-      features: [
-        { label: 'Surface Refraction', description: 'A measured finish designed to carry ambient light and tactile detail.', sortOrder: 0 },
-        { label: 'Ergonomic Lift', description: 'Balanced geometry engineered for confident handling during service.', sortOrder: 1 },
-      ],
-      panels: [
-        { title: 'Product Details', body: 'Crafted for daily ritual with a considered balance of material, finish, and proportion.', sortOrder: 0 },
-        { title: 'Care & Use', body: 'Care instructions and use notes are maintained by the atelier for each edition.', sortOrder: 1 },
-        { title: 'Delivery & Provenance', body: 'Each exemplar is serialized and delivered with its corresponding authenticity record.', sortOrder: 2 },
-      ],
-    },
-    finish: {
-      sectionLabel: '02 / The Finish & Philosophy', title: 'Made of steel.', titleEmphasis: 'Alive with light.',
-      paragraphs: ['A curve. A glint. The room, reflected. A surface that becomes part of the setting.', 'The finish carries the season, the lighting, and the architecture of the gathering.'],
-      presetLabel: 'Select Optical Light State', spectrumLabel: 'Reflective Index Spectrum', roughnessLabel: 'Surface Index',
-      presets: DEFAULT_FINISH_PRESETS,
-    },
-    specifications: {
-      sectionLabel: '03 / Specifications', title: 'Every detail,', titleEmphasis: 'considered.', description: 'Refined measurements balanced for the surfaces and rituals of everyday dining.',
-      metricToggleLabel: 'MM / G', imperialToggleLabel: 'IN / OZ', serialStamp: 'Verified Serial Stamp', archiveLabel: 'Maison Glint Archive',
-      rows: [
-        { label: 'DIAMETER', metric: '280 mm', imperial: '11.02 in', sortOrder: 0 },
-        { label: 'RIM HEIGHT', metric: '18 mm', imperial: '0.71 in', sortOrder: 1 },
-        { label: 'BASE GAUGE', metric: '2.5 mm', imperial: '0.10 in', sortOrder: 2 },
-        { label: 'NET MASS', metric: '640 grams', imperial: '22.58 oz', sortOrder: 3 },
-        { label: 'ALLOY GRADE', metric: 'Food Safe Austenitic Steel', imperial: 'Food Safe Austenitic Steel', sortOrder: 4 },
-        { label: 'MIRROR POLISH', metric: 'Multi-Stage Optical Hand-Buff', imperial: 'Multi-Stage Optical Hand-Buff', sortOrder: 5 },
-      ],
-    },
-    table: {
-      sectionLabel: '04 / At The Table', title: 'The Art of the Everyday.', titleEmphasis: 'Set a different table.', description: 'A reflective stage for considered courses, fresh harvest, and intimate evening settings.',
-      rituals: [
-        { title: 'The Dining Ritual', subtitle: 'Linen, stone, and cool metal.', imageUrl: images[0] || '', imageAlt: `${name} in a dining setting`, description: 'A considered arrangement of bread, linen, and warm natural surfaces.', items: [{ label: 'Artisanal Course', sortOrder: 0 }, { label: 'Washed Linen', sortOrder: 1 }], sortOrder: 0 },
-        { title: 'Raw Elements', subtitle: 'A reflective stage for fresh harvest.', imageUrl: images[1] || images[0] || '', imageAlt: `${name} with fresh elements`, description: 'Fresh botanical elements meet a reflective architectural surface.', items: [{ label: 'Seasonal Harvest', sortOrder: 0 }, { label: 'Micro-Crystalline Salt', sortOrder: 1 }], sortOrder: 1 },
-        { title: 'Nocturne Setting', subtitle: 'Candlelight and evening reflections.', imageUrl: images[2] || images[0] || '', imageAlt: `${name} in an evening setting`, description: 'A low evening light reveals the object’s changing reflection.', items: [{ label: 'Natural Candlelight', sortOrder: 0 }, { label: 'Hand-Blown Glass', sortOrder: 1 }], sortOrder: 2 },
-      ],
-    },
-  };
-}
-
-export const INITIAL_PRODUCTS: Product[] = [
-  {
-    id: 'object-01-the-glint-plate',
-    name: 'Object 01 — The Glint Plate',
-    description:
-      'Forged from surgical Grade 316L stainless steel, featuring undulating liquid perimeter geometry and high-refraction micro-buffed mirror chrome finish. Restricted atelier edition of 250 exemplars.',
-    price: 680,
-    currency: 'USD',
-    images: [
-      '/images/fig-01-table.png',
-      '/images/fig-02-profile.png',
-      '/images/scallops-macro.png',
-    ],
-    specifications: {
-      gauge: '18-Gauge Surgical 316L Core',
-      diameter: '280 mm (11.02 inches)',
-      finish: 'Micro-Buff Mirror Chrome (>98% Refraction)',
-      weight: '1,420 grams (Substantial Heavy Core)',
-      origin: 'Atelier Zurich / Milan',
-    },
-    inStock: true,
-    editionTotal: 250,
-    editionRemaining: 34,
-    editionReserved: 0,
-    createdAt: new Date().toISOString(),
-    editorial: createEditorialContent('Object 01 — The Glint Plate', ['/images/fig-01-table.png', '/images/fig-02-profile.png', '/images/scallops-macro.png'], 'Batch 01 / 250'),
-  },
-  {
-    id: 'object-02-fluid-coupe-pair',
-    name: 'Object 02 — Fluid Coupe Pair',
-    description: 'A matched pair of monolithic steel stem coupes with a mirror-polished interior bowl.',
-    price: 490,
-    currency: 'USD',
-    images: ['/images/dining-ritual.png', '/images/fig-01-table.png', '/images/nocturne-setting.png'],
-    specifications: { gauge: 'Seamless Solid Cold Lathe', diameter: '110 mm bowl / 165 mm height', finish: 'Dual Finish: Satin Stem / Mirror Bowl', weight: '480 grams each', origin: 'Atelier Zurich' },
-    inStock: true,
-    editionTotal: 150,
-    editionRemaining: 18,
-    editionReserved: 0,
-    createdAt: new Date().toISOString(),
-    editorial: createEditorialContent('Object 02 — Fluid Coupe Pair', ['/images/dining-ritual.png', '/images/fig-01-table.png', '/images/nocturne-setting.png'], 'Batch 02 / 150'),
-  },
-  {
-    id: 'object-03-monolith-serving-knife',
-    name: 'Object 03 — Monolith Serving Knife',
-    description: 'A balanced unibody steel serving knife with a micro-serrated beveled edge for ceremonial slicing.',
-    price: 340,
-    currency: 'USD',
-    images: ['/images/scallops-macro.png', '/images/fig-02-profile.png', '/images/raw-elements.png'],
-    specifications: { gauge: 'Forged 440C High-Carbon Stainless', diameter: '320 mm total length', finish: 'Vapour-Deposited Mirror Chrome', weight: '310 grams', origin: 'Solingen / Zurich Atelier' },
-    inStock: true,
-    editionTotal: 300,
-    editionRemaining: 52,
-    editionReserved: 0,
-    createdAt: new Date().toISOString(),
-    editorial: createEditorialContent('Object 03 — Monolith Serving Knife', ['/images/scallops-macro.png', '/images/fig-02-profile.png', '/images/raw-elements.png'], 'Batch 03 / 300'),
-  },
-  // {
-  //   id: 'object-04-sculpted-centro-vessel',
-  //   name: 'Object 02 — Fluid Coupe (Pair)',
-  //   description:
-  //     'A matched pair of monolithic steel stem coupes. Precision lathed with a mirror-polished interior bowl designed to accelerate chilled culinary vapor and wine bouquet.',
-  //   price: 490,
-  //   currency: 'USD',
-  //   images: [
-  //     '/images/dining-ritual.png',
-  //     '/images/fig-01-table.png',
-  //   ],
-  //   specifications: {
-  //     gauge: 'Seamless Solid Cold Lathe',
-  //     diameter: '110 mm bowl / 165 mm height',
-  //     finish: 'Dual Finish: Satin Stem / Mirror Bowl',
-  //     weight: '480 grams each',
-  //     origin: 'Atelier Zurich',
-  //   },
-  //   inStock: true,
-  //   editionTotal: 150,
-  //   editionRemaining: 18,
-  //   createdAt: new Date().toISOString(),
-  // },
-  // {
-  //   id: 'object-03-monolith-serving-knife',
-  //   name: 'Object 03 — Monolith Serving Knife',
-  //   description:
-  //     'Unibody steel blade with micro-serrated beveled edge for ceremonial slicing. Balanced center of mass crafted to rest horizontally on table surfaces without touching blade to linen.',
-  //   price: 340,
-  //   currency: 'USD',
-  //   images: [
-  //     '/images/scallops-macro.png',
-  //     '/images/fig-02-profile.png',
-  //   ],
-  //   specifications: {
-  //     gauge: 'Forged 440C High-Carbon Stainless',
-  //     diameter: '320 mm total length',
-  //     finish: 'Vapour-Deposited Mirror Chrome',
-  //     weight: '310 grams',
-  //     origin: 'Solingen / Zurich Atelier',
-  //   },
-  //   inStock: true,
-  //   editionTotal: 300,
-  //   editionRemaining: 52,
-  //   createdAt: new Date().toISOString(),
-  // },
-  // {
-  //   id: 'object-04-sculpted-centro-vessel',
-  //   name: 'Object 04 — Sculpted Centro Vessel',
-  //   description:
-  //     'Centerpiece parabolic steel vessel holding seasonal botanical or floral arrangements. Dynamic ambient curvature reflects changing gallery light throughout the day.',
-  //   price: 820,
-  //   currency: 'USD',
-  //   images: [
-  //     '/images/raw-elements.png',
-  //     '/images/nocturne-setting.png',
-  //   ],
-  //   specifications: {
-  //     gauge: 'Hand-Hammered Liquid Form Steel',
-  //     diameter: '380 mm width / 140 mm depth',
-  //     finish: 'Liquid Mirror Chrome',
-  //     weight: '2,640 grams',
-  //     origin: 'Zurich Atelier',
-  //   },
-  //   inStock: true,
-  //   editionTotal: 100,
-  //   editionRemaining: 12,
-  //   createdAt: new Date().toISOString(),
-  // },
-];
+export const DEFAULT_FINISH_PRESETS: ProductFinishPreset[] = [];
+export const INITIAL_PRODUCTS: Product[] = [];
 
 const LOCAL_PRODUCTS_KEY = 'mg_local_products_cache';
 
@@ -338,12 +132,13 @@ export async function saveProduct(product: Product): Promise<void> {
   }
   saveLocalProducts(updated);
 
-  try {
-    const { error } = await getSupabaseBrowser().from('products').upsert(toProductRow(product));
-    if (error) throw error;
-    if (product.editorial) await saveEditorialContent(product);
-  } catch (error) {
-    throw error;
+  const client = getSupabaseBrowser();
+  const { error: productError } = await client.from('products').upsert(toProductRow(product));
+  if (productError) {
+    throw new Error(`Products table error: ${productError.message || productError.code || JSON.stringify(productError)}`);
+  }
+  if (product.editorial) {
+    await saveEditorialContent(product);
   }
 }
 
@@ -359,10 +154,14 @@ async function saveEditorialContent(product: Product): Promise<void> {
     specifications: { ...editorial.specifications, rows: undefined },
     table_content: { ...editorial.table, rituals: undefined },
   });
-  if (editorialError) throw editorialError;
+  if (editorialError) {
+    throw new Error(`Editorial table error: ${editorialError.message || editorialError.code || JSON.stringify(editorialError)}`);
+  }
 
   const { error: imageDeleteError } = await client.from('product_images').delete().eq('product_id', product.id);
-  if (imageDeleteError) throw imageDeleteError;
+  if (imageDeleteError) {
+    throw new Error(`Images delete error: ${imageDeleteError.message || imageDeleteError.code || JSON.stringify(imageDeleteError)}`);
+  }
   if (product.images.length) {
     const { error: imageInsertError } = await client.from('product_images').insert(product.images.map((url, sortOrder) => ({
       product_id: product.id,
@@ -371,43 +170,76 @@ async function saveEditorialContent(product: Product): Promise<void> {
       role: sortOrder === 0 ? 'catalog' : sortOrder === product.images.length - 1 ? 'showcase' : 'detail',
       sort_order: sortOrder,
     })));
-    if (imageInsertError) throw imageInsertError;
+    if (imageInsertError) {
+      throw new Error(`Images insert error: ${imageInsertError.message || imageInsertError.code || JSON.stringify(imageInsertError)}`);
+    }
   }
 
   const childTables = ['product_hero_slides', 'product_features', 'product_panels', 'product_finish_presets', 'product_specification_rows', 'product_rituals'];
   for (const table of childTables) {
     const { error } = await client.from(table).delete().eq('product_id', product.id);
-    if (error) throw error;
+    if (error) {
+      throw new Error(`${table} delete error: ${error.message || error.code || JSON.stringify(error)}`);
+    }
   }
 
   const childRows = [
-    ['product_hero_slides', editorial.hero.slides.map((slide) => ({ product_id: product.id, image_url: slide.imageUrl, alt: slide.alt, category: slide.category, title: slide.title, figure_label: slide.figureLabel, tab_label: slide.tabLabel, badge: slide.badge, sort_order: slide.sortOrder }))],
-    ['product_features', editorial.showcase.features.map((feature) => ({ product_id: product.id, label: feature.label, description: feature.description, sort_order: feature.sortOrder }))],
-    ['product_panels', editorial.showcase.panels.map((panel) => ({ product_id: product.id, title: panel.title, body: panel.body, sort_order: panel.sortOrder }))],
-    ['product_finish_presets', editorial.finish.presets.map((preset) => ({ product_id: product.id, preset_key: preset.key, label: preset.label, angle: preset.angle, roughness: preset.roughness, dispersion: preset.dispersion, image_url: preset.imageUrl || '', sort_order: preset.sortOrder }))],
-    ['product_specification_rows', editorial.specifications.rows.map((row) => ({ product_id: product.id, label: row.label, metric: row.metric, imperial: row.imperial, sort_order: row.sortOrder }))],
+    ['product_hero_slides', (editorial.hero?.slides || []).map((slide, idx) => ({ product_id: product.id, image_url: slide.imageUrl, alt: slide.alt || '', category: slide.category || '', title: slide.title || '', figure_label: slide.figureLabel || '', tab_label: slide.tabLabel || '', badge: slide.badge || '', sort_order: slide.sortOrder ?? idx }))],
+    ['product_features', (editorial.showcase?.features || []).map((feature, idx) => ({ product_id: product.id, label: feature.label, description: feature.description || '', sort_order: feature.sortOrder ?? idx }))],
+    ['product_panels', (editorial.showcase?.panels || []).map((panel, idx) => ({ product_id: product.id, title: panel.title, body: panel.body || '', sort_order: panel.sortOrder ?? idx }))],
+    ['product_finish_presets', (editorial.finish?.presets || []).map((preset, idx) => ({ product_id: product.id, preset_key: preset.key, label: preset.label, angle: preset.angle ?? 0, roughness: preset.roughness || '', dispersion: preset.dispersion || '', image_url: preset.imageUrl || '', sort_order: preset.sortOrder ?? idx }))],
+    ['product_specification_rows', (editorial.specifications?.rows || []).map((row: any, idx) => ({ product_id: product.id, label: row.label || '', metric: row.metric || row.metricValue || '', imperial: row.imperial || row.imperialValue || '', sort_order: row.sortOrder ?? row.sort_order ?? idx }))],
   ] as const;
   for (const [table, rows] of childRows) {
     if (!rows.length) continue;
     let { error } = await client.from(table).insert(rows as Record<string, unknown>[]);
-    if (error && table === 'product_finish_presets' && (error as { code?: string }).code === '42703') {
-      // If migration 006 has not been applied yet, gracefully fallback without image_url column
-      console.warn('Column image_url does not exist on product_finish_presets in database. Retrying without image_url.');
+    if (
+      error &&
+      table === 'product_finish_presets' &&
+      ((error as { code?: string }).code === '42703' ||
+        (error as { code?: string }).code === 'PGRST204' ||
+        (error as { message?: string }).message?.includes('image_url') ||
+        (error as { message?: string }).message?.includes('schema cache'))
+    ) {
+      // If migration 006 has not been applied yet or schema cache hasn't reloaded, gracefully fallback without image_url column
+      console.warn('Column image_url does not exist on product_finish_presets in database schema cache. Retrying without image_url.');
       const fallbackRows = (rows as Record<string, unknown>[]).map(({ image_url: _, ...rest }) => rest);
       const retry = await client.from(table).insert(fallbackRows);
       error = retry.error;
     }
-    if (error) throw error;
+    if (error) {
+      throw new Error(`${table} insert error: ${error.message || error.code || JSON.stringify(error)}`);
+    }
   }
 
-  const { data: rituals, error: ritualError } = await client.from('product_rituals').insert(editorial.table.rituals.map((ritual) => ({
-    product_id: product.id, title: ritual.title, subtitle: ritual.subtitle, image_url: ritual.imageUrl, image_alt: ritual.imageAlt, description: ritual.description, sort_order: ritual.sortOrder,
-  }))).select('id, sort_order');
-  if (ritualError) throw ritualError;
-  const ritualItems = (rituals || []).flatMap((ritual, index) => editorial.table.rituals[index].items.map((item) => ({ ritual_id: ritual.id, label: item.label, sort_order: item.sortOrder })));
-  if (ritualItems.length) {
-    const { error } = await client.from('product_ritual_items').insert(ritualItems);
-    if (error) throw error;
+  const tableRituals = editorial.table?.rituals || [];
+  if (tableRituals.length > 0) {
+    const { data: rituals, error: ritualError } = await client.from('product_rituals').insert(tableRituals.map((ritual: any, idx) => ({
+      product_id: product.id,
+      title: ritual.title || '',
+      subtitle: ritual.subtitle || ritual.tag || '',
+      image_url: ritual.imageUrl || ritual.image || '',
+      image_alt: ritual.imageAlt || ritual.title || '',
+      description: ritual.description || '',
+      sort_order: ritual.sortOrder ?? ritual.sort_order ?? idx,
+    }))).select('id, sort_order');
+    if (ritualError) {
+      throw new Error(`product_rituals insert error: ${ritualError.message || ritualError.code || JSON.stringify(ritualError)}`);
+    }
+    const ritualItems = (rituals || []).flatMap((ritual, index) => {
+      const items = (tableRituals[index] as any)?.items || [];
+      return items.map((item: any, itemIdx: number) => ({
+        ritual_id: ritual.id,
+        label: item.label || '',
+        sort_order: item.sortOrder ?? item.sort_order ?? itemIdx,
+      }));
+    });
+    if (ritualItems.length) {
+      const { error } = await client.from('product_ritual_items').insert(ritualItems);
+      if (error) {
+        throw new Error(`product_ritual_items insert error: ${error.message || error.code || JSON.stringify(error)}`);
+      }
+    }
   }
 }
 
@@ -478,9 +310,8 @@ async function hydrateProducts(rows: Record<string, unknown>[]): Promise<Product
       rituals: ritualRows,
       ritualItems: (ritualItemsResult.data || []) as Record<string, unknown>[],
     });
-    const fallbackEditorial = INITIAL_PRODUCTS.find((fallback) => fallback.id === product.id)?.editorial;
-    const hasEditorialRows = Boolean(productEditorial) || hydratedEditorial.hero.slides.length > 0 || hydratedEditorial.table.rituals.length > 0;
-    grouped.set(product.id, hasEditorialRows ? hydratedEditorial : fallbackEditorial || hydratedEditorial);
+
+    grouped.set(product.id, hydratedEditorial);
   }
 
   return products.map((product) => ({ ...product, editorial: grouped.get(product.id) }));
@@ -501,7 +332,7 @@ function toEditorial(
 ): ProductEditorialContent {
   const json = (key: string): Record<string, unknown> =>
     row && row[key] && typeof row[key] === 'object' ? row[key] as Record<string, unknown> : {};
-  const text = (value: unknown) => String(value || '');
+  const text = (value: unknown) => String(value ?? '');
   const owned = (items: Record<string, unknown>[]) => items.filter((item) => item.product_id === productId);
   const hero = json('hero');
   const showcase = json('showcase');
@@ -509,22 +340,55 @@ function toEditorial(
   const specifications = json('specifications');
   const table = json('table_content');
 
-  const slides: ProductHeroSlide[] = owned(related.heroSlides).map((item, index) => ({
-    id: text(item.id), imageUrl: text(item.image_url), alt: text(item.alt), category: text(item.category),
-    title: text(item.title), figureLabel: text(item.figure_label), tabLabel: text(item.tab_label),
-    badge: text(item.badge), sortOrder: Number(item.sort_order ?? index),
-  }));
-  const features: ProductFeature[] = owned(related.features).map((item, index) => ({
-    id: text(item.id), label: text(item.label), description: text(item.description), sortOrder: Number(item.sort_order ?? index),
-  }));
-  const panels: ProductPanel[] = owned(related.panels).map((item, index) => ({
-    id: text(item.id), title: text(item.title), body: text(item.body), sortOrder: Number(item.sort_order ?? index),
-  }));
-  const rawPresets = Array.isArray(finish.presets) ? (finish.presets as ProductFinishPreset[]) : [];
+  const rawSlides = Array.isArray(hero.slides) ? (hero.slides as Record<string, unknown>[]) : [];
+  const slides: ProductHeroSlide[] = owned(related.heroSlides).length > 0
+    ? owned(related.heroSlides).map((item, index) => ({
+        id: text(item.id),
+        imageUrl: text(item.image_url || item.imageUrl),
+        alt: text(item.alt),
+        category: text(item.category),
+        title: text(item.title),
+        figureLabel: text(item.figure_label || item.figureLabel),
+        tabLabel: text(item.tab_label || item.tabLabel),
+        badge: text(item.badge),
+        sortOrder: Number(item.sort_order ?? item.sortOrder ?? index),
+      }))
+    : rawSlides.map((item, index) => ({
+        id: text(item.id || `slide-${index}`),
+        imageUrl: text(item.imageUrl || item.image_url),
+        alt: text(item.alt),
+        category: text(item.category),
+        title: text(item.title),
+        figureLabel: text(item.figureLabel || item.figure_label),
+        tabLabel: text(item.tabLabel || item.tab_label),
+        badge: text(item.badge),
+        sortOrder: Number(item.sortOrder ?? item.sort_order ?? index),
+      }));
+
+  const rawFeatures = Array.isArray(showcase.features) ? (showcase.features as Record<string, unknown>[]) : [];
+  const features: ProductFeature[] = owned(related.features).length > 0
+    ? owned(related.features).map((item, index) => ({
+        id: text(item.id), label: text(item.label), description: text(item.description), sortOrder: Number(item.sort_order ?? index),
+      }))
+    : rawFeatures.map((item, index) => ({
+        id: text(item.id || `feat-${index}`), label: text(item.label), description: text(item.description), sortOrder: Number(item.sortOrder ?? item.sort_order ?? index),
+      }));
+
+  const rawPanels = Array.isArray(showcase.panels) ? (showcase.panels as Record<string, unknown>[]) : [];
+  const panels: ProductPanel[] = owned(related.panels).length > 0
+    ? owned(related.panels).map((item, index) => ({
+        id: text(item.id), title: text(item.title), body: text(item.body), sortOrder: Number(item.sort_order ?? index),
+      }))
+    : rawPanels.map((item, index) => ({
+        id: text(item.id || `panel-${index}`), title: text(item.title), body: text(item.body), sortOrder: Number(item.sortOrder ?? item.sort_order ?? index),
+      }));
+
+  const rawPresets = Array.isArray(finish.presets)
+    ? (finish.presets as (ProductFinishPreset & Record<string, unknown>)[])
+    : [];
   const presets: ProductFinishPreset[] = owned(related.presets).length > 0
     ? owned(related.presets).map((item, index) => {
         const rawJsonMatch = rawPresets.find((jp) => jp.key === text(item.preset_key));
-        const defaultMatch = DEFAULT_FINISH_PRESETS.find((dp) => dp.key === text(item.preset_key));
         return {
           id: text(item.id),
           key: text(item.preset_key),
@@ -532,50 +396,111 @@ function toEditorial(
           angle: Number(item.angle || 0),
           roughness: text(item.roughness),
           dispersion: text(item.dispersion),
-          imageUrl: text(item.image_url) || rawJsonMatch?.imageUrl || defaultMatch?.imageUrl || '',
+          imageUrl: text(item.image_url) || rawJsonMatch?.imageUrl || (rawJsonMatch?.image_url as string) || '',
           sortOrder: Number(item.sort_order ?? index),
         };
       })
-    : (rawPresets.length > 0 ? rawPresets : DEFAULT_FINISH_PRESETS);
-  const specificationRows: ProductSpecificationRow[] = owned(related.specificationRows).map((item, index) => ({
-    id: text(item.id), label: text(item.label), metric: text(item.metric), imperial: text(item.imperial), sortOrder: Number(item.sort_order ?? index),
-  }));
-  const rituals: ProductRitual[] = owned(related.rituals).map((item, index) => ({
-    id: text(item.id), title: text(item.title), subtitle: text(item.subtitle), imageUrl: text(item.image_url),
-    imageAlt: text(item.image_alt), description: text(item.description), sortOrder: Number(item.sort_order ?? index),
-    items: related.ritualItems.filter((ritualItem) => ritualItem.ritual_id === item.id).map((ritualItem, itemIndex): ProductRitualItem => ({
-      id: text(ritualItem.id), label: text(ritualItem.label), sortOrder: Number(ritualItem.sort_order ?? itemIndex),
-    })),
-  }));
+    : rawPresets.map((jp, index) => ({
+        id: jp.id || `preset-${jp.key || index}`,
+        key: jp.key || `preset-${index}`,
+        label: jp.label || '',
+        angle: Number(jp.angle || 0),
+        roughness: jp.roughness || '',
+        dispersion: jp.dispersion || '',
+        imageUrl: jp.imageUrl || (jp.image_url as string) || '',
+        sortOrder: Number(jp.sortOrder ?? jp.sort_order ?? index),
+      }));
+
+  const rawSpecRows = Array.isArray(specifications.rows) ? (specifications.rows as Record<string, unknown>[]) : [];
+  const specificationRows: ProductSpecificationRow[] = owned(related.specificationRows).length > 0
+    ? owned(related.specificationRows).map((item, index) => ({
+        id: text(item.id), label: text(item.label), metric: text(item.metric), imperial: text(item.imperial), sortOrder: Number(item.sort_order ?? index),
+      }))
+    : rawSpecRows.map((item, index) => ({
+        id: text(item.id || `spec-${index}`), label: text(item.label), metric: text(item.metric || item.metricValue), imperial: text(item.imperial || item.imperialValue), sortOrder: Number(item.sortOrder ?? item.sort_order ?? index),
+      }));
+
+  const rawRituals = Array.isArray(table.rituals) ? (table.rituals as Record<string, unknown>[]) : [];
+  const rituals: ProductRitual[] = owned(related.rituals).length > 0
+    ? owned(related.rituals).map((item, index) => ({
+        id: text(item.id), title: text(item.title), subtitle: text(item.subtitle), imageUrl: text(item.image_url || item.imageUrl),
+        imageAlt: text(item.image_alt || item.imageAlt), description: text(item.description), sortOrder: Number(item.sort_order ?? index),
+        items: related.ritualItems.filter((ritualItem) => ritualItem.ritual_id === item.id).map((ritualItem, itemIndex): ProductRitualItem => ({
+          id: text(ritualItem.id), label: text(ritualItem.label), sortOrder: Number(ritualItem.sort_order ?? itemIndex),
+        })),
+      }))
+    : rawRituals.map((item, index) => ({
+        id: text(item.id || `ritual-${index}`), title: text(item.title), subtitle: text(item.subtitle),
+        imageUrl: text(item.imageUrl || item.image_url || item.image),
+        imageAlt: text(item.imageAlt || item.image_alt || item.title),
+        description: text(item.description),
+        sortOrder: Number(item.sortOrder ?? item.sort_order ?? index),
+        items: Array.isArray(item.items)
+          ? (item.items as Record<string, unknown>[]).map((ritItem, ritIdx) => ({
+              id: text(ritItem.id || `ritual-item-${index}-${ritIdx}`),
+              label: text(ritItem.label),
+              sortOrder: Number(ritItem.sortOrder ?? ritItem.sort_order ?? ritIdx),
+            }))
+          : [],
+      }));
 
   return {
     hero: {
-      eyebrow: text(hero.eyebrow), editionLabel: text(hero.edition_label), description: text(hero.description),
-      discoverLabel: text(hero.discover_label), reserveLabel: text(hero.reserve_label), materialLabel: text(hero.material_label),
-      materialValue: text(hero.material_value), craftLabel: text(hero.craft_label), craftValue: text(hero.craft_value),
-      editionLabelMeta: text(hero.edition_label_meta), editionValue: text(hero.edition_value), slides,
+      eyebrow: text(hero.eyebrow),
+      editionLabel: text(hero.editionLabel ?? hero.edition_label),
+      description: text(hero.description),
+      discoverLabel: text(hero.discoverLabel ?? hero.discover_label),
+      reserveLabel: text(hero.reserveLabel ?? hero.reserve_label),
+      materialLabel: text(hero.materialLabel ?? hero.material_label),
+      materialValue: text(hero.materialValue ?? hero.material_value),
+      craftLabel: text(hero.craftLabel ?? hero.craft_label),
+      craftValue: text(hero.craftValue ?? hero.craft_value),
+      editionLabelMeta: text(hero.editionLabelMeta ?? hero.edition_label_meta),
+      editionValue: text(hero.editionValue ?? hero.edition_value),
+      slides,
     },
     showcase: {
-      sectionLabel: text(showcase.section_label), title: text(showcase.title), titleEmphasis: text(showcase.title_emphasis),
-      description: text(showcase.description), finishBadge: text(showcase.finish_badge), statusLabel: text(showcase.status_label),
-      statusDescription: text(showcase.status_description), provenanceLabel: text(showcase.provenance_label),
-      monographLabel: text(showcase.monograph_label), acquireLabel: text(showcase.acquire_label), priorityLabel: text(showcase.priority_label),
-      features, panels,
+      sectionLabel: text(showcase.sectionLabel ?? showcase.section_label),
+      title: text(showcase.title),
+      titleEmphasis: text(showcase.titleEmphasis ?? showcase.title_emphasis),
+      description: text(showcase.description),
+      finishBadge: text(showcase.finishBadge ?? showcase.finish_badge),
+      statusLabel: text(showcase.statusLabel ?? showcase.status_label),
+      statusDescription: text(showcase.statusDescription ?? showcase.status_description),
+      provenanceLabel: text(showcase.provenanceLabel ?? showcase.provenance_label),
+      monographLabel: text(showcase.monographLabel ?? showcase.monograph_label),
+      acquireLabel: text(showcase.acquireLabel ?? showcase.acquire_label),
+      priorityLabel: text(showcase.priorityLabel ?? showcase.priority_label),
+      features,
+      panels,
     },
     finish: {
-      sectionLabel: text(finish.section_label), title: text(finish.title), titleEmphasis: text(finish.title_emphasis),
-      paragraphs: Array.isArray(finish.paragraphs) ? finish.paragraphs.map(text) : [], presetLabel: text(finish.preset_label),
-      spectrumLabel: text(finish.spectrum_label), roughnessLabel: text(finish.roughness_label), presets,
+      sectionLabel: text(finish.sectionLabel ?? finish.section_label),
+      title: text(finish.title),
+      titleEmphasis: text(finish.titleEmphasis ?? finish.title_emphasis),
+      paragraphs: Array.isArray(finish.paragraphs) ? finish.paragraphs.map(text) : [],
+      presetLabel: text(finish.presetLabel ?? finish.preset_label),
+      spectrumLabel: text(finish.spectrumLabel ?? finish.spectrum_label),
+      roughnessLabel: text(finish.roughnessLabel ?? finish.roughness_label),
+      presets,
     },
     specifications: {
-      sectionLabel: text(specifications.section_label), title: text(specifications.title), titleEmphasis: text(specifications.title_emphasis),
-      description: text(specifications.description), metricToggleLabel: text(specifications.metric_toggle_label),
-      imperialToggleLabel: text(specifications.imperial_toggle_label), serialStamp: text(specifications.serial_stamp),
-      archiveLabel: text(specifications.archive_label), rows: specificationRows,
+      sectionLabel: text(specifications.sectionLabel ?? specifications.section_label),
+      title: text(specifications.title),
+      titleEmphasis: text(specifications.titleEmphasis ?? specifications.title_emphasis),
+      description: text(specifications.description),
+      metricToggleLabel: text(specifications.metricToggleLabel ?? specifications.metric_toggle_label),
+      imperialToggleLabel: text(specifications.imperialToggleLabel ?? specifications.imperial_toggle_label),
+      serialStamp: text(specifications.serialStamp ?? specifications.serial_stamp),
+      archiveLabel: text(specifications.archiveLabel ?? specifications.archive_label),
+      rows: specificationRows,
     },
     table: {
-      sectionLabel: text(table.section_label), title: text(table.title), titleEmphasis: text(table.title_emphasis),
-      description: text(table.description), rituals,
+      sectionLabel: text(table.sectionLabel ?? table.section_label),
+      title: text(table.title),
+      titleEmphasis: text(table.titleEmphasis ?? table.title_emphasis),
+      description: text(table.description),
+      rituals,
     },
   };
 }
@@ -588,3 +513,82 @@ function toProductRow(product: Product) {
     edition_reserved: product.editionReserved ?? 0,
   };
 }
+
+export const EMPTY_EDITORIAL_TEMPLATE: ProductEditorialContent = {
+  hero: {
+    eyebrow: 'Objects for the Everyday Ritual',
+    editionLabel: 'Batch 01 / 100',
+    description: 'A considered object with a reflective surface, clean geometry, and a quiet presence at the table.',
+    discoverLabel: 'Discover Object',
+    reserveLabel: 'Acquire Edition',
+    materialLabel: 'Material',
+    materialValue: 'AISI 304 Stainless Steel',
+    craftLabel: 'Surface Craft',
+    craftValue: 'Double-Buffed 8K Mirror Chrome',
+    editionLabelMeta: 'Provenance',
+    editionValue: 'Numbered Atelier Run',
+    slides: [
+      {
+        id: 'slide-1',
+        imageUrl: '/images/fig-01-table.png',
+        alt: 'Atmosphere setting',
+        category: 'Table Setting',
+        title: 'A considered presence at the table',
+        figureLabel: 'FIG. 01',
+        tabLabel: 'Fig. 01',
+        badge: 'Atmosphere',
+        sortOrder: 0,
+      },
+    ],
+  },
+  showcase: {
+    sectionLabel: '01 / Object Showcase',
+    title: 'New Atelier Edition',
+    titleEmphasis: 'Alive with light.',
+    description: 'A simple form, a reflective surface, and a different way to set the table.',
+    finishBadge: 'Double-Buffed 8K Mirror Chrome',
+    statusLabel: 'Status',
+    statusDescription: 'Serialized atelier allocation with edition verification and provenance documentation included.',
+    provenanceLabel: 'Provenance',
+    monographLabel: 'Monograph View',
+    acquireLabel: 'Acquire Edition',
+    priorityLabel: 'Priority Access',
+    features: [
+      { id: 'f-1', label: 'Surface Refraction', description: 'A measured finish designed to carry ambient light.', sortOrder: 0 },
+    ],
+    panels: [
+      { id: 'p-1', title: 'Product Details', body: 'Crafted for daily ritual with a considered balance of material, finish, and proportion.', sortOrder: 0 },
+    ],
+  },
+  finish: {
+    sectionLabel: '02 / The Finish & Philosophy',
+    title: 'Made of steel.',
+    titleEmphasis: 'Alive with light.',
+    paragraphs: ['A curve. A glint. The room, reflected. A surface that becomes part of the setting.'],
+    presetLabel: 'Select Optical Light State',
+    spectrumLabel: 'Reflective Index Spectrum',
+    roughnessLabel: 'Surface Index',
+    presets: [],
+  },
+  specifications: {
+    sectionLabel: '03 / Specifications',
+    title: 'Every detail,',
+    titleEmphasis: 'considered.',
+    description: 'Refined measurements balanced for the surfaces and rituals of everyday dining.',
+    metricToggleLabel: 'MM / G',
+    imperialToggleLabel: 'IN / OZ',
+    serialStamp: 'Verified Serial Stamp',
+    archiveLabel: 'Maison Glint Archive',
+    rows: [
+      { id: 's-1', label: 'DIAMETER', metric: '280 mm', imperial: '11.0 in', sortOrder: 0 },
+    ],
+  },
+  table: {
+    sectionLabel: '04 / At The Table',
+    title: 'The Art of the Everyday.',
+    titleEmphasis: 'Set a different table.',
+    description: 'A reflective stage for considered courses and intimate evening settings.',
+    rituals: [],
+  },
+};
+

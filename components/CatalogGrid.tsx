@@ -11,9 +11,14 @@ import type { Product } from '../types/store';
 interface CatalogGridProps {
   products?: Product[];
   loading?: boolean;
+  onSelectProduct?: (product: Product, index: number) => void;
 }
 
-export default function CatalogGrid({ products: suppliedProducts, loading: suppliedLoading }: CatalogGridProps) {
+export default function CatalogGrid({
+  products: suppliedProducts,
+  loading: suppliedLoading,
+  onSelectProduct,
+}: CatalogGridProps) {
   const products = suppliedProducts || [];
   const loading = suppliedLoading ?? false;
   const { addItem } = useCart();
@@ -60,7 +65,10 @@ export default function CatalogGrid({ products: suppliedProducts, loading: suppl
                 className="group flex flex-col justify-between bg-[#f9f9f7] border border-[#e5e5e3] hover:border-[#111111] transition-all duration-300"
               >
                 {/* Image Container */}
-                <div>
+                <div
+                  onClick={() => onSelectProduct?.(product, idx)}
+                  className={onSelectProduct ? 'cursor-pointer' : ''}
+                >
                   <div className="relative w-full aspect-[4/3] bg-[#eeeeec] overflow-hidden border-b border-[#e5e5e3]">
                     <Image
                       src={displayImage}

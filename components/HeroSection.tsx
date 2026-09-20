@@ -12,6 +12,8 @@ interface HeroSectionProps {
   onReserveClick: () => void;
   onDiscoverClick: () => void;
   onActiveProductChange?: (product: Product, index: number) => void;
+  activeProductIndex?: number;
+  onSelectProductIndex?: (index: number) => void;
 }
 
 export default function HeroSection({
@@ -20,17 +22,29 @@ export default function HeroSection({
   onReserveClick,
   onDiscoverClick,
   onActiveProductChange,
+  activeProductIndex: propActiveProductIndex,
+  onSelectProductIndex,
 }: HeroSectionProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const [carouselState, setCarouselState] = useState<{
     productIndex: number;
     perspectiveIndex: number;
   }>({
-    productIndex: 0,
+    productIndex: typeof propActiveProductIndex === 'number' ? propActiveProductIndex : 0,
     perspectiveIndex: 0,
   });
   const [isPaused, setIsPaused] = useState<boolean>(false);
   const [cycleResetKey, setCycleResetKey] = useState<number>(0);
+
+  // Synchronize when parent changes product
+  useEffect(() => {
+    if (typeof propActiveProductIndex === 'number') {
+      setCarouselState((prev) => {
+        if (prev.productIndex === propActiveProductIndex) return prev;
+        return { productIndex: propActiveProductIndex, perspectiveIndex: 0 };
+      });
+    }
+  }, [propActiveProductIndex]);
 
   // Parallax Scroll Tracking for Hero -> Object Showcase transition
   const { scrollYProgress } = useScroll({
@@ -57,7 +71,34 @@ export default function HeroSection({
   const safeProductIndex = products.length ? carouselState.productIndex % products.length : 0;
   const activeProduct = products[safeProductIndex] || products[0];
   const editorial = activeProduct?.editorial;
-  const perspectives = editorial?.hero.slides || [];
+  const fallbackSlides = (activeProduct?.images && activeProduct.images.length > 0)
+    ? activeProduct.images.map((imageUrl, idx) => ({
+        id: `slide-${idx}`,
+        imageUrl,
+        alt: `${activeProduct.name} perspective ${idx + 1}`,
+        category: idx === 0 ? 'Table Setting' : 'Side Elevation',
+        title: idx === 0 ? 'A considered presence at the table' : 'Profile, edge, and reflected light',
+        figureLabel: `FIG. 0${idx + 1}`,
+        tabLabel: `Fig. 0${idx + 1}`,
+        badge: idx === 0 ? 'Atmosphere' : 'Profile',
+        sortOrder: idx,
+      }))
+    : [
+        {
+          id: 'slide-default-1',
+          imageUrl: '/images/fig-01-table.png',
+          alt: `${activeProduct?.name || 'Object'} perspective 1`,
+          category: 'Table Setting',
+          title: 'A considered presence at the table',
+          figureLabel: 'FIG. 01',
+          tabLabel: 'Fig. 01',
+          badge: 'Atmosphere',
+          sortOrder: 0,
+        },
+      ];
+  const perspectives = (editorial?.hero.slides && editorial.hero.slides.length > 0)
+    ? editorial.hero.slides
+    : fallbackSlides;
   const safePerspectiveIndex = perspectives.length
     ? Math.min(carouselState.perspectiveIndex, perspectives.length - 1)
     : 0;
@@ -66,30 +107,34 @@ export default function HeroSection({
     ? perspectives[(safePerspectiveIndex + 1) % perspectives.length]
     : currentMain;
 
+  const carouselStateRef = useRef(carouselState);
+  carouselStateRef.current = carouselState;
+
   // Two-Tier Nested Carousel:
   // Tier 1: View each figure (Fig. 01, Fig. 02) of current product for 3.5s (x seconds)
   // Tier 2: After all figures of product have been viewed (2x = 7.0s), advance to next product in collection
   const STEP_INTERVAL_MS = 3500;
   const advanceStep = useCallback(() => {
     if (!products.length) return;
-    setCarouselState((current) => {
-      const currentProduct = products[current.productIndex % products.length];
-      const slides = currentProduct?.editorial?.hero?.slides || [];
-      const hasMoreSlides = slides.length > 1 && current.perspectiveIndex < slides.length - 1;
+    const current = carouselStateRef.current;
+    const currentProduct = products[current.productIndex % products.length];
+    const slides = currentProduct?.editorial?.hero?.slides || [];
+    const hasMoreSlides = slides.length > 1 && current.perspectiveIndex < slides.length - 1;
 
-      if (hasMoreSlides) {
-        return {
-          productIndex: current.productIndex,
-          perspectiveIndex: current.perspectiveIndex + 1,
-        };
-      } else {
-        return {
-          productIndex: (current.productIndex + 1) % products.length,
-          perspectiveIndex: 0,
-        };
-      }
-    });
-  }, [products]);
+    if (hasMoreSlides) {
+      setCarouselState({
+        productIndex: current.productIndex,
+        perspectiveIndex: current.perspectiveIndex + 1,
+      });
+    } else {
+      const nextIndex = (current.productIndex + 1) % products.length;
+      setCarouselState({
+        productIndex: nextIndex,
+        perspectiveIndex: 0,
+      });
+      onSelectProductIndex?.(nextIndex);
+    }
+  }, [products, onSelectProductIndex]);
 
   useEffect(() => {
     if (isPaused || products.length === 0) return;
@@ -103,12 +148,20 @@ export default function HeroSection({
 
   useEffect(() => {
     if (products.length > 0 && activeProduct) {
-      onActiveProductChange?.(activeProduct, safeProductIndex);
+      if (typeof propActiveProductIndex === 'number' && propActiveProductIndex !== safeProductIndex) {
+        onActiveProductChange?.(activeProduct, safeProductIndex);
+      }
     }
-  }, [activeProduct, safeProductIndex, products.length, onActiveProductChange]);
+  }, [activeProduct, safeProductIndex, products.length, propActiveProductIndex, onActiveProductChange]);
 
-  if (loading || !activeProduct || !editorial || perspectives.length === 0) {
-    return <section ref={sectionRef} id="hero-section" className="min-h-[70vh] border-b border-[#e5e5e3]" />;
+  if (loading || !activeProduct || !editorial) {
+    return (
+      <section ref={sectionRef} id="hero-section" className="min-h-[60vh] border-b border-[#e5e5e3] flex items-center justify-center">
+        <div className="text-[11px] uppercase tracking-[0.2em] text-[#747878] animate-pulse font-mono">
+          Loading Atelier Edition...
+        </div>
+      </section>
+    );
   }
 
   const handleSelectPerspective = (index: number) => {

@@ -11,37 +11,12 @@ import type { Product, ProductFinishPreset } from '../types/store';
 interface FinishPhilosophyProps {
   products: Product[];
   loading: boolean;
+  activeProduct?: Product;
+  activeIndex?: number;
+  onNext?: () => void;
+  onPrevious?: () => void;
 }
 
-const DEFAULT_PRESETS: ProductFinishPreset[] = [
-  {
-    key: 'morning',
-    label: 'Morning Sun',
-    angle: 45,
-    roughness: 'Ra < 0.050 µm',
-    dispersion: '98.4%',
-    imageUrl: 'https://drive.google.com/file/d/10MrLj9sZ0g3rDmXhl1XATt3WbHymY-RI/view?usp=sharing',
-    sortOrder: 0,
-  },
-  {
-    key: 'candlelight',
-    label: 'Candlelight Grazing',
-    angle: 22,
-    roughness: 'Ra < 0.048 µm',
-    dispersion: '99.1%',
-    imageUrl: 'https://drive.google.com/file/d/1J6r_3beMMM8DGnMch3WVLIzncvKRUJrj/view?usp=sharing',
-    sortOrder: 1,
-  },
-  {
-    key: 'zenith',
-    label: 'Overhead Ambient',
-    angle: 70,
-    roughness: 'Ra < 0.045 µm',
-    dispersion: '98.8%',
-    imageUrl: 'https://drive.google.com/file/d/1rgJEFBuH17GLAhCK6i-2Kcd0MoGmDFPu/view?usp=sharing',
-    sortOrder: 2,
-  },
-];
 
 interface LightingStudy {
   key: string;
@@ -99,23 +74,54 @@ const LIGHTING_STUDIES: Record<string, LightingStudy> = {
   },
 };
 
-export default function FinishPhilosophy({ products, loading }: FinishPhilosophyProps) {
-  const { activeProduct, activeIndex, next, previous, prefersReducedMotion } = useProductCarousel(products);
+export default function FinishPhilosophy({
+  products,
+  loading,
+  activeProduct: propActiveProduct,
+  activeIndex: propActiveIndex,
+  onNext,
+  onPrevious,
+}: FinishPhilosophyProps) {
+  const carousel = useProductCarousel(products);
+  const activeProduct = propActiveProduct || carousel.activeProduct;
+  const activeIndex = typeof propActiveIndex === 'number' ? propActiveIndex : carousel.activeIndex;
+  const next = onNext || carousel.next;
+  const previous = onPrevious || carousel.previous;
+  const prefersReducedMotion = carousel.prefersReducedMotion;
+
   const [selectedKey, setSelectedKey] = useState<string>('morning');
   const [imageError, setImageError] = useState<boolean>(false);
 
   const editorial = activeProduct?.editorial?.finish;
-  const presets = editorial?.presets && editorial.presets.length > 0 ? editorial.presets : DEFAULT_PRESETS;
-  const activePreset = presets.find((p) => p.key === selectedKey) || presets[0];
+  const presets: ProductFinishPreset[] = Array.isArray(editorial?.presets) ? editorial.presets : [];
+  const activePreset: ProductFinishPreset =
+    presets.find((p) => p.key === selectedKey) ||
+    presets[0] ||
+    {
+      id: 'default',
+      key: 'morning',
+      label: 'Morning Sun',
+      angle: 45,
+      roughness: 'Ra < 0.050 µm',
+      dispersion: '98.4%',
+      imageUrl: '',
+      sortOrder: 0,
+    };
 
   const luxuryEase = [0.16, 1, 0.3, 1] as const;
 
   if (loading || !activeProduct) {
-    return <section id="the-finish" className="min-h-[60vh] border-b border-[#e5e5e3]" />;
+    return (
+      <section id="the-finish" className="min-h-[50vh] border-b border-[#e5e5e3] flex items-center justify-center">
+        <div className="text-[11px] uppercase tracking-[0.2em] text-[#747878] animate-pulse font-mono">
+          Loading Surface Optics...
+        </div>
+      </section>
+    );
   }
 
-  const study = LIGHTING_STUDIES[activePreset.key] || LIGHTING_STUDIES.morning;
-  const resolvedPresetImage = formatGoogleDriveUrl(activePreset.imageUrl);
+  const study = LIGHTING_STUDIES[activePreset?.key || 'morning'] || LIGHTING_STUDIES.morning;
+  const resolvedPresetImage = formatGoogleDriveUrl(activePreset?.imageUrl);
   const displayImage = !imageError && resolvedPresetImage ? resolvedPresetImage : study.image;
 
   return (
@@ -194,29 +200,35 @@ export default function FinishPhilosophy({ products, loading }: FinishPhilosophy
                 {editorial?.presetLabel || 'Select Optical Light State'}
               </div>
               <div className="flex flex-wrap gap-2">
-                {presets.map((preset) => {
-                  const isActive = activePreset.key === preset.key;
-                  const displayLabel = preset.label.includes('°')
-                    ? preset.label
-                    : `${preset.label} (${preset.angle}°)`;
+                {presets.length > 0 ? (
+                  presets.map((preset) => {
+                    const isActive = activePreset.key === preset.key;
+                    const displayLabel = preset.label.includes('°')
+                      ? preset.label
+                      : `${preset.label} (${preset.angle}°)`;
 
-                  return (
-                    <button
-                      key={preset.key || preset.id}
-                      onClick={() => {
-                        setSelectedKey(preset.key);
-                        setImageError(false);
-                      }}
-                      className={`px-3 sm:px-3.5 py-1.5 sm:py-2 text-[9px] sm:text-[10px] uppercase tracking-[0.16em] font-medium transition-all border cursor-pointer ${
-                        isActive
-                          ? 'bg-[#111111] text-[#f9f9f7] border-[#111111]'
-                          : 'bg-[#f4f4f2] text-[#444748] border-[#e5e5e3] hover:border-[#111111]'
-                      }`}
-                    >
-                      {displayLabel}
-                    </button>
-                  );
-                })}
+                    return (
+                      <button
+                        key={preset.key || preset.id}
+                        onClick={() => {
+                          setSelectedKey(preset.key);
+                          setImageError(false);
+                        }}
+                        className={`px-3 sm:px-3.5 py-1.5 sm:py-2 text-[9px] sm:text-[10px] uppercase tracking-[0.16em] font-medium transition-all border cursor-pointer ${
+                          isActive
+                            ? 'bg-[#111111] text-[#f9f9f7] border-[#111111]'
+                            : 'bg-[#f4f4f2] text-[#444748] border-[#e5e5e3] hover:border-[#111111]'
+                        }`}
+                      >
+                        {displayLabel}
+                      </button>
+                    );
+                  })
+                ) : (
+                  <span className="px-3 py-1.5 text-[9px] uppercase tracking-[0.16em] bg-[#f4f4f2] text-[#747878] border border-[#e5e5e3] font-mono">
+                    8K Mirror Polish Specular Optics
+                  </span>
+                )}
               </div>
             </div>
           </motion.div>

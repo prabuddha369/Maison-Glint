@@ -24,7 +24,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import { getOrdersByUser } from '../../lib/payment';
 import { getReservationsByUser } from '../../lib/reservations';
-import { INITIAL_PRODUCTS } from '../../lib/products';
+import { getProductById } from '../../lib/products';
 import AuthModal from '../../components/AuthModal';
 import type { Order, ShippingAddress, Reservation } from '../../types/store';
 
@@ -97,10 +97,16 @@ export default function AccountPage() {
     }
   }, [profile, user]);
 
-  const handleAcquireReserved = (productId: string) => {
-    const matchedProduct = INITIAL_PRODUCTS.find((p) => p.id === productId) || INITIAL_PRODUCTS[0];
-    addItem(matchedProduct, 1);
-    router.push('/checkout');
+  const handleAcquireReserved = async (productId: string) => {
+    try {
+      const matchedProduct = await getProductById(productId);
+      if (matchedProduct) {
+        addItem(matchedProduct, 1);
+        router.push('/checkout');
+      }
+    } catch (e) {
+      console.error('Failed to acquire reserved product', e);
+    }
   };
 
   const handleCopySerial = (code: string) => {

@@ -62,6 +62,16 @@ export default function ProductDetailPage() {
     }
   };
 
+  if (loading || !product) {
+    return (
+      <div className="min-h-screen bg-[#f9f9f7] flex items-center justify-center text-[#111111]">
+        <div className="text-[11px] uppercase tracking-[0.2em] text-[#747878] font-mono animate-pulse">
+          Loading Technical Monograph...
+        </div>
+      </div>
+    );
+  }
+
   const images = product.images || [];
 
   const otherObjects = allProducts.filter((p) => p.id !== product.id);

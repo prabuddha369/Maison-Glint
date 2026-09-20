@@ -9,15 +9,38 @@ import type { Product } from '../types/store';
 interface SpecificationsProps {
   products: Product[];
   loading: boolean;
+  activeProduct?: Product;
+  activeIndex?: number;
+  onNext?: () => void;
+  onPrevious?: () => void;
 }
 
-export default function Specifications({ products, loading }: SpecificationsProps) {
+export default function Specifications({
+  products,
+  loading,
+  activeProduct: propActiveProduct,
+  activeIndex: propActiveIndex,
+  onNext,
+  onPrevious,
+}: SpecificationsProps) {
   const [unitSystem, setUnitSystem] = useState<'metric' | 'imperial'>('metric');
-  const { activeProduct, activeIndex, next, previous, prefersReducedMotion } = useProductCarousel(products);
+  const carousel = useProductCarousel(products);
+  const activeProduct = propActiveProduct || carousel.activeProduct;
+  const activeIndex = typeof propActiveIndex === 'number' ? propActiveIndex : carousel.activeIndex;
+  const next = onNext || carousel.next;
+  const previous = onPrevious || carousel.previous;
+  const prefersReducedMotion = carousel.prefersReducedMotion;
+
   const editorial = activeProduct?.editorial?.specifications;
 
   if (loading || !activeProduct || !editorial) {
-    return <section id="specifications" className="min-h-[55vh] border-b border-[#e5e5e3]" />;
+    return (
+      <section id="specifications" className="min-h-[40vh] border-b border-[#e5e5e3] flex items-center justify-center">
+        <div className="text-[11px] uppercase tracking-[0.2em] text-[#747878] animate-pulse font-mono">
+          Loading Technical Architecture...
+        </div>
+      </section>
+    );
   }
 
   return (

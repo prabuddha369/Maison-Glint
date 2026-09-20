@@ -21,7 +21,8 @@ import RitualModal from '@/components/RitualModal';
 export default function Home() {
   const { openCart, itemCount } = useCart();
   const { products, loading: productsLoading } = useCatalog();
-  const [activeHeroProduct, setActiveHeroProduct] = useState<Product | null>(null);
+  const [activeProductIndex, setActiveProductIndex] = useState(0);
+  const [isManualPause, setIsManualPause] = useState(false);
   const [priorityModalOpen, setPriorityModalOpen] = useState(false);
   const [bagDrawerOpen, setBagDrawerOpen] = useState(false);
   const [bagCount, setBagCount] = useState(1);
@@ -33,6 +34,29 @@ export default function Home() {
     curation: string[];
   } | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  const activeProduct = products[activeProductIndex] || products[0];
+
+  const handleNextProduct = () => {
+    setIsManualPause(true);
+    setActiveProductIndex((prev) => (products.length ? (prev + 1) % products.length : 0));
+  };
+
+  const handlePreviousProduct = () => {
+    setIsManualPause(true);
+    setActiveProductIndex((prev) => (products.length ? (prev - 1 + products.length) % products.length : 0));
+  };
+
+  const handleSelectProduct = (index: number) => {
+    setIsManualPause(true);
+    setActiveProductIndex(index % (products.length || 1));
+  };
+
+  const handleHeroProductChange = (product: Product, index: number) => {
+    if (!isManualPause) {
+      setActiveProductIndex(index);
+    }
+  };
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -73,45 +97,80 @@ export default function Home() {
         onOpenBag={openCart}
         onOpenAllocation={() => setPriorityModalOpen(true)}
         bagCount={itemCount}
-        activeProduct={activeHeroProduct || products[0]}
-        productName={(activeHeroProduct || products[0])?.name}
+        activeProduct={activeProduct}
+        productName={activeProduct?.name}
       />
 
       {/* Hero Section */}
       <HeroSection
         products={products}
         loading={productsLoading}
+        activeProductIndex={activeProductIndex}
         onReserveClick={() => setPriorityModalOpen(true)}
         onDiscoverClick={scrollToPlate}
-        onActiveProductChange={(product) => setActiveHeroProduct(product)}
+        onActiveProductChange={handleHeroProductChange}
+        onSelectProductIndex={(idx) => {
+          if (!isManualPause) {
+            setActiveProductIndex(idx);
+          }
+        }}
       />
 
       {/* 01 / The Glint Plate Showcase */}
       <ObjectShowcase
         products={products}
         loading={productsLoading}
+        activeProduct={activeProduct}
+        activeIndex={activeProductIndex}
+        onNext={handleNextProduct}
+        onPrevious={handlePreviousProduct}
         onRequestPriorityAccess={() => setPriorityModalOpen(true)}
       />
 
       {/* 02 / The Finish & Philosophy */}
-      <FinishPhilosophy products={products} loading={productsLoading} />
+      <FinishPhilosophy
+        products={products}
+        loading={productsLoading}
+        activeProduct={activeProduct}
+        activeIndex={activeProductIndex}
+        onNext={handleNextProduct}
+        onPrevious={handlePreviousProduct}
+      />
 
       {/* 03 / Specifications */}
-      <Specifications products={products} loading={productsLoading} />
+      <Specifications
+        products={products}
+        loading={productsLoading}
+        activeProduct={activeProduct}
+        activeIndex={activeProductIndex}
+        onNext={handleNextProduct}
+        onPrevious={handlePreviousProduct}
+      />
 
       {/* 04 / The Atelier Collection (Dynamic Multi-Object Catalog) */}
-      <CatalogGrid products={products} loading={productsLoading} />
+      <CatalogGrid
+        products={products}
+        loading={productsLoading}
+        onSelectProduct={(prod, idx) => {
+          handleSelectProduct(idx);
+          scrollToPlate();
+        }}
+      />
 
       {/* 05 / At The Table */}
       <AtTheTable
         products={products}
         loading={productsLoading}
+        activeProduct={activeProduct}
+        activeIndex={activeProductIndex}
+        onNext={handleNextProduct}
+        onPrevious={handlePreviousProduct}
         onSelectRitual={(ritual) => setSelectedRitual(ritual)}
       />
 
       {/* Newsletter Subscription */}
       <AcquisitionSection
-        product={products[0]}
+        product={activeProduct || products[0]}
         onSubscribe={(email) => showToast(`Newsletter subscription registered for ${email}`)}
       />
 
@@ -124,7 +183,7 @@ export default function Home() {
         onClose={() => setPriorityModalOpen(false)}
         onSuccess={handleSuccessfulAllocation}
         products={products}
-        selectedProductId={(activeHeroProduct || products[0])?.id}
+        selectedProductId={activeProduct?.id}
       />
 
       {/* Acquisition Bag Drawer */}
@@ -137,7 +196,7 @@ export default function Home() {
           if (q > 0) showToast(`Acquisition drawer updated: ${q} exemplar(s)`);
         }}
         onProceedCheckout={handleProceedCheckout}
-        product={products[0]}
+        product={activeProduct || products[0]}
       />
 
       {/* Ritual Lightbox Inspector Modal */}
