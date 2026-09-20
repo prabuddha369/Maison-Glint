@@ -467,13 +467,14 @@ export function buildOrderConfirmationEmail(data: OrderConfirmationEmailData): {
                   <td style="padding: 4px 20px; text-align: right;"><p style="margin: 0; font-family: 'Courier New', monospace; font-size: 12px; color: #111111;">$${data.subtotal.toLocaleString()} ${data.currency}</p></td>
                 </tr>
                 <tr>
-                  <td style="padding: 4px 20px;"><p style="margin: 0; font-size: 11px; color: #8c8c8c;">Insured Transit</p></td>
+                  <td style="padding: 4px 20px;"><p style="margin: 0; font-size: 11px; color: #8c8c8c;">Delivery</p></td>
                   <td style="padding: 4px 20px; text-align: right;"><p style="margin: 0; font-family: 'Courier New', monospace; font-size: 12px; color: #111111;">${data.shippingCost === 0 ? 'Complimentary' : `$${data.shippingCost} ${data.currency}`}</p></td>
                 </tr>
+                ${data.taxEstimate > 0 ? `
                 <tr>
-                  <td style="padding: 4px 20px;"><p style="margin: 0; font-size: 11px; color: #8c8c8c;">Import Duties & Tax (est.)</p></td>
+                  <td style="padding: 4px 20px;"><p style="margin: 0; font-size: 11px; color: #8c8c8c;">Tax</p></td>
                   <td style="padding: 4px 20px; text-align: right;"><p style="margin: 0; font-family: 'Courier New', monospace; font-size: 12px; color: #111111;">$${data.taxEstimate.toLocaleString()} ${data.currency}</p></td>
-                </tr>
+                </tr>` : ''}
                 <tr>
                   <td style="padding: 12px 20px 4px; border-top: 1px solid #e5e5e3;"><p style="margin: 0; font-size: 12px; font-weight: 600; color: #111111; letter-spacing: 0.05em;">Total Investment</p></td>
                   <td style="padding: 12px 20px 4px; border-top: 1px solid #e5e5e3; text-align: right;"><p style="margin: 0; font-family: Georgia, serif; font-size: 18px; font-weight: 700; color: #111111;">$${data.total.toLocaleString()} ${data.currency}</p></td>
@@ -534,9 +535,8 @@ SECURED OBJECTS
 ${data.items.map((i) => `${i.name} × ${i.quantity} — $${(i.price * i.quantity).toLocaleString()} ${data.currency}`).join('\n')}
 
 Subtotal: $${data.subtotal.toLocaleString()} ${data.currency}
-Transit: ${data.shippingCost === 0 ? 'Complimentary' : `$${data.shippingCost} ${data.currency}`}
-Duties & Tax: $${data.taxEstimate.toLocaleString()} ${data.currency}
-Total: $${data.total.toLocaleString()} ${data.currency}
+Delivery: ${data.shippingCost === 0 ? 'Complimentary' : `$${data.shippingCost} ${data.currency}`}
+${data.taxEstimate > 0 ? `Tax: $${data.taxEstimate.toLocaleString()} ${data.currency}\n` : ''}Total: $${data.total.toLocaleString()} ${data.currency}
 ${data.paymentMethod ? `Paid via: ${data.paymentMethod}` : ''}
 
 DELIVERY ADDRESS

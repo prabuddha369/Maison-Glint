@@ -184,7 +184,7 @@ export default function AcquisitionBagDrawer({
           <div className="pt-6 border-t border-[#e5e5e3] space-y-4">
             <div className="flex justify-between text-[12px]">
               <span className="text-[10px] uppercase tracking-[0.2em] text-[#747878]">
-                Insured Shipping
+                Delivery
               </span>
               <span className="font-medium text-[#111111]">Complimentary</span>
             </div>

@@ -163,7 +163,7 @@ export default function CheckoutPage() {
   const isPhoneVerified = Boolean(phoneVerifiedDirectly || profile?.phoneVerified);
 
   // ---------------------------------------------------------------------------
-  // STAGE 5: Logistics Tier & Final Clearing
+  // STAGE 5: Delivery Selection & Payment Clearing
   // ---------------------------------------------------------------------------
   const [selectedMethodId, setSelectedMethodId] = useState<string>('standard-insured');
   const selectedShippingMethod =
@@ -589,7 +589,7 @@ export default function CheckoutPage() {
         items,
         subtotal,
         shippingCost: calculatedShipping,
-        taxEstimate,
+        taxEstimate: 0,
         total: calculatedTotal,
         currency: 'USD',
         notes: `Authenticated Atelier Order with Ola Maps & SMS verification.`,
@@ -1523,7 +1523,7 @@ export default function CheckoutPage() {
             </div>
 
             {/* --------------------------------------------------------------------- */}
-            {/* STAGE 5: Logistics Tier & Final Clearing */}
+            {/* STAGE 5: Delivery Selection & Final Clearing */}
             {/* --------------------------------------------------------------------- */}
             <div
               id="stage-5-clearing"
@@ -1558,7 +1558,7 @@ export default function CheckoutPage() {
                     </label>
                     {SHIPPING_METHODS.map((method) => {
                       const costDisplay =
-                        subtotal >= 1000 && method.id === 'standard-insured'
+                        method.cost === 0
                           ? 'Complimentary'
                           : `$${method.cost} USD`;
 
@@ -1733,12 +1733,8 @@ export default function CheckoutPage() {
                 <div className="flex justify-between text-[#8c8c8c]">
                   <span>Insured Courier Freight</span>
                   <span className="font-mono text-[#111111]">
-                    {calculatedShipping === 0 ? 'Complimentary' : `$${calculatedShipping}`}
+                    {calculatedShipping === 0 ? 'Complimentary' : `$${calculatedShipping} USD`}
                   </span>
-                </div>
-                <div className="flex justify-between text-[#8c8c8c]">
-                  <span>Estimated Atelier Duty / Tax</span>
-                  <span className="font-mono text-[#111111]">${taxEstimate.toLocaleString()}</span>
                 </div>
                 <div className="pt-3 border-t border-[#e5e5e3] flex justify-between items-baseline">
                   <span className="text-xs uppercase tracking-[0.15em] font-semibold text-[#111111]">
@@ -1754,7 +1750,7 @@ export default function CheckoutPage() {
               <div className="pt-4 border-t border-[#f0f0ee] space-y-3">
                 <div className="flex items-center space-x-3 text-[10px] uppercase tracking-[0.15em] text-[#8c8c8c]">
                   <ShieldCheck className="w-4 h-4 text-[#d4af37]" />
-                  <span>Sovereign Customs Clearance Documentation</span>
+                  <span>Transparent Pricing · No Hidden Fees</span>
                 </div>
                 <div className="flex items-center space-x-3 text-[10px] uppercase tracking-[0.15em] text-[#8c8c8c]">
                   <Truck className="w-4 h-4 text-[#d4af37]" />

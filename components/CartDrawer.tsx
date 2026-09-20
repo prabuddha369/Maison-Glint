@@ -16,7 +16,6 @@ export default function CartDrawer() {
     updateQuantity,
     subtotal,
     shippingCost,
-    taxEstimate,
     total,
     itemCount,
     maxPerProduct,
@@ -203,17 +202,13 @@ export default function CartDrawer() {
                   <span className="text-[#111111] font-medium">${subtotal.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between text-[#747878]">
-                  <span>Insured Cross-Border Freight</span>
+                  <span>Delivery</span>
                   <span className="text-[#111111] font-medium">
-                    {shippingCost === 0 ? 'Complimentary' : `$${shippingCost}`}
+                    Complimentary
                   </span>
                 </div>
-                <div className="flex justify-between text-[#747878]">
-                  <span>Estimated Atelier Duty / Tax</span>
-                  <span className="text-[#111111] font-medium">${taxEstimate.toLocaleString()}</span>
-                </div>
                 <div className="pt-2 border-t border-[#e5e5e3] flex justify-between text-[13px] font-semibold text-[#111111]">
-                  <span>Total Investment</span>
+                  <span>Total</span>
                   <span className="font-[family-name:var(--font-cormorant)] text-xl font-bold">
                     ${total.toLocaleString()} USD
                   </span>

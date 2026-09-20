@@ -232,15 +232,17 @@ export default function OrderSuccessPage() {
                 <span className="text-[#111111]">${order?.subtotal?.toLocaleString()}</span>
               </div>
               <div className="flex justify-between text-[#747878]">
-                <span>Transit</span>
+                <span>Delivery</span>
                 <span className="text-[#111111]">
-                  {order?.shippingCost === 0 ? 'Complimentary' : `$${order?.shippingCost}`}
+                  {order?.shippingCost === 0 ? 'Complimentary' : `$${order?.shippingCost} USD`}
                 </span>
               </div>
-              <div className="flex justify-between text-[#747878]">
-                <span>Import Tax & Atelier Duties</span>
-                <span className="text-[#111111]">${order?.taxEstimate?.toLocaleString()}</span>
-              </div>
+              {Boolean(order?.taxEstimate && order.taxEstimate > 0) && (
+                <div className="flex justify-between text-[#747878]">
+                  <span>Tax</span>
+                  <span className="text-[#111111]">${order?.taxEstimate?.toLocaleString()}</span>
+                </div>
+              )}
               <div className="pt-3 border-t border-[#e5e5e3] flex justify-between items-baseline text-[#111111] font-semibold">
                 <span className="text-[12px]">Total Balance</span>
                 <span className="font-[family-name:var(--font-cormorant)] text-xl font-bold">

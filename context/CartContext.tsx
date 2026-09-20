@@ -29,8 +29,8 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 const CART_STORAGE_KEY = 'mg_maison_glint_cart_v1';
-const ESTIMATED_TAX_RATE = 0.08; // 8% luxury cross-border tax estimate
-const STANDARD_SHIPPING_FLAT = 45; // Complimentary over $1000, flat $45 otherwise
+const ESTIMATED_TAX_RATE = 0; // No hidden tax charges
+const STANDARD_SHIPPING_FLAT = 0; // Complimentary normal delivery
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [notice, setNoticeState] = useState<string | null>(null);
@@ -165,17 +165,16 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   );
 
   const shippingCost = useMemo(() => {
-    if (items.length === 0) return 0;
-    return subtotal >= 1000 ? 0 : STANDARD_SHIPPING_FLAT;
-  }, [items.length, subtotal]);
+    return 0; // Complimentary normal delivery
+  }, []);
 
   const taxEstimate = useMemo(() => {
-    return Math.round(subtotal * ESTIMATED_TAX_RATE);
-  }, [subtotal]);
+    return 0; // No hidden tax charges
+  }, []);
 
   const total = useMemo(() => {
-    return subtotal + shippingCost + taxEstimate;
-  }, [subtotal, shippingCost, taxEstimate]);
+    return subtotal;
+  }, [subtotal]);
 
   const openCart = () => setIsCartOpen(true);
   const closeCart = () => setIsCartOpen(false);
