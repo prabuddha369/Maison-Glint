@@ -108,7 +108,7 @@ export default function FinishPhilosophy({
       sortOrder: 0,
     };
 
-  const luxuryEase = [0.16, 1, 0.3, 1] as const;
+  const luxuryEase = [0.22, 1, 0.36, 1] as const;
 
   if (loading || !activeProduct) {
     return (
@@ -137,7 +137,7 @@ export default function FinishPhilosophy({
             initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 32 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-60px' }}
-            transition={{ duration: 0.9, ease: luxuryEase }}
+            transition={{ duration: 1.0, ease: luxuryEase }}
             className="lg:col-span-6 flex flex-col justify-center"
           >
             {/* Eyebrow & Optional Carousel Switcher */}
@@ -239,7 +239,7 @@ export default function FinishPhilosophy({
             initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 32 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-60px' }}
-            transition={{ duration: 0.9, ease: luxuryEase, delay: 0.18 }}
+            transition={{ duration: 1.0, ease: luxuryEase, delay: 0.25 }}
             className="lg:col-span-6"
           >
             <div
@@ -267,7 +267,7 @@ export default function FinishPhilosophy({
                     initial={{ opacity: 0, scale: 1.02 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.99 }}
-                    transition={{ duration: 0.55, ease: luxuryEase }}
+                    transition={{ duration: 0.5, ease: luxuryEase }}
                     className="relative w-full h-full"
                   >
                     <Image

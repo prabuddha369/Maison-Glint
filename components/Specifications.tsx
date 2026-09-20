@@ -82,7 +82,7 @@ export default function Specifications({
             {editorial.description}
           </p>
         </div>
-        <motion.div key={activeProduct.id} initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 20 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 pt-10">
+        <motion.div key={activeProduct.id} initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1.0, ease: [0.22, 1, 0.36, 1] }} className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 pt-10">
           <div className="lg:col-span-5 flex items-start gap-2">
             <button onClick={() => setUnitSystem('metric')} className={`px-4 py-2 border text-[10px] uppercase tracking-[0.2em] ${unitSystem === 'metric' ? 'bg-[#111111] text-[#f9f9f7] border-[#111111]' : 'border-[#e5e5e3]'}`}>{editorial.metricToggleLabel}</button>
             <button onClick={() => setUnitSystem('imperial')} className={`px-4 py-2 border text-[10px] uppercase tracking-[0.2em] ${unitSystem === 'imperial' ? 'bg-[#111111] text-[#f9f9f7] border-[#111111]' : 'border-[#e5e5e3]'}`}>{editorial.imperialToggleLabel}</button>

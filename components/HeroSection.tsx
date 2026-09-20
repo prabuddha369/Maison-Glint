@@ -65,8 +65,8 @@ export default function HeroSection({
   const bottomCaptionOpacity = useTransform(scrollYProgress, [0, 0.65], [1, 0]);
 
   const transitionConfig = {
-    duration: 0.9,
-    ease: [0.16, 1, 0.3, 1] as const,
+    duration: 1.0,
+    ease: [0.22, 1, 0.36, 1] as const,
   };
 
   const safeProductIndex = products.length ? carouselState.productIndex % products.length : 0;
@@ -112,9 +112,9 @@ export default function HeroSection({
   carouselStateRef.current = carouselState;
 
   // Two-Tier Nested Carousel:
-  // Tier 1: View each figure (Fig. 01, Fig. 02) of current product for 3.5s (x seconds)
-  // Tier 2: After all figures of product have been viewed (2x = 7.0s), advance to next product in collection
-  const STEP_INTERVAL_MS = 3500;
+  // Tier 1: View each figure (Fig. 01, Fig. 02) of current product for 1 full bar (4.0s = 4 beats @ 60 BPM)
+  // Tier 2: After all figures of product have been viewed (2 bars = 8.0s), advance to next product on phrase boundary
+  const STEP_INTERVAL_MS = 4000;
   const advanceStep = useCallback(() => {
     if (!products.length) return;
     const current = carouselStateRef.current;

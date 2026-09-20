@@ -10,7 +10,7 @@ interface ProductCarouselOptions {
 
 export function useProductCarousel(
   products: Product[],
-  { interval = 7000, autoPlay = true }: ProductCarouselOptions = {}
+  { interval = 8000, autoPlay = true }: ProductCarouselOptions = {}
 ) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);

@@ -7,10 +7,23 @@
   }
 }
 
+/* ── Synchronized 60 BPM Ambient Audio Animation System ──
+   Musical Subdivisions (60.1 BPM ≈ 1 beat per second):
+   - 1/4 Beat (16th note): 250ms
+   - 1/2 Beat (8th note):  500ms
+   - 1 Beat   (Quarter):   1000ms (1.0s)
+   - 2 Beats  (Half-Bar):  2000ms (2.0s)
+   - 4 Beats  (1 Bar):     4000ms (4.0s)
+   - 8 Beats  (2 Bars):    8000ms (8.0s)
+   Easing:
+   - Deceleration: cubic-bezier(0.22, 1, 0.36, 1)
+   - Sine Breathe: cubic-bezier(0.4, 0, 0.2, 1)
+*/
+
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(4px);
+    transform: translateY(6px);
   }
   to {
     opacity: 1;
@@ -19,7 +32,113 @@
 }
 
 .animate-fadeIn {
-  animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: fadeIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* ── Entrance Curtain ── */
+@keyframes curtainEnter {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes curtainExit {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.02);
+  }
+}
+
+@keyframes curtainTextPulse {
+  0%, 100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.curtain-enter {
+  animation: curtainEnter 1.0s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.curtain-exit {
+  animation: curtainExit 1.0s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  pointer-events: none;
+}
+
+.curtain-text-pulse {
+  animation: curtainTextPulse 4.0s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+/* ── Audio Control Pulse Ring (2-Beat Half-Bar Expansion) ── */
+@keyframes audioPulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 0.2;
+  }
+  100% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+
+.audio-pulse-ring {
+  animation: audioPulse 2.0s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+/* ── Ambient Breathing Pulse (Full 4-Beat Measure) ── */
+@keyframes ambientPulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+.animate-pulse {
+  animation: ambientPulse 4.0s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+/* ── Ambient Ping (2-Beat Measure) ── */
+@keyframes ambientPing {
+  0% {
+    transform: scale(1);
+    opacity: 0.75;
+  }
+  75%, 100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+.animate-ping {
+  animation: ambientPing 2.0s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* ── Harmonic Spinner (2-Beat Measure) ── */
+@keyframes ambientSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: ambientSpin 2.0s linear infinite;
 }
 
 

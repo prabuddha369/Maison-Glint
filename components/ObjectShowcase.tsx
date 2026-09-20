@@ -54,7 +54,7 @@ export default function ObjectShowcase({
     setOpenAccordion(openAccordion === id ? null : id);
   };
 
-  const luxuryEase = [0.16, 1, 0.3, 1] as const;
+  const luxuryEase = [0.22, 1, 0.36, 1] as const;
   const editorial = product?.editorial;
   const showcaseImage = resolveImageUrl(
     product?.images?.[product.images.length - 1] ||
@@ -85,7 +85,7 @@ export default function ObjectShowcase({
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true, margin: '-60px' }}
-          transition={{ duration: 0.85, ease: luxuryEase }}
+          transition={{ duration: 1.0, ease: luxuryEase }}
           className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-16 pb-8 sm:pb-12 md:pb-16 border-b border-[#e5e5e3]"
         >
           <div className="lg:col-span-7">
@@ -135,7 +135,7 @@ export default function ObjectShowcase({
             initial={{ opacity: 0, y: 32 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-60px' }}
-            transition={{ duration: 0.9, ease: luxuryEase, delay: 0.1 }}
+            transition={{ duration: 1.0, ease: luxuryEase, delay: 0.25 }}
             className="lg:col-span-7 flex flex-col space-y-4 sm:space-y-6"
           >
             {/* Macro Close-up Image Container with Inner Parallax Glide */}
@@ -150,7 +150,7 @@ export default function ObjectShowcase({
                   fill
                   sizes="(max-width: 1024px) 100vw, 58vw"
                   referrerPolicy="no-referrer"
-                  className="object-cover object-center group-hover:scale-[1.03] transition-transform duration-700 ease-out"
+                  className="object-cover object-center group-hover:scale-[1.03] transition-transform duration-1000 ease-out"
                 />
               </motion.div>
 
@@ -185,7 +185,7 @@ export default function ObjectShowcase({
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true, margin: '-60px' }}
-            transition={{ duration: 0.9, ease: luxuryEase, delay: 0.2 }}
+            transition={{ duration: 1.0, ease: luxuryEase, delay: 0.5 }}
             className="lg:col-span-5 flex flex-col"
           >
             <div className="text-[9px] sm:text-[10px] uppercase tracking-[0.25em] font-medium text-[#c5a059] mb-1.5 sm:mb-2 flex items-center space-x-2">

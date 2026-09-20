@@ -92,7 +92,7 @@ export default function AtTheTable({
             {editorial.description}
           </p>
         </div>
-        <motion.div key={activeProduct.id} initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 20 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 pt-10">
+        <motion.div key={activeProduct.id} initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1.0, ease: [0.22, 1, 0.36, 1] }} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 pt-10">
           {editorial.rituals.map((ritual) => {
             const ritualImg = resolveImageUrl(ritual.imageUrl);
             return (
@@ -115,7 +115,7 @@ export default function AtTheTable({
                   fill
                   sizes="(max-width: 768px) 100vw, 33vw"
                   referrerPolicy="no-referrer"
-                  className="object-cover transition-transform duration-700 group-hover:scale-105"
+                  className="object-cover transition-transform duration-1000 ease-out group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
                 <div className="absolute inset-x-0 bottom-0 p-5 text-white">

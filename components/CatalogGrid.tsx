@@ -23,7 +23,7 @@ export default function CatalogGrid({
   const products = suppliedProducts || [];
   const loading = suppliedLoading ?? false;
   const { addItem } = useCart();
-  const luxuryEase = [0.16, 1, 0.3, 1] as const;
+  const luxuryEase = [0.22, 1, 0.36, 1] as const;
 
   return (
     <section id="collection" className="w-full py-16 sm:py-24 bg-[#ffffff] border-b border-[#e5e5e3]">
@@ -33,7 +33,7 @@ export default function CatalogGrid({
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-40px' }}
-          transition={{ duration: 0.8, ease: luxuryEase }}
+          transition={{ duration: 1.0, ease: luxuryEase }}
           className="flex flex-col md:flex-row md:items-end justify-between mb-12 sm:mb-16 border-b border-[#e5e5e3] pb-8"
         >
           <div>
@@ -62,8 +62,8 @@ export default function CatalogGrid({
                 initial={{ opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-40px' }}
-                transition={{ duration: 0.7, ease: luxuryEase, delay: idx * 0.08 }}
-                className="group flex flex-col justify-between bg-[#f9f9f7] border border-[#e5e5e3] hover:border-[#111111] transition-all duration-300"
+                transition={{ duration: 1.0, ease: luxuryEase, delay: idx * 0.1 }}
+                className="group flex flex-col justify-between bg-[#f9f9f7] border border-[#e5e5e3] hover:border-[#111111] transition-all duration-500"
               >
                 {/* Image Container */}
                 <div
@@ -77,7 +77,7 @@ export default function CatalogGrid({
                       fill
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
                       referrerPolicy="no-referrer"
-                      className="object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
+                      className="object-cover object-center group-hover:scale-105 transition-transform duration-1000 ease-out"
                     />
                     <div className="absolute top-3 left-3 bg-[#f9f9f7]/95 backdrop-blur-sm border border-[#e5e5e3] px-2 py-0.5 text-[8px] uppercase tracking-[0.18em] font-medium text-[#111111]">
                       {product.editionRemaining !== undefined

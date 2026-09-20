@@ -42,11 +42,11 @@ export default function CartDrawer() {
   if (!isCartOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden">
+    <div className="fixed inset-0 z-50 overflow-hidden animate-fadeIn">
       {/* Backdrop */}
       <div
         onClick={closeCart}
-        className="fixed inset-0 bg-[#111111]/60 backdrop-blur-sm transition-opacity duration-300"
+        className="fixed inset-0 bg-[#111111]/60 backdrop-blur-sm transition-opacity duration-500"
       />
 
       {/* Slide-out Drawer Panel */}

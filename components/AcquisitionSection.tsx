@@ -21,7 +21,7 @@ export default function AcquisitionSection({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const luxuryEase = [0.16, 1, 0.3, 1] as const;
+  const luxuryEase = [0.22, 1, 0.36, 1] as const;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -65,7 +65,7 @@ export default function AcquisitionSection({
         initial={{ opacity: 0, y: 32 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: '-60px' }}
-        transition={{ duration: 0.9, ease: luxuryEase }}
+        transition={{ duration: 1.0, ease: luxuryEase }}
         className="max-w-3xl mx-auto px-4 sm:px-6 text-center"
       >
         {/* Prominent Brand Logo */}
