@@ -11,13 +11,59 @@ import type {
 } from '../types/store';
 import { getSupabaseBrowser } from './supabase/client';
 
+const LOCAL_ASSET_MAP: Record<string, string> = {
+  // Object 01
+  'https://i.ibb.co/QhchdS2/Object01.jpg': '/images/products/object-01-the-glint-plate-catalog.webp',
+  'https://i.ibb.co/k6Kfn9w6/Object01.jpg': '/images/products/object-01-the-glint-plate-catalog.webp',
+  'https://i.ibb.co/XfjRngGP/Object01.jpg': '/images/products/object-01-the-glint-plate-catalog.webp',
+  'https://i.ibb.co/b5Y7LVPT/Object01-Hero-fig2.jpg': '/images/products/object-01-the-glint-plate-hero-fig01.webp',
+  'https://i.ibb.co/N2s1KyTh/Object01-hero-fig1.jpg': '/images/products/object-01-the-glint-plate-hero-fig02.webp',
+  'https://i.ibb.co/chfkS1Fs/Object01-hero-fig1.jpg': '/images/products/object-01-the-glint-plate-hero-fig01.webp',
+  'https://i.ibb.co/PZcDbrqY/Object01-Hero-fig2.jpg': '/images/products/object-01-the-glint-plate-hero-fig02.webp',
+
+  // Object 02
+  'https://i.ibb.co/PGvx1zB2/Object2.jpg': '/images/products/object-02-fluid-coupe-pair-catalog.webp',
+  'https://i.ibb.co/PGrkxTLv/Object02-Hero-fig2.jpg': '/images/products/object-02-fluid-coupe-pair-catalog.webp',
+  'https://i.ibb.co/kV5R6hRJ/Object02-Hero-fig1.jpg': '/images/products/object-02-fluid-coupe-pair-hero-fig01.webp',
+  'https://i.ibb.co/FqzLzVh4/Object02-Hero-fig2.jpg': '/images/products/object-02-fluid-coupe-pair-hero-fig01.webp',
+  'https://i.ibb.co/Z1YdQGrZ/Object02-Hero-fig2.jpg': '/images/products/object-02-fluid-coupe-pair-hero-fig02.webp',
+  'https://i.ibb.co/p6YhVrDt/Object02-Hero-fig1.jpg': '/images/products/object-02-fluid-coupe-pair-hero-fig02.webp',
+
+  // Object 03
+  'https://i.ibb.co/Y4JtzD3F/Object3.jpg': '/images/products/object-03-monolith-serving-knife-catalog.webp',
+  'https://i.ibb.co/jvV0gDMS/Object03.jpg': '/images/products/object-03-monolith-serving-knife-catalog.webp',
+  'https://i.ibb.co/NnQBKdRk/Object03-Hero-fig1.jpg': '/images/products/object-03-monolith-serving-knife-hero-fig01.webp',
+  'https://i.ibb.co/BVS6vC23/Object03-Hero-fig2.jpg': '/images/products/object-03-monolith-serving-knife-hero-fig01.webp',
+  'https://i.ibb.co/KcTTgB34/Object03-Hero-fig2.jpg': '/images/products/object-03-monolith-serving-knife-hero-fig02.webp',
+  'https://i.ibb.co/kVxjrWY5/Object03-Hero-fig1.jpg': '/images/products/object-03-monolith-serving-knife-hero-fig02.webp',
+
+  // Finish Studies
+  'https://i.ibb.co/nq5jxcVT/Object-Incident-Sunlight.jpg': '/images/products/finish-study-morning.webp',
+  'https://i.ibb.co/Nd3qZYNr/Object-Candel-Light.jpg': '/images/products/finish-study-candlelight.webp',
+  'https://i.ibb.co/sdcwK64T/Object-Defuse-Celing.jpg': '/images/products/finish-study-zenith.webp',
+
+  // Rituals of the Table
+  'https://i.ibb.co/j9r5wLJ7/Object-At-Table2.jpg': '/images/products/object-01-ritual-the-dining-ritual.webp',
+  'https://i.ibb.co/KcjR9xTV/Object-At-Table5.jpg': '/images/products/object-01-ritual-raw-elements.webp',
+  'https://i.ibb.co/mFgTJ3Vh/Object-At-Table9.jpg': '/images/products/object-01-ritual-nocturne-setting.webp',
+
+  'https://i.ibb.co/6ckNMvmT/Object-At-Table3.jpg': '/images/products/object-02-ritual-the-dining-ritual.webp',
+  'https://i.ibb.co/Txmjzccp/Object-At-Table4.jpg': '/images/products/object-02-ritual-the-layered-setting.webp',
+  'https://i.ibb.co/nq6ch7wm/Object-At-Table8.jpg': '/images/products/object-02-ritual-nocturne-setting.webp',
+
+  'https://i.ibb.co/d4qhsrjw/Object-At-Table1.jpg': '/images/products/object-03-ritual-the-host-setting.webp',
+  'https://i.ibb.co/RpG9mZGy/Object-At-Table6.jpg': '/images/products/object-03-ritual-course-progression.webp',
+  'https://i.ibb.co/Y7SvZs9Z/Object-At-Table7.jpg': '/images/products/object-03-ritual-nocturne-gathering.webp',
+};
+
 /**
- * Resolves and trims image URLs, returning a standard fallback if empty.
+ * Resolves and trims image URLs, returning a local WebP asset or standard fallback if empty.
  */
 export function resolveImageUrl(url?: string, fallback = '/images/fig-01-table.png'): string {
   if (!url || typeof url !== 'string') return fallback;
   const trimmed = url.trim().replace(/^[<"']+|[>"']+$/g, '');
-  return trimmed || fallback;
+  if (!trimmed) return fallback;
+  return LOCAL_ASSET_MAP[trimmed] || trimmed;
 }
 
 export const DEFAULT_FINISH_PRESETS: ProductFinishPreset[] = [];

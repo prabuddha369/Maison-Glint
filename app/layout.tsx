@@ -36,6 +36,20 @@ export const metadata: Metadata = {
 export default function RootLayout({children}: {children: React.ReactNode}) {
   return (
     <html lang="en" className={`${cormorant.variable} ${inter.variable} scroll-smooth`}>
+      <head>
+        <link
+          rel="preload"
+          as="image"
+          href="/images/products/object-01-the-glint-plate-hero-fig01.webp"
+          type="image/webp"
+        />
+        <link
+          rel="preload"
+          as="image"
+          href="/primary_logo_sm.svg"
+          type="image/svg+xml"
+        />
+      </head>
       <body className="bg-[#f9f9f7] text-[#111111] antialiased selection:bg-[#111111] selection:text-[#f9f9f7]" suppressHydrationWarning>
         <Providers>{children}</Providers>
       </body>

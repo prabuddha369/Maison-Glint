@@ -1,11 +1,30 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAudio } from '../context/AudioContext';
+
+const CRITICAL_STOREFRONT_IMAGES = [
+  '/images/products/object-01-the-glint-plate-hero-fig01.webp',
+  '/images/products/object-01-the-glint-plate-hero-fig02.webp',
+  '/images/products/object-01-the-glint-plate-catalog.webp',
+  '/images/products/object-02-fluid-coupe-pair-catalog.webp',
+  '/images/products/object-03-monolith-serving-knife-catalog.webp',
+  '/images/products/finish-study-morning.webp',
+];
 
 export default function EntranceCurtain() {
   const { hasCurtainBeenSeen, enterMaison } = useAudio();
   const [isExiting, setIsExiting] = useState(false);
+
+  // Preload critical above-the-fold assets while the curtain is viewed
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      CRITICAL_STOREFRONT_IMAGES.forEach((src) => {
+        const img = new window.Image();
+        img.src = src;
+      });
+    }
+  }, []);
 
   if (hasCurtainBeenSeen) return null;
 
