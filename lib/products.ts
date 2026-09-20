@@ -170,22 +170,7 @@ async function saveEditorialContent(product: Product): Promise<void> {
     throw new Error(`Editorial table error: ${editorialError.message || editorialError.code || JSON.stringify(editorialError)}`);
   }
 
-  const { error: imageDeleteError } = await client.from('product_images').delete().eq('product_id', product.id);
-  if (imageDeleteError) {
-    throw new Error(`Images delete error: ${imageDeleteError.message || imageDeleteError.code || JSON.stringify(imageDeleteError)}`);
-  }
-  if (product.images.length) {
-    const { error: imageInsertError } = await client.from('product_images').insert(product.images.map((url, sortOrder) => ({
-      product_id: product.id,
-      url: resolveImageUrl(url, url),
-      alt: product.name,
-      role: sortOrder === 0 ? 'catalog' : sortOrder === product.images.length - 1 ? 'showcase' : 'detail',
-      sort_order: sortOrder,
-    })));
-    if (imageInsertError) {
-      throw new Error(`Images insert error: ${imageInsertError.message || imageInsertError.code || JSON.stringify(imageInsertError)}`);
-    }
-  }
+
 
   const childTables = ['product_hero_slides', 'product_features', 'product_panels', 'product_finish_presets', 'product_specification_rows', 'product_rituals'];
   for (const table of childTables) {

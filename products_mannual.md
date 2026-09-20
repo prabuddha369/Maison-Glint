@@ -123,7 +123,7 @@ Rules:
 - Alt text belongs in hero slides and rituals; describe the actual product and setting.
 - Do not use an image URL from another product unless that reuse is intentional.
 
-The normalized database image table is `product_images`. It stores the URL, alt text, role, and `sort_order`.
+Product images are stored directly on the product record in the `public.products(images)` JSONB array column, which serves as the single source of truth for the storefront catalog, cart, and image gallery.
 
 ## 7. Editorial Content JSON
 
@@ -352,8 +352,8 @@ The parent product is stored in `public.products`.
 
 | Table | Stores |
 |---|---|
+| `public.products(images)` | Ordered general product image URLs stored directly as JSONB array. |
 | `product_editorial` | Non-repeatable hero, showcase, finish, specification, and table labels/copy. |
-| `product_images` | Ordered general product image URLs, alt text, and roles. |
 | `product_hero_slides` | Hero carousel slides. |
 | `product_features` | Showcase feature cards. |
 | `product_panels` | Showcase accordion panels. |
