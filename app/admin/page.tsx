@@ -26,7 +26,7 @@ import {
   Loader2,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { EMPTY_EDITORIAL_TEMPLATE, getProducts, saveProduct, deleteProduct, seedDefaultProducts } from '../../lib/products';
+import { EMPTY_EDITORIAL_TEMPLATE, getProducts, saveProduct, deleteProduct, seedDefaultProducts, resolveImageUrl } from '../../lib/products';
 import { getAllOrders, updateOrderStatus } from '../../lib/payment';
 import { fetchAllSubscribers, toggleSubscriberStatus, deleteSubscriberRecord } from '../../lib/newsletter';
 import type { Product, Order, OrderStatus, NewsletterSubscriber } from '../../types/store';
@@ -787,7 +787,7 @@ export default function AdminPage() {
                 >
                   <div className="relative w-24 h-24 bg-[#ecece9] border border-[#e5e5e3] shrink-0">
                     <Image
-                      src={p.images[0] || '/images/fig-01-table.png'}
+                      src={resolveImageUrl(p.images[0])}
                       alt={p.name}
                       fill
                       sizes="96px"

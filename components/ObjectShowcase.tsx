@@ -8,6 +8,7 @@ import { motion, useScroll, useTransform } from 'motion/react';
 import { useCart } from '../hooks/useCart';
 import { useProductCarousel } from '../hooks/useProductCarousel';
 import type { Product } from '../types/store';
+import { resolveImageUrl } from '../lib/products';
 
 interface ObjectShowcaseProps {
   products: Product[];
@@ -55,10 +56,10 @@ export default function ObjectShowcase({
 
   const luxuryEase = [0.16, 1, 0.3, 1] as const;
   const editorial = product?.editorial;
-  const showcaseImage =
+  const showcaseImage = resolveImageUrl(
     product?.images?.[product.images.length - 1] ||
-    product?.images?.[0] ||
-    '/images/fig-01-table.png';
+    product?.images?.[0]
+  );
   const priceDisplay = product ? `$${product.price}` : '';
 
   if (loading || !product || !editorial) {

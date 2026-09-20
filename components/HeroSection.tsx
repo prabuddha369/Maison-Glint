@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { ArrowUpRight, ZoomIn, RefreshCw, Play, Pause } from 'lucide-react';
 import { motion, AnimatePresence, useScroll, useTransform } from 'motion/react';
 import type { Product } from '../types/store';
+import { resolveImageUrl } from '../lib/products';
 
 interface HeroSectionProps {
   products: Product[];
@@ -74,7 +75,7 @@ export default function HeroSection({
   const fallbackSlides = (activeProduct?.images && activeProduct.images.length > 0)
     ? activeProduct.images.map((imageUrl, idx) => ({
         id: `slide-${idx}`,
-        imageUrl,
+        imageUrl: resolveImageUrl(imageUrl, imageUrl),
         alt: `${activeProduct.name} perspective ${idx + 1}`,
         category: idx === 0 ? 'Table Setting' : 'Side Elevation',
         title: idx === 0 ? 'A considered presence at the table' : 'Profile, edge, and reflected light',
@@ -215,7 +216,7 @@ export default function HeroSection({
                 className={`absolute inset-0 w-full h-full ${isActive ? 'z-10' : 'z-0 pointer-events-none'}`}
               >
                 <Image
-                  src={persp.imageUrl}
+                  src={resolveImageUrl(persp.imageUrl)}
                   alt={persp.alt}
                   fill
                   priority={idx === 0}
@@ -474,7 +475,7 @@ export default function HeroSection({
                   className={`absolute inset-0 ${isSideActive ? 'z-10' : 'z-0 pointer-events-none'}`}
                 >
                   <Image
-                    src={persp.imageUrl}
+                    src={resolveImageUrl(persp.imageUrl)}
                     alt={persp.alt}
                     fill
                     referrerPolicy="no-referrer"

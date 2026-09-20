@@ -5,6 +5,7 @@ import { ArrowLeft, ArrowRight, ZoomIn } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useProductCarousel } from '../hooks/useProductCarousel';
 import type { Product } from '../types/store';
+import { resolveImageUrl } from '../lib/products';
 
 interface RitualSelection {
   title: string;
@@ -92,11 +93,41 @@ export default function AtTheTable({
           </p>
         </div>
         <motion.div key={activeProduct.id} initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 20 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 pt-10">
-          {editorial.rituals.map((ritual) => <button key={ritual.id || ritual.title} onClick={() => onSelectRitual({ title: ritual.title, subtitle: ritual.subtitle, image: ritual.imageUrl, description: ritual.description, curation: ritual.items.map((item) => item.label) })} className="group relative aspect-[4/3] overflow-hidden border border-[#e5e5e3] text-left bg-[#eeeeec]">
-            <Image src={ritual.imageUrl} alt={ritual.imageAlt || ritual.title} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover transition-transform duration-700 group-hover:scale-105" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
-            <div className="absolute inset-x-0 bottom-0 p-5 text-white"><div className="text-[9px] uppercase tracking-[0.2em] text-[#e5c98b] mb-2">{ritual.title}</div><div className="font-[family-name:var(--font-cormorant)] text-[22px] italic">{ritual.subtitle}</div><div className="mt-3 inline-flex items-center gap-2 text-[9px] uppercase tracking-[0.16em]"><ZoomIn className="w-3 h-3" /> {activeProduct.name}</div></div>
-          </button>)}
+          {editorial.rituals.map((ritual) => {
+            const ritualImg = resolveImageUrl(ritual.imageUrl);
+            return (
+              <button
+                key={ritual.id || ritual.title}
+                onClick={() =>
+                  onSelectRitual({
+                    title: ritual.title,
+                    subtitle: ritual.subtitle,
+                    image: ritualImg,
+                    description: ritual.description,
+                    curation: ritual.items.map((item) => item.label),
+                  })
+                }
+                className="group relative aspect-[4/3] overflow-hidden border border-[#e5e5e3] text-left bg-[#eeeeec]"
+              >
+                <Image
+                  src={ritualImg}
+                  alt={ritual.imageAlt || ritual.title}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                  referrerPolicy="no-referrer"
+                  className="object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
+                <div className="absolute inset-x-0 bottom-0 p-5 text-white">
+                  <div className="text-[9px] uppercase tracking-[0.2em] text-[#e5c98b] mb-2">{ritual.title}</div>
+                  <div className="font-[family-name:var(--font-cormorant)] text-[22px] italic">{ritual.subtitle}</div>
+                  <div className="mt-3 inline-flex items-center gap-2 text-[9px] uppercase tracking-[0.16em]">
+                    <ZoomIn className="w-3 h-3" /> {activeProduct.name}
+                  </div>
+                </div>
+              </button>
+            );
+          })}
         </motion.div>
       </div>
     </section>

@@ -16,6 +16,7 @@ import {
   BadgeCheck,
 } from 'lucide-react';
 import { getOrderById, updateLocalOrder } from '../../../lib/payment';
+import { resolveImageUrl } from '../../../lib/products';
 import type { Order } from '../../../types/store';
 
 export default function OrderSuccessPage() {
@@ -196,7 +197,7 @@ export default function OrderSuccessPage() {
                 <div key={idx} className="py-4 flex items-center gap-4">
                   <div className="relative w-16 h-16 bg-[#ecece9] border border-[#e5e5e3] shrink-0">
                     <Image
-                      src={item.image || '/images/fig-01-table.png'}
+                      src={resolveImageUrl(item.image)}
                       alt={item.name}
                       fill
                       sizes="64px"

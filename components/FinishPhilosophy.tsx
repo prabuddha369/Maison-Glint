@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { ArrowLeft, ArrowRight, Sun, Flame, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useProductCarousel } from '../hooks/useProductCarousel';
-import { formatGoogleDriveUrl } from '../lib/products';
+import { resolveImageUrl } from '../lib/products';
 import type { Product, ProductFinishPreset } from '../types/store';
 
 interface FinishPhilosophyProps {
@@ -121,7 +121,7 @@ export default function FinishPhilosophy({
   }
 
   const study = LIGHTING_STUDIES[activePreset?.key || 'morning'] || LIGHTING_STUDIES.morning;
-  const resolvedPresetImage = formatGoogleDriveUrl(activePreset?.imageUrl);
+  const resolvedPresetImage = activePreset?.imageUrl ? resolveImageUrl(activePreset.imageUrl, '') : '';
   const displayImage = !imageError && resolvedPresetImage ? resolvedPresetImage : study.image;
 
   return (

@@ -12,30 +12,12 @@ import type {
 import { getSupabaseBrowser } from './supabase/client';
 
 /**
- * Normalizes Google Drive sharing links to direct CDN endpoints.
- * Handles /file/d/{id}/view, ?id={id}, open?id={id}, uc?id={id}, and lh3.googleusercontent.com
+ * Resolves and trims image URLs, returning a standard fallback if empty.
  */
-export function formatGoogleDriveUrl(url?: string): string | undefined {
-  if (!url || typeof url !== 'string') return undefined;
-  const trimmed = url.trim();
-  if (!trimmed) return undefined;
-
-  // Already a direct local image or data URI
-  if (trimmed.startsWith('/') || trimmed.startsWith('data:')) {
-    return trimmed;
-  }
-
-  // Extract Google Drive File ID
-  const driveMatch =
-    trimmed.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) ||
-    trimmed.match(/[?&]id=([a-zA-Z0-9_-]+)/) ||
-    trimmed.match(/\/d\/([a-zA-Z0-9_-]+)/);
-
-  if (driveMatch && driveMatch[1]) {
-    return `https://lh3.googleusercontent.com/d/${driveMatch[1]}`;
-  }
-
-  return trimmed;
+export function resolveImageUrl(url?: string, fallback = '/images/fig-01-table.png'): string {
+  if (!url || typeof url !== 'string') return fallback;
+  const trimmed = url.trim().replace(/^[<"']+|[>"']+$/g, '');
+  return trimmed || fallback;
 }
 
 export const DEFAULT_FINISH_PRESETS: ProductFinishPreset[] = [];
@@ -120,37 +102,67 @@ export async function seedDefaultProducts(): Promise<void> {
  * Admin: Add or update a product
  */
 export async function saveProduct(product: Product): Promise<void> {
+  const sanitizedImages = (product.images || []).map((img) => resolveImageUrl(img, img)).filter(Boolean);
+  const sanitizedProduct: Product = {
+    ...product,
+    images: sanitizedImages,
+  };
+
   // Update local cache first
   const current = getLocalProducts();
-  const index = current.findIndex((p) => p.id === product.id);
+  const index = current.findIndex((p) => p.id === sanitizedProduct.id);
   let updated: Product[];
   if (index >= 0) {
     updated = [...current];
-    updated[index] = product;
+    updated[index] = sanitizedProduct;
   } else {
-    updated = [product, ...current];
+    updated = [sanitizedProduct, ...current];
   }
   saveLocalProducts(updated);
 
   const client = getSupabaseBrowser();
-  const { error: productError } = await client.from('products').upsert(toProductRow(product));
+  const { error: productError } = await client.from('products').upsert(toProductRow(sanitizedProduct));
   if (productError) {
     throw new Error(`Products table error: ${productError.message || productError.code || JSON.stringify(productError)}`);
   }
-  if (product.editorial) {
-    await saveEditorialContent(product);
+  if (sanitizedProduct.editorial) {
+    await saveEditorialContent(sanitizedProduct);
   }
 }
 
 async function saveEditorialContent(product: Product): Promise<void> {
   if (!product.editorial) return;
   const client = getSupabaseBrowser();
-  const { editorial } = product;
+  const editorial: ProductEditorialContent = {
+    ...product.editorial,
+    hero: {
+      ...product.editorial.hero,
+      slides: (product.editorial.hero?.slides || []).map((s) => ({
+        ...s,
+        imageUrl: resolveImageUrl(s.imageUrl, s.imageUrl),
+      })),
+    },
+    finish: {
+      ...product.editorial.finish,
+      presets: (product.editorial.finish?.presets || []).map((p) => ({
+        ...p,
+        imageUrl: resolveImageUrl(p.imageUrl, p.imageUrl),
+      })),
+    },
+    table: {
+      ...product.editorial.table,
+      rituals: (product.editorial.table?.rituals || []).map((r) => ({
+        ...r,
+        imageUrl: resolveImageUrl(r.imageUrl, r.imageUrl),
+      })),
+    },
+  };
+
   const { error: editorialError } = await client.from('product_editorial').upsert({
     product_id: product.id,
     hero: { ...editorial.hero, slides: undefined },
     showcase: { ...editorial.showcase, features: undefined, panels: undefined },
-    finish: { ...editorial.finish, presets: editorial.finish.presets },
+    finish: { ...editorial.finish, presets: undefined },
     specifications: { ...editorial.specifications, rows: undefined },
     table_content: { ...editorial.table, rituals: undefined },
   });
@@ -165,7 +177,7 @@ async function saveEditorialContent(product: Product): Promise<void> {
   if (product.images.length) {
     const { error: imageInsertError } = await client.from('product_images').insert(product.images.map((url, sortOrder) => ({
       product_id: product.id,
-      url,
+      url: resolveImageUrl(url, url),
       alt: product.name,
       role: sortOrder === 0 ? 'catalog' : sortOrder === product.images.length - 1 ? 'showcase' : 'detail',
       sort_order: sortOrder,
@@ -184,10 +196,10 @@ async function saveEditorialContent(product: Product): Promise<void> {
   }
 
   const childRows = [
-    ['product_hero_slides', (editorial.hero?.slides || []).map((slide, idx) => ({ product_id: product.id, image_url: slide.imageUrl, alt: slide.alt || '', category: slide.category || '', title: slide.title || '', figure_label: slide.figureLabel || '', tab_label: slide.tabLabel || '', badge: slide.badge || '', sort_order: slide.sortOrder ?? idx }))],
+    ['product_hero_slides', (editorial.hero?.slides || []).map((slide, idx) => ({ product_id: product.id, image_url: resolveImageUrl(slide.imageUrl, slide.imageUrl), alt: slide.alt || '', category: slide.category || '', title: slide.title || '', figure_label: slide.figureLabel || '', tab_label: slide.tabLabel || '', badge: slide.badge || '', sort_order: slide.sortOrder ?? idx }))],
     ['product_features', (editorial.showcase?.features || []).map((feature, idx) => ({ product_id: product.id, label: feature.label, description: feature.description || '', sort_order: feature.sortOrder ?? idx }))],
     ['product_panels', (editorial.showcase?.panels || []).map((panel, idx) => ({ product_id: product.id, title: panel.title, body: panel.body || '', sort_order: panel.sortOrder ?? idx }))],
-    ['product_finish_presets', (editorial.finish?.presets || []).map((preset, idx) => ({ product_id: product.id, preset_key: preset.key, label: preset.label, angle: preset.angle ?? 0, roughness: preset.roughness || '', dispersion: preset.dispersion || '', image_url: preset.imageUrl || '', sort_order: preset.sortOrder ?? idx }))],
+    ['product_finish_presets', (editorial.finish?.presets || []).map((preset, idx) => ({ product_id: product.id, preset_key: preset.key, label: preset.label, angle: preset.angle ?? 0, roughness: preset.roughness || '', dispersion: preset.dispersion || '', image_url: resolveImageUrl(preset.imageUrl, preset.imageUrl || ''), sort_order: preset.sortOrder ?? idx }))],
     ['product_specification_rows', (editorial.specifications?.rows || []).map((row: any, idx) => ({ product_id: product.id, label: row.label || '', metric: row.metric || row.metricValue || '', imperial: row.imperial || row.imperialValue || '', sort_order: row.sortOrder ?? row.sort_order ?? idx }))],
   ] as const;
   for (const [table, rows] of childRows) {
@@ -218,7 +230,7 @@ async function saveEditorialContent(product: Product): Promise<void> {
       product_id: product.id,
       title: ritual.title || '',
       subtitle: ritual.subtitle || ritual.tag || '',
-      image_url: ritual.imageUrl || ritual.image || '',
+      image_url: resolveImageUrl(ritual.imageUrl || ritual.image, ritual.imageUrl || ritual.image || ''),
       image_alt: ritual.imageAlt || ritual.title || '',
       description: ritual.description || '',
       sort_order: ritual.sortOrder ?? ritual.sort_order ?? idx,
@@ -259,9 +271,11 @@ export async function deleteProduct(productId: string): Promise<void> {
 }
 
 function toProduct(item: Record<string, unknown>): Product {
+  const rawImages = Array.isArray(item.images) ? (item.images as string[]) : [];
+  const images = rawImages.map((img) => resolveImageUrl(img, img)).filter(Boolean);
   return {
     id: String(item.id), name: String(item.name), description: String(item.description || ''), price: Number(item.price),
-    currency: String(item.currency || 'USD'), images: Array.isArray(item.images) ? item.images as string[] : [],
+    currency: String(item.currency || 'USD'), images,
     specifications: (item.specifications || {}) as Product['specifications'], inStock: item.in_stock !== false,
     editionTotal: typeof item.edition_total === 'number' ? item.edition_total : undefined,
     editionRemaining: typeof item.edition_remaining === 'number' ? item.edition_remaining : undefined,
@@ -344,7 +358,7 @@ function toEditorial(
   const slides: ProductHeroSlide[] = owned(related.heroSlides).length > 0
     ? owned(related.heroSlides).map((item, index) => ({
         id: text(item.id),
-        imageUrl: text(item.image_url || item.imageUrl),
+        imageUrl: resolveImageUrl(text(item.image_url || item.imageUrl)),
         alt: text(item.alt),
         category: text(item.category),
         title: text(item.title),
@@ -355,7 +369,7 @@ function toEditorial(
       }))
     : rawSlides.map((item, index) => ({
         id: text(item.id || `slide-${index}`),
-        imageUrl: text(item.imageUrl || item.image_url),
+        imageUrl: resolveImageUrl(text(item.imageUrl || item.image_url)),
         alt: text(item.alt),
         category: text(item.category),
         title: text(item.title),
@@ -389,6 +403,7 @@ function toEditorial(
   const presets: ProductFinishPreset[] = owned(related.presets).length > 0
     ? owned(related.presets).map((item, index) => {
         const rawJsonMatch = rawPresets.find((jp) => jp.key === text(item.preset_key));
+        const rawUrl = text(item.image_url) || rawJsonMatch?.imageUrl || (rawJsonMatch?.image_url as string) || '';
         return {
           id: text(item.id),
           key: text(item.preset_key),
@@ -396,20 +411,23 @@ function toEditorial(
           angle: Number(item.angle || 0),
           roughness: text(item.roughness),
           dispersion: text(item.dispersion),
-          imageUrl: text(item.image_url) || rawJsonMatch?.imageUrl || (rawJsonMatch?.image_url as string) || '',
+          imageUrl: resolveImageUrl(rawUrl, rawUrl),
           sortOrder: Number(item.sort_order ?? index),
         };
       })
-    : rawPresets.map((jp, index) => ({
-        id: jp.id || `preset-${jp.key || index}`,
-        key: jp.key || `preset-${index}`,
-        label: jp.label || '',
-        angle: Number(jp.angle || 0),
-        roughness: jp.roughness || '',
-        dispersion: jp.dispersion || '',
-        imageUrl: jp.imageUrl || (jp.image_url as string) || '',
-        sortOrder: Number(jp.sortOrder ?? jp.sort_order ?? index),
-      }));
+    : rawPresets.map((jp, index) => {
+        const rawUrl = jp.imageUrl || (jp.image_url as string) || '';
+        return {
+          id: jp.id || `preset-${jp.key || index}`,
+          key: jp.key || `preset-${index}`,
+          label: jp.label || '',
+          angle: Number(jp.angle || 0),
+          roughness: jp.roughness || '',
+          dispersion: jp.dispersion || '',
+          imageUrl: resolveImageUrl(rawUrl, rawUrl),
+          sortOrder: Number(jp.sortOrder ?? jp.sort_order ?? index),
+        };
+      });
 
   const rawSpecRows = Array.isArray(specifications.rows) ? (specifications.rows as Record<string, unknown>[]) : [];
   const specificationRows: ProductSpecificationRow[] = owned(related.specificationRows).length > 0
@@ -423,7 +441,7 @@ function toEditorial(
   const rawRituals = Array.isArray(table.rituals) ? (table.rituals as Record<string, unknown>[]) : [];
   const rituals: ProductRitual[] = owned(related.rituals).length > 0
     ? owned(related.rituals).map((item, index) => ({
-        id: text(item.id), title: text(item.title), subtitle: text(item.subtitle), imageUrl: text(item.image_url || item.imageUrl),
+        id: text(item.id), title: text(item.title), subtitle: text(item.subtitle), imageUrl: resolveImageUrl(text(item.image_url || item.imageUrl)),
         imageAlt: text(item.image_alt || item.imageAlt), description: text(item.description), sortOrder: Number(item.sort_order ?? index),
         items: related.ritualItems.filter((ritualItem) => ritualItem.ritual_id === item.id).map((ritualItem, itemIndex): ProductRitualItem => ({
           id: text(ritualItem.id), label: text(ritualItem.label), sortOrder: Number(ritualItem.sort_order ?? itemIndex),
@@ -431,7 +449,7 @@ function toEditorial(
       }))
     : rawRituals.map((item, index) => ({
         id: text(item.id || `ritual-${index}`), title: text(item.title), subtitle: text(item.subtitle),
-        imageUrl: text(item.imageUrl || item.image_url || item.image),
+        imageUrl: resolveImageUrl(text(item.imageUrl || item.image_url || item.image)),
         imageAlt: text(item.imageAlt || item.image_alt || item.title),
         description: text(item.description),
         sortOrder: Number(item.sortOrder ?? item.sort_order ?? index),

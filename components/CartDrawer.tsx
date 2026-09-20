@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { X, Plus, Minus, Trash2, ShieldCheck, ArrowRight, Package } from 'lucide-react';
 import { useCart } from '../hooks/useCart';
+import { resolveImageUrl } from '../lib/products';
 
 export default function CartDrawer() {
   const {
@@ -110,7 +111,7 @@ export default function CartDrawer() {
                   {/* Thumbnail */}
                   <div className="relative w-20 h-20 bg-[#ecece9] border border-[#e5e5e3] shrink-0 overflow-hidden">
                     <Image
-                      src={item.image}
+                      src={resolveImageUrl(item.image)}
                       alt={item.name}
                       fill
                       sizes="80px"

@@ -7,6 +7,7 @@ import { ShoppingBag, ArrowUpRight, Sparkles } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useCart } from '../hooks/useCart';
 import type { Product } from '../types/store';
+import { resolveImageUrl } from '../lib/products';
 
 interface CatalogGridProps {
   products?: Product[];
@@ -52,7 +53,7 @@ export default function CatalogGrid({
         {/* Product Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
           {products.map((product, idx) => {
-            const displayImage = product.images?.[0] || '/images/fig-01-table.png';
+            const displayImage = resolveImageUrl(product.images?.[0]);
             const objectCode = product.id.replace(/-/g, ' ').toUpperCase();
 
             return (

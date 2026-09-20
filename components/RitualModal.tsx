@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import { X, Sparkles, Check, Compass } from 'lucide-react';
+import { resolveImageUrl } from '../lib/products';
 
 interface RitualModalProps {
   ritual: {
@@ -53,7 +54,7 @@ export default function RitualModal({
           {/* Large Image Frame */}
           <div className="relative w-full aspect-[16/10] sm:aspect-[2/1] bg-[#eeeeec] border border-[#e5e5e3] mb-4 sm:mb-6 overflow-hidden">
             <Image
-              src={ritual.image}
+              src={resolveImageUrl(ritual.image)}
               alt={ritual.title}
               fill
               referrerPolicy="no-referrer"

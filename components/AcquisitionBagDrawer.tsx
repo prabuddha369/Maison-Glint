@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { X, Plus, Minus, ShieldCheck, ArrowRight } from 'lucide-react';
 import type { Product } from '../types/store';
+import { resolveImageUrl } from '../lib/products';
 
 interface AcquisitionBagDrawerProps {
   isOpen: boolean;
@@ -62,7 +63,7 @@ export default function AcquisitionBagDrawer({
               <div className="bg-[#f4f4f2] border border-[#e5e5e3] p-3 sm:p-4 flex gap-3 sm:gap-4">
                 <div className="relative w-20 h-20 sm:w-24 sm:h-24 bg-[#eeeeec] border border-[#e5e5e3] shrink-0 overflow-hidden">
                   <Image
-                    src={product?.images?.[0] || '/images/fig-01-table.png'}
+                    src={resolveImageUrl(product?.images?.[0])}
                     alt={product?.name || 'Selected product'}
                     fill
                     referrerPolicy="no-referrer"

@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { useProduct, useCatalog } from '@/lib/catalog';
 import { useCart } from '@/hooks/useCart';
+import { resolveImageUrl } from '@/lib/products';
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -72,7 +73,9 @@ export default function ProductDetailPage() {
     );
   }
 
-  const images = product.images || [];
+  const rawImages = product.images || [];
+  const images = rawImages.map((img) => resolveImageUrl(img, img)).filter(Boolean);
+  if (images.length === 0) images.push('/images/fig-01-table.png');
 
   const otherObjects = allProducts.filter((p) => p.id !== product.id);
 
@@ -367,7 +370,7 @@ export default function ProductDetailPage() {
                 >
                   <div className="relative w-full aspect-[4/3] bg-[#eeeeec] mb-4 overflow-hidden">
                     <Image
-                      src={item.images?.[0] || images[0]}
+                      src={resolveImageUrl(item.images?.[0] || images[0])}
                       alt={item.name}
                       fill
                       sizes="(max-width: 768px) 100vw, 33vw"

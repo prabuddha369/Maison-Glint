@@ -23,7 +23,7 @@ import { useCart } from '../../hooks/useCart';
 import { useAuth } from '../../context/AuthContext';
 import { createStorefrontOrder } from '../../lib/payment';
 import { checkProductReservationEntitlement } from '../../lib/reservations';
-import { getProducts } from '../../lib/products';
+import { getProducts, resolveImageUrl } from '../../lib/products';
 import { getSupabaseBrowser } from '../../lib/supabase/client';
 import {
   validateFullName,
@@ -51,14 +51,14 @@ const SHIPPING_METHODS = [
   {
     id: 'standard-insured',
     title: 'Standard Insured Cross-Border Cargo',
-    cost: 45,
+    cost: 0,
     estimatedDelivery: '8–12 Business Days (Customs Cleared)',
     description: 'Specialized tamper-evident reinforced crate with end-to-end telemetry tracking.',
   },
   {
     id: 'white-glove-express',
     title: 'Atelier White-Glove Direct Courier',
-    cost: 120,
+    cost: 20,
     estimatedDelivery: '3–5 Business Days (Priority Dispatch)',
     description: 'Direct courier hand-delivery with white-glove inspection on arrival.',
   },
@@ -1698,7 +1698,7 @@ export default function CheckoutPage() {
                   <div key={item.id} className="py-3.5 flex gap-3 first:pt-0 last:pb-0">
                     <div className="relative w-14 h-14 bg-[#ecece9] border border-[#e5e5e3] shrink-0">
                       <Image
-                        src={item.image}
+                        src={resolveImageUrl(item.image)}
                         alt={item.name}
                         fill
                         sizes="56px"
