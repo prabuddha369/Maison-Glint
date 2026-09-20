@@ -49,6 +49,12 @@ export default function RootLayout({children}: {children: React.ReactNode}) {
           href="/primary_logo_sm.svg"
           type="image/svg+xml"
         />
+        <link
+          rel="preload"
+          as="image"
+          href="/primary_logo_light.svg"
+          type="image/svg+xml"
+        />
       </head>
       <body className="bg-[#f9f9f7] text-[#111111] antialiased selection:bg-[#111111] selection:text-[#f9f9f7]" suppressHydrationWarning>
         <Providers>{children}</Providers>

@@ -1,9 +1,11 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { useAudio } from '../context/AudioContext';
 
 const CRITICAL_STOREFRONT_IMAGES = [
+  '/primary_logo_light.svg',
   '/images/products/object-01-the-glint-plate-hero-fig01.webp',
   '/images/products/object-01-the-glint-plate-hero-fig02.webp',
   '/images/products/object-01-the-glint-plate-catalog.webp',
@@ -58,17 +60,17 @@ export default function EntranceCurtain() {
         }}
       />
 
-      {/* Brand wordmark */}
+      {/* Brand logo */}
       <div className="relative z-10 text-center">
-        <h1
-          className="font-[var(--font-cormorant)] text-[#f5f0e8] tracking-[0.35em] uppercase mb-2"
-          style={{
-            fontSize: 'clamp(1.1rem, 3vw, 1.6rem)',
-            fontWeight: 300,
-            letterSpacing: '0.35em',
-          }}
-        >
-          Maison Glint
+        <h1 className="flex justify-center mb-2">
+          <Image
+            src="/primary_logo_light.svg"
+            alt="Maison Glint"
+            width={320}
+            height={100}
+            priority
+            className="h-14 sm:h-16 md:h-20 w-auto object-contain"
+          />
         </h1>
 
         {/* Thin divider */}
