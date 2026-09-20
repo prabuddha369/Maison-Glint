@@ -23,6 +23,7 @@ import {
   Users,
   UserCheck,
   UserX,
+  Loader2,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { EMPTY_EDITORIAL_TEMPLATE, getProducts, saveProduct, deleteProduct, seedDefaultProducts } from '../../lib/products';
@@ -46,6 +47,7 @@ export default function AdminPage() {
 
   // Editing product modal / state
   const [isEditingProduct, setIsEditingProduct] = useState<boolean>(false);
+  const [isSavingProduct, setIsSavingProduct] = useState<boolean>(false);
   const [editorialJsonInput, setEditorialJsonInput] = useState<string>('');
   const [jsonError, setJsonError] = useState<string>('');
   const [productForm, setProductForm] = useState<Product>({
@@ -134,6 +136,7 @@ export default function AdminPage() {
 
   const handleSaveProduct = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSavingProduct) return;
     if (!productForm.name || !productForm.price) return;
 
     let parsedEditorial = productForm.editorial;
@@ -153,6 +156,7 @@ export default function AdminPage() {
       editorial: parsedEditorial,
     };
 
+    setIsSavingProduct(true);
     try {
       await saveProduct(productToSave);
       setIsEditingProduct(false);
@@ -171,6 +175,8 @@ export default function AdminPage() {
           : String(err);
       console.error(`[Maison Glint] Failed to save product: ${msg}`);
       alert(`Failed to save product: ${msg}`);
+    } finally {
+      setIsSavingProduct(false);
     }
   };
 
@@ -748,14 +754,23 @@ export default function AdminPage() {
                 <div className="flex space-x-3 pt-3">
                   <button
                     type="submit"
-                    className="px-6 py-2.5 bg-[#111111] text-[#f9f9f7] text-[10px] uppercase tracking-[0.18em] font-medium hover:bg-[#2b2b2b]"
+                    disabled={isSavingProduct}
+                    className="px-6 py-2.5 bg-[#111111] text-[#f9f9f7] text-[10px] uppercase tracking-[0.18em] font-medium hover:bg-[#2b2b2b] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 transition-all min-w-[160px]"
                   >
-                    Save to Catalog
+                    {isSavingProduct ? (
+                      <>
+                        <Loader2 className="w-3.5 h-3.5 animate-spin text-[#f9f9f7]" />
+                        <span>Saving...</span>
+                      </>
+                    ) : (
+                      <span>Save to Catalog</span>
+                    )}
                   </button>
                   <button
                     type="button"
+                    disabled={isSavingProduct}
                     onClick={() => setIsEditingProduct(false)}
-                    className="px-6 py-2.5 border border-[#d6d6d4] text-[10px] uppercase tracking-[0.18em] font-medium"
+                    className="px-6 py-2.5 border border-[#d6d6d4] text-[10px] uppercase tracking-[0.18em] font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#f0f0ee] transition-colors"
                   >
                     Cancel
                   </button>
