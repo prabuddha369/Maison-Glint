@@ -9,15 +9,86 @@
 import crypto from 'crypto';
 
 // ---------------------------------------------------------------------------
-// Constants & Configuration
+// Dynamic Environment & Configuration Helpers
 // ---------------------------------------------------------------------------
 
-const CASHFREE_API_BASE =
-  process.env.CASHFREE_API_BASE_URL || 'https://sandbox.cashfree.com/pg';
-const CASHFREE_API_VERSION =
-  process.env.CASHFREE_API_VERSION || '2023-08-01';
-const CASHFREE_APP_ID = process.env.NEXT_PUBLIC_CASHFREE_APP_ID || '';
-const CASHFREE_SECRET = process.env.CASHFREE_SECRET || '';
+/**
+ * Detect whether Cashfree should operate in Sandbox (Staging) or Production mode.
+ * Evaluates:
+ * 1. NEXT_PUBLIC_CASHFREE_MODE ('sandbox' | 'production')
+ * 2. CASHFREE_ENV / CASHFREE_MODE ('sandbox' | 'production' | 'test' | 'prod')
+ * 3. Active Secret or App ID starting with 'cfsk_ma_test_' or 'TEST'
+ * 4. Base URL containing 'sandbox'
+ */
+export function isCashfreeSandbox(): boolean {
+  const mode = (
+    process.env.NEXT_PUBLIC_CASHFREE_MODE ||
+    process.env.CASHFREE_ENV ||
+    process.env.CASHFREE_MODE ||
+    ''
+  ).toLowerCase();
+
+  if (mode === 'sandbox' || mode === 'test' || mode === 'staging') return true;
+  if (mode === 'production' || mode === 'prod' || mode === 'live') return false;
+
+  // Fallback to inspecting active keys / URL
+  const secret = process.env.CASHFREE_SECRET || '';
+  const appId = process.env.NEXT_PUBLIC_CASHFREE_APP_ID || '';
+  if (secret.startsWith('cfsk_ma_test_') || appId.startsWith('TEST')) return true;
+  if (process.env.CASHFREE_API_BASE_URL?.includes('sandbox')) return true;
+
+  return false;
+}
+
+export function getCashfreeConfig() {
+  const isSandbox = isCashfreeSandbox();
+
+  // Resolve App ID: check dedicated staging/prod variables first, fallback to standard
+  let appId = isSandbox
+    ? (process.env.CASHFREE_TEST_APP_ID || process.env.NEXT_PUBLIC_CASHFREE_APP_ID || '')
+    : (process.env.CASHFREE_PROD_APP_ID || process.env.NEXT_PUBLIC_CASHFREE_APP_ID || '');
+
+  // Resolve Secret: check dedicated staging/prod variables first, fallback to standard
+  let secret = isSandbox
+    ? (process.env.CASHFREE_TEST_SECRET || process.env.CASHFREE_SECRET || '')
+    : (process.env.CASHFREE_PROD_SECRET || process.env.CASHFREE_SECRET || '');
+
+  // Auto-correct if dedicated variables exist and standard variable is mismatched
+  if (isSandbox && !appId.startsWith('TEST') && process.env.CASHFREE_TEST_APP_ID) {
+    appId = process.env.CASHFREE_TEST_APP_ID;
+  }
+  if (isSandbox && !secret.startsWith('cfsk_ma_test_') && process.env.CASHFREE_TEST_SECRET) {
+    secret = process.env.CASHFREE_TEST_SECRET;
+  }
+  if (!isSandbox && appId.startsWith('TEST') && process.env.CASHFREE_PROD_APP_ID) {
+    appId = process.env.CASHFREE_PROD_APP_ID;
+  }
+  if (!isSandbox && secret.startsWith('cfsk_ma_test_') && process.env.CASHFREE_PROD_SECRET) {
+    secret = process.env.CASHFREE_PROD_SECRET;
+  }
+
+  // Base URL
+  const apiBase = isSandbox
+    ? 'https://sandbox.cashfree.com/pg'
+    : (process.env.CASHFREE_API_BASE_URL && !process.env.CASHFREE_API_BASE_URL.includes('sandbox')
+        ? process.env.CASHFREE_API_BASE_URL
+        : 'https://api.cashfree.com/pg');
+
+  const apiVersion = process.env.CASHFREE_API_VERSION || '2023-08-01';
+
+  return {
+    isSandbox,
+    mode: isSandbox ? ('sandbox' as const) : ('production' as const),
+    appId,
+    secret,
+    apiBase,
+    apiVersion,
+  };
+}
+
+export function getCashfreeMode(): 'sandbox' | 'production' {
+  return getCashfreeConfig().mode;
+}
 
 // ---------------------------------------------------------------------------
 // Types
@@ -40,9 +111,7 @@ export interface CashfreeCreateOrderParams {
   returnUrl: string;
   notifyUrl?: string;
   /**
-   * When true (sandbox/test mode), removes payment_methods restriction so all
-   * Cashfree test cards (Visa, RuPay, Mastercard) work.
-   * In production, restricts to cc,dc for international card payments.
+   * When true (sandbox/test mode), forces sandbox endpoint and test card parameters.
    */
   isSandbox?: boolean;
 }
@@ -57,6 +126,12 @@ export interface CashfreeOrderResponse {
   payment_session_id: string;
   order_expiry_time: string;
   created_at: string;
+  // Dual-mode FX metadata
+  isConverted?: boolean;
+  originalCurrency?: string;
+  originalAmount?: number;
+  exchangeRate?: number;
+  formattedAmount?: string;
 }
 
 export interface CashfreePayment {
@@ -98,14 +173,15 @@ export interface CashfreePayment {
  * Get Cashfree API request headers (server-side only)
  */
 function getCashfreeHeaders(): Record<string, string> {
-  if (!CASHFREE_APP_ID || !CASHFREE_SECRET) {
+  const { appId, secret, apiVersion } = getCashfreeConfig();
+  if (!appId || !secret) {
     throw new Error('[Cashfree] Missing CASHFREE credentials in environment variables.');
   }
   return {
     'Content-Type': 'application/json',
-    'x-api-version': CASHFREE_API_VERSION,
-    'x-client-id': CASHFREE_APP_ID,
-    'x-client-secret': CASHFREE_SECRET,
+    'x-api-version': apiVersion,
+    'x-client-id': appId,
+    'x-client-secret': secret,
   };
 }
 
@@ -117,7 +193,8 @@ export async function getCashfreeOrder(
   cfOrderId: string
 ): Promise<CashfreeOrderResponse | null> {
   try {
-    const res = await fetch(`${CASHFREE_API_BASE}/orders/${cfOrderId}`, {
+    const { apiBase } = getCashfreeConfig();
+    const res = await fetch(`${apiBase}/orders/${cfOrderId}`, {
       method: 'GET',
       headers: getCashfreeHeaders(),
     });
@@ -136,28 +213,49 @@ export async function getCashfreeOrder(
 export async function createCashfreeOrder(
   params: CashfreeCreateOrderParams
 ): Promise<CashfreeOrderResponse> {
-  const createAttempt = async (targetOrderId: string) => {
-    const body = {
-      order_id: targetOrderId,
-      order_amount: params.amount,
-      order_currency: params.currency,
+  const config = getCashfreeConfig();
+  const apiBase = config.apiBase;
+
+  // Strict Native Currency Processing:
+  // Charges directly in the requested native currency (e.g. USD) without synthetic conversion.
+  const targetCurrency = (params.currency || 'USD').toUpperCase();
+  const targetAmount = Math.round(Number(params.amount) * 100) / 100;
+
+  // Clean customer phone: prioritize valid international phone or format compliant E.164
+  let phone = params.customerPhone ? params.customerPhone.trim() : '';
+  if (!phone || phone.length < 8) {
+    phone = '+12025550143';
+  } else if (!phone.startsWith('+')) {
+    phone = `+${phone}`;
+  }
+
+  // Clean customer ID (alphanumeric and underscore only, max 50 chars)
+  const customerId =
+    params.customerEmail.replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 50) || 'collector';
+
+  const executeCreate = async (
+    orderIdToUse: string,
+    amountToUse: number,
+    currencyToUse: string
+  ) => {
+    const body: Record<string, unknown> = {
+      order_id: orderIdToUse,
+      order_amount: amountToUse,
+      order_currency: currencyToUse,
       customer_details: {
-        customer_id: params.customerEmail.replace(/[^a-zA-Z0-9]/g, '_').slice(0, 50),
-        customer_name: params.customerName,
+        customer_id: customerId,
+        customer_name: params.customerName || 'Maison Glint Collector',
         customer_email: params.customerEmail,
-        customer_phone: params.customerPhone || (params.isSandbox ? '+919000000000' : '+10000000000'),
+        customer_phone: phone,
       },
       order_meta: {
         return_url: params.returnUrl,
         notify_url: params.notifyUrl,
-        // In sandbox: no payment_methods restriction so ALL test cards work (Visa/RuPay/Mastercard)
-        // In production: restrict to cc,dc only for international card payments
-        ...(params.isSandbox ? {} : { payment_methods: 'cc,dc' }),
       },
-      order_expiry_time: new Date(Date.now() + 30 * 60 * 1000).toISOString(), // 30 min expiry
+      order_expiry_time: new Date(Date.now() + 30 * 60 * 1000).toISOString(),
     };
 
-    const res = await fetch(`${CASHFREE_API_BASE}/orders`, {
+    const res = await fetch(`${apiBase}/orders`, {
       method: 'POST',
       headers: getCashfreeHeaders(),
       body: JSON.stringify(body),
@@ -166,32 +264,53 @@ export async function createCashfreeOrder(
     return { res, errText: !res.ok ? await res.text() : '' };
   };
 
-  const firstAttempt = await createAttempt(params.orderId);
+  // 1. Initial attempt
+  let currentOrderId = params.orderId;
+  let attempt = await executeCreate(currentOrderId, targetAmount, targetCurrency);
 
-  if (!firstAttempt.res.ok) {
-    if (firstAttempt.errText.includes('order_already_exists')) {
-      // Check if existing order is still active, has a valid payment_session_id, and matches currency
-      const existing = await getCashfreeOrder(params.orderId);
-      if (
-        existing &&
-        existing.order_status === 'ACTIVE' &&
-        existing.payment_session_id &&
-        existing.order_currency === params.currency
-      ) {
-        return existing;
-      }
-      // If expired, not active, or different currency, create with a unique retry timestamp
-      const retryId = `${params.orderId.slice(0, 32)}_R${Date.now().toString().slice(-6)}`;
-      const retryAttempt = await createAttempt(retryId);
-      if (retryAttempt.res.ok) {
-        return retryAttempt.res.json() as Promise<CashfreeOrderResponse>;
-      }
-      throw new Error(`[Cashfree] createOrder retry failed (${retryAttempt.res.status}): ${retryAttempt.errText}`);
+  // If order already exists in Cashfree, check existing or generate unique retry suffix
+  if (!attempt.res.ok && attempt.errText.includes('order_already_exists')) {
+    const existing = await getCashfreeOrder(currentOrderId);
+    if (
+      existing &&
+      existing.order_status === 'ACTIVE' &&
+      existing.payment_session_id &&
+      existing.order_currency === targetCurrency &&
+      Math.abs(existing.order_amount - targetAmount) < 0.01
+    ) {
+      existing.isConverted = false;
+      existing.originalCurrency = targetCurrency;
+      existing.originalAmount = targetAmount;
+      return existing;
     }
-    throw new Error(`[Cashfree] createOrder failed (${firstAttempt.res.status}): ${firstAttempt.errText}`);
+    currentOrderId = `${params.orderId.slice(0, 30)}_R${Date.now().toString().slice(-6)}`;
+    attempt = await executeCreate(currentOrderId, targetAmount, targetCurrency);
   }
 
-  return firstAttempt.res.json() as Promise<CashfreeOrderResponse>;
+  // 2. Strict Currency Error Detection:
+  const isCurrencyError =
+    !attempt.res.ok &&
+    (attempt.errText.includes('order Currency not enabled for this merchant account') ||
+      attempt.errText.includes('currency_not_supported') ||
+      attempt.errText.includes('CURRENCY_NOT_SUPPORTED'));
+
+  if (isCurrencyError) {
+    throw new Error(
+      `[Cashfree] Currency "${targetCurrency}" is not yet enabled on your Cashfree merchant account. ` +
+      `Please request International Cards activation in your Cashfree Dashboard ` +
+      `(Settings > Payment Methods > International Cards) to process native ${targetCurrency} transactions.`
+    );
+  }
+
+  if (!attempt.res.ok) {
+    throw new Error(`[Cashfree] createOrder failed (${attempt.res.status}): ${attempt.errText}`);
+  }
+
+  const result = (await attempt.res.json()) as CashfreeOrderResponse;
+  result.isConverted = false;
+  result.originalCurrency = targetCurrency;
+  result.originalAmount = targetAmount;
+  return result;
 }
 
 /**
@@ -201,7 +320,8 @@ export async function createCashfreeOrder(
 export async function getCashfreePayments(
   cfOrderId: string
 ): Promise<CashfreePayment[]> {
-  const res = await fetch(`${CASHFREE_API_BASE}/orders/${cfOrderId}/payments`, {
+  const { apiBase } = getCashfreeConfig();
+  const res = await fetch(`${apiBase}/orders/${cfOrderId}/payments`, {
     method: 'GET',
     headers: getCashfreeHeaders(),
   });
@@ -212,7 +332,6 @@ export async function getCashfreePayments(
   }
 
   const data = await res.json();
-  // API returns an array directly
   return Array.isArray(data) ? data : [];
 }
 
@@ -269,10 +388,11 @@ export function verifyCashfreeWebhook(
   timestamp: string
 ): boolean {
   try {
-    if (!CASHFREE_SECRET) return false;
+    const { secret } = getCashfreeConfig();
+    if (!secret) return false;
     const data = timestamp + rawBody;
     const expectedSig = crypto
-      .createHmac('sha256', CASHFREE_SECRET)
+      .createHmac('sha256', secret)
       .update(data)
       .digest('base64');
     return crypto.timingSafeEqual(

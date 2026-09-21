@@ -64,11 +64,12 @@ export default function OrderFailedPage() {
         throw new Error(errData.error || 'Failed to initiate payment retry.');
       }
 
-      const { paymentSessionId } = await sessionRes.json();
+      const sessionData = await sessionRes.json();
+      const { paymentSessionId, isSandbox } = sessionData;
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const cashfree = (window as any).Cashfree({
-        mode: 'sandbox',
+        mode: isSandbox ? 'sandbox' : (process.env.NEXT_PUBLIC_CASHFREE_MODE || 'production'),
       });
 
       const returnUrl = `${window.location.origin}/api/payment/return?mg_order_id=${order.orderId}&order_id={order_id}`;

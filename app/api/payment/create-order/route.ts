@@ -4,16 +4,13 @@
  * Creates a Cashfree payment order and returns the payment_session_id.
  * Server-side only — uses CASHFREE_SECRET, never exposed to the browser.
  *
- * CURRENCY NOTE:
- * Cashfree SANDBOX test cards are Indian bank test cards (Visa/RuPay/Mastercard)
- * and only work with INR currency. We auto-detect sandbox via CASHFREE_API_BASE_URL
- * and switch to INR for test orders. In PRODUCTION, USD is used for international clients.
+ * CURRENCY PROCESSING:
+ * Charges natively in USD (or customer's specified cart currency).
+ * No artificial conversions to INR are performed, eliminating bill shock and fraud blocks.
  */
 import { NextRequest, NextResponse } from 'next/server';
-import { createCashfreeOrder } from '../../../../lib/cashfree';
+import { createCashfreeOrder, getCashfreeConfig } from '../../../../lib/cashfree';
 import { syncOrderPaymentStatusServer } from '../../../../lib/orderPaymentSync';
-
-const IS_SANDBOX = (process.env.CASHFREE_API_BASE_URL ?? '').includes('sandbox');
 
 export async function POST(req: NextRequest) {
   try {
@@ -21,12 +18,14 @@ export async function POST(req: NextRequest) {
     const {
       orderId,
       amount,
+      currency,
       customerName,
       customerEmail,
       customerPhone,
     } = body as {
       orderId: string;
       amount: number;
+      currency?: string;
       customerName: string;
       customerEmail: string;
       customerPhone?: string;
@@ -39,16 +38,11 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    /**
-     * Currency configuration:
-     * - CASHFREE_CURRENCY env var allows explicitly setting currency (e.g. 'USD' once international is activated).
-     * - By default in Cashfree sandbox, merchant accounts only have domestic INR cards enabled.
-     *   Until International Payments are activated on the Cashfree Merchant Dashboard, Cashfree rejects
-     *   USD cards with "This card is not supported for this payment" (code: payment_method_unsupported).
-     * - In production, USD is used for international patrons.
-     */
-    const currency =
-      process.env.CASHFREE_CURRENCY || (IS_SANDBOX ? 'INR' : 'USD');
+    const config = getCashfreeConfig();
+    const isSandbox = config.isSandbox;
+
+    // Incoming currency of the order amount (Maison Glint storefront catalog prices are in USD)
+    const incomingCurrency = (currency || 'USD').toUpperCase();
 
     // Build return URL — Cashfree redirects here after payment attempt
     const baseUrl =
@@ -60,17 +54,17 @@ export async function POST(req: NextRequest) {
     const notifyUrl = `${baseUrl}/api/payment/webhook`;
 
     // Create Cashfree order (server-side, uses CASHFREE_SECRET)
+    // Sends clean native currency (e.g. USD) directly to Cashfree multi-currency gateway
     const cfOrder = await createCashfreeOrder({
       orderId,
       amount,
-      currency,
+      currency: incomingCurrency,
       customerName: customerName || 'Maison Glint Collector',
       customerEmail,
-      // Sandbox requires a valid-format Indian mobile number
-      customerPhone: customerPhone || (IS_SANDBOX ? '+919000000000' : '+10000000000'),
+      customerPhone: customerPhone || '+12025550143',
       returnUrl,
       notifyUrl,
-      isSandbox: IS_SANDBOX,
+      isSandbox,
     });
 
     // Store the Cashfree order ID in Supabase for webhook correlation
@@ -84,8 +78,13 @@ export async function POST(req: NextRequest) {
       paymentSessionId: cfOrder.payment_session_id,
       cfOrderId: cfOrder.cf_order_id,
       expiresAt: cfOrder.order_expiry_time,
-      currency,
-      isSandbox: IS_SANDBOX,
+      currency: cfOrder.order_currency,
+      orderAmount: cfOrder.order_amount,
+      originalAmount: cfOrder.originalAmount ?? amount,
+      originalCurrency: cfOrder.originalCurrency ?? incomingCurrency,
+      isConverted: false,
+      isSandbox,
+      mode: config.mode,
     });
   } catch (err: unknown) {
     console.error('[/api/payment/create-order] Error:', err);

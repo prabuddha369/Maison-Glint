@@ -622,7 +622,7 @@ export default function CheckoutPage() {
           currency: 'USD',
           customerName: customerInfo.fullName,
           customerEmail: customerInfo.email,
-          customerPhone: customerInfo.phone || '+10000000000',
+          customerPhone: normalizedPhone || customerInfo.phone || profile?.phoneNumber || '',
         }),
       });
 
@@ -631,12 +631,14 @@ export default function CheckoutPage() {
         throw new Error(errData.error || 'Failed to initiate payment session.');
       }
 
-      const { paymentSessionId } = await sessionRes.json();
+      const sessionData = await sessionRes.json();
+      const { paymentSessionId, isSandbox } = sessionData;
 
-      // 5. Open Cashfree hosted payment page via the JS SDK
+      // 5. Open Cashfree hosted payment page via the JS SDK (Production / Sandbox aware)
+      const cashfreeMode = isSandbox ? 'sandbox' : (process.env.NEXT_PUBLIC_CASHFREE_MODE || 'production');
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const cashfree = (window as any).Cashfree({
-        mode: 'sandbox', // Change to 'production' for live
+        mode: cashfreeMode,
       });
 
       // Clear cart before redirect (so it's not doubled on return)
@@ -659,7 +661,7 @@ export default function CheckoutPage() {
 
   return (
     <div className="min-h-screen bg-[#f5f5f3] text-[#111111] font-[family-name:var(--font-inter)] antialiased pt-24 pb-20 px-4 sm:px-6 lg:px-12">
-      {/* Cashfree JS SDK — sandbox mode */}
+      {/* Cashfree JS SDK v3 — Production Mode */}
       <Script
         src="https://sdk.cashfree.com/js/v3/cashfree.js"
         strategy="lazyOnload"
