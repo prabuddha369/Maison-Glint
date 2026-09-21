@@ -19,17 +19,68 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'Maison Glint — Modernist Chromeware',
-  description: 'Forging liquid geometry into permanent domestic sculpture. Introducing The Glint Plate, Object 01.',
+  metadataBase: new URL('https://www.maisonglint.com'),
+  title: {
+    default: 'Maison Glint — Modernist Chromeware & Editorial Tableware',
+    template: '%s | Maison Glint',
+  },
+  description:
+    'Considered table settings around reflective steel, tactile materials, and the pleasure of gathering. Introducing Object 01 in Mirror Polish.',
+  keywords: [
+    'Maison Glint',
+    'Object 01',
+    'Modernist Chromeware',
+    'Stainless Steel Dinnerware',
+    'Mirror Polish Tableware',
+    'The Host Set',
+    'Warm Minimalism',
+    'Architectural Tableware',
+  ],
+  authors: [{ name: 'Maison Glint' }],
+  creator: 'Maison Glint',
+  publisher: 'Maison Glint',
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
   openGraph: {
-    title: 'Maison Glint — Modernist Chromeware',
-    description: 'Forging liquid geometry into permanent domestic sculpture. Introducing The Glint Plate, Object 01.',
+    title: 'Maison Glint — Modernist Chromeware & Editorial Tableware',
+    description:
+      'Considered table settings around reflective steel, tactile materials, and the pleasure of gathering. Introducing Object 01 in Mirror Polish.',
+    url: 'https://www.maisonglint.com',
+    siteName: 'Maison Glint',
+    locale: 'en_US',
     type: 'website',
+    images: [
+      {
+        url: '/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Maison Glint — Object 01 Modernist Chromeware on Travertine',
+        type: 'image/jpeg',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Maison Glint — Modernist Chromeware',
-    description: 'Forging liquid geometry into permanent domestic sculpture. Introducing The Glint Plate, Object 01.',
+    title: 'Maison Glint — Modernist Chromeware & Editorial Tableware',
+    description:
+      'Considered table settings around reflective steel, tactile materials, and the pleasure of gathering. Introducing Object 01 in Mirror Polish.',
+    site: '@maisonglint',
+    creator: '@maisonglint',
+    images: ['/og-image.jpg'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
 };
 

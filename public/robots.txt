@@ -1,0 +1,63 @@
+# Maison Glint — Modernist Chromeware
+# Crawler Permissions & Production Robot Directives
+# https://www.maisonglint.com
+
+User-agent: *
+Allow: /
+Allow: /product/
+Allow: /_brand_constituition/
+Allow: /llms.txt
+Disallow: /admin
+Disallow: /account
+Disallow: /checkout
+Disallow: /api/
+Disallow: /order-failed/
+Disallow: /order-pending/
+Disallow: /order-success/
+
+# AI Search & Synthesis Engines (Perplexity, OpenAI, Anthropic, Google)
+User-agent: GPTBot
+Allow: /
+Disallow: /admin
+Disallow: /account
+Disallow: /checkout
+Disallow: /api/
+
+User-agent: ChatGPT-User
+Allow: /
+Disallow: /admin
+Disallow: /account
+Disallow: /checkout
+Disallow: /api/
+
+User-agent: ClaudeBot
+Allow: /
+Disallow: /admin
+Disallow: /account
+Disallow: /checkout
+Disallow: /api/
+
+User-agent: PerplexityBot
+Allow: /
+Disallow: /admin
+Disallow: /account
+Disallow: /checkout
+Disallow: /api/
+
+User-agent: Google-Extended
+Allow: /
+Disallow: /admin
+Disallow: /account
+Disallow: /checkout
+Disallow: /api/
+
+User-agent: Applebot-Extended
+Allow: /
+Disallow: /admin
+Disallow: /account
+Disallow: /checkout
+Disallow: /api/
+
+# Host & Sitemaps
+Host: https://www.maisonglint.com
+Sitemap: https://www.maisonglint.com/sitemap.xml
