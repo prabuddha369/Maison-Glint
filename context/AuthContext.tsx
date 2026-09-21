@@ -112,6 +112,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (error) throw error;
   };
 
+  const getAuthRedirectUrl = (path: string = '/account'): string => {
+    const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://www.maisonglint.com').replace(/\/$/, '');
+    return `${siteUrl}${path.startsWith('/') ? path : `/${path}`}`;
+  };
+
   const signUpWithEmail = async (email: string, password: string, name: string) => {
     if (!supabase) throw new Error('Supabase public configuration is missing.');
     const { data, error } = await supabase.auth.signUp({
@@ -119,7 +124,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       password,
       options: {
         data: { display_name: name.trim() },
-        emailRedirectTo: `${window.location.origin}/account`,
+        emailRedirectTo: getAuthRedirectUrl('/account'),
       },
     });
     if (error) throw error;
@@ -141,7 +146,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const sendResetEmail = async (email: string) => {
     if (!supabase) throw new Error('Supabase public configuration is missing.');
     const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-      redirectTo: `${window.location.origin}/account`,
+      redirectTo: getAuthRedirectUrl('/account'),
     });
     if (error) throw error;
   };

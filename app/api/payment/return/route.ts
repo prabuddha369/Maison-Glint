@@ -25,7 +25,10 @@ export async function GET(req: NextRequest) {
   const mgOrderId = searchParams.get('mg_order_id');
   const cfOrderId = searchParams.get('order_id');
 
-  const baseUrl = req.headers.get('origin') ?? 'http://localhost:3000';
+  const baseUrl =
+    req.headers.get('origin') ??
+    process.env.NEXT_PUBLIC_SITE_URL ??
+    'https://www.maisonglint.com';
 
   if (!mgOrderId || !cfOrderId) {
     return NextResponse.redirect(`${baseUrl}/?payment_error=missing_params`);

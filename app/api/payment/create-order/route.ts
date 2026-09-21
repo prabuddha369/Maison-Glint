@@ -53,8 +53,9 @@ export async function POST(req: NextRequest) {
     // Build return URL — Cashfree redirects here after payment attempt
     const baseUrl =
       process.env.NEXT_PUBLIC_APP_URL ||
+      process.env.NEXT_PUBLIC_SITE_URL ||
       req.headers.get('origin') ||
-      'http://localhost:3000';
+      'https://www.maisonglint.com';
     const returnUrl = `${baseUrl}/api/payment/return?mg_order_id=${orderId}&order_id={order_id}`;
     const notifyUrl = `${baseUrl}/api/payment/webhook`;
 
