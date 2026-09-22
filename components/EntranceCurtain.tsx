@@ -62,7 +62,7 @@ export default function EntranceCurtain() {
 
       {/* Brand logo */}
       <div className="relative z-10 text-center">
-        <h1 className="flex justify-center mb-2">
+        <div className="flex justify-center mb-2">
           <Image
             src="/primary_logo_light.svg"
             alt="Maison Glint"
@@ -71,7 +71,7 @@ export default function EntranceCurtain() {
             priority
             className="h-14 sm:h-16 md:h-20 w-auto object-contain"
           />
-        </h1>
+        </div>
 
         {/* Thin divider */}
         <div

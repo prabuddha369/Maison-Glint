@@ -77,7 +77,7 @@ export default function OrderSuccessPage() {
           <div className="flex items-center space-x-4">
             <Link
               href="/account"
-              className="text-[10px] uppercase tracking-[0.16em] text-[#747878] hover:text-[#111111] transition-colors"
+              className="text-xs uppercase tracking-[0.16em] text-[#595D5D] hover:text-[#111111] transition-colors"
             >
               Collector Account
             </Link>
@@ -100,16 +100,16 @@ export default function OrderSuccessPage() {
 
             <div className="flex-1">
               <div className="flex flex-wrap items-center gap-3 mb-2">
-                <span className="text-[10px] uppercase tracking-[0.24em] font-semibold text-[#747878]">
+                <span className="text-xs uppercase tracking-[0.24em] font-semibold text-[#595D5D]">
                   {isPaid ? 'Payment Confirmed' : 'Order Registered'}
                 </span>
                 {isPaid ? (
-                  <span className="inline-flex items-center space-x-1.5 px-2.5 py-1 bg-[#f0fff4] border border-[#a3e4b0] text-[#1a6b2e] text-[10px] uppercase tracking-[0.15em] font-medium">
+                  <span className="inline-flex items-center space-x-1.5 px-2.5 py-1 bg-[#f0fff4] border border-[#a3e4b0] text-[#1a6b2e] text-xs uppercase tracking-[0.15em] font-medium">
                     <CheckCircle2 className="w-3 h-3 text-[#2e7d32]" />
                     <span>Acquisition Secured</span>
                   </span>
                 ) : (
-                  <span className="inline-flex items-center space-x-1.5 px-2.5 py-1 bg-[#fff8e7] border border-[#e8d5aa] text-[#8a681c] text-[10px] uppercase tracking-[0.15em] font-medium">
+                  <span className="inline-flex items-center space-x-1.5 px-2.5 py-1 bg-[#fff8e7] border border-[#e8d5aa] text-[#8a681c] text-xs uppercase tracking-[0.15em] font-medium">
                     <Clock className="w-3 h-3 text-[#c5a059]" />
                     <span>Pending Gateway Settlement</span>
                   </span>
@@ -120,7 +120,7 @@ export default function OrderSuccessPage() {
                 Acquisition Confirmed: {order?.orderId || orderId}
               </h1>
 
-              <p className="text-[13px] text-[#747878] font-light mt-3 leading-relaxed">
+              <p className="text-[13px] text-[#595D5D] font-light mt-3 leading-relaxed">
                 {isPaid
                   ? 'Your payment has been confirmed. Your bespoke allocation is formally registered in the Maison Glint atelier ledger and enters the production queue.'
                   : 'Your bespoke allocation has been registered in the Maison Glint ledger. All units are currently allocated to your reservation docket.'}
@@ -129,9 +129,9 @@ export default function OrderSuccessPage() {
           </div>
 
           {/* Payment Gateway Info */}
-          <div className="mt-8 pt-8 border-t border-[#e5e5e3] grid grid-cols-1 sm:grid-cols-3 gap-6 text-[11px]">
+          <div className="mt-8 pt-8 border-t border-[#e5e5e3] grid grid-cols-1 sm:grid-cols-3 gap-6 text-xs">
             <div>
-              <span className="uppercase tracking-[0.16em] text-[#747878] block mb-1">
+              <span className="uppercase tracking-[0.16em] text-[#595D5D] block mb-1">
                 Order Reference
               </span>
               <span className="font-mono text-base font-semibold text-[#111111]">
@@ -140,7 +140,7 @@ export default function OrderSuccessPage() {
             </div>
 
             <div>
-              <span className="uppercase tracking-[0.16em] text-[#747878] block mb-1">
+              <span className="uppercase tracking-[0.16em] text-[#595D5D] block mb-1">
                 Settlement Status
               </span>
               <span className="font-medium text-[#111111] flex items-center space-x-1.5">
@@ -157,12 +157,12 @@ export default function OrderSuccessPage() {
                 )}
               </span>
               {paymentMethod && isPaid && (
-                <span className="block text-[10px] text-[#8c8c8c] mt-1">via {paymentMethod}</span>
+                <span className="block text-xs text-[#595D5D] mt-1">via {paymentMethod}</span>
               )}
             </div>
 
             <div>
-              <span className="uppercase tracking-[0.16em] text-[#747878] block mb-1">
+              <span className="uppercase tracking-[0.16em] text-[#595D5D] block mb-1">
                 Dispatch Target
               </span>
               <span className="font-medium text-[#111111]">
@@ -174,7 +174,7 @@ export default function OrderSuccessPage() {
           {/* Cashfree Payment ID (if available) */}
           {order?.cashfreePaymentId && (
             <div className="mt-4 pt-4 border-t border-[#f0f0ee]">
-              <p className="text-[9px] font-mono text-[#c0c0c0] tracking-wider">
+              <p className="text-xs font-mono text-[#595D5D] tracking-wider">
                 Payment Ref: {order.cashfreePaymentId}
               </p>
             </div>
@@ -187,7 +187,7 @@ export default function OrderSuccessPage() {
           <div className="md:col-span-7 bg-[#ffffff] border border-[#e5e5e3] p-6 sm:p-8">
             <h2 className="font-[family-name:var(--font-cormorant)] text-2xl font-light text-[#111111] mb-6 flex items-center justify-between border-b border-[#f0f0ee] pb-3">
               <span>Secured Items</span>
-              <span className="text-[12px] uppercase tracking-[0.15em] text-[#747878] font-sans">
+              <span className="text-xs uppercase tracking-[0.15em] text-[#595D5D] font-sans">
                 {order?.items?.length || 0} Object(s)
               </span>
             </h2>
@@ -211,11 +211,11 @@ export default function OrderSuccessPage() {
                       {item.name}
                     </h3>
                     {item.specifications?.gauge && (
-                      <p className="text-[10px] uppercase tracking-[0.12em] text-[#747878]">
+                      <p className="text-xs uppercase tracking-[0.12em] text-[#595D5D]">
                         {item.specifications.gauge}
                       </p>
                     )}
-                    <span className="text-[11px] text-[#747878]">Qty: {item.quantity}</span>
+                    <span className="text-xs text-[#595D5D]">Qty: {item.quantity}</span>
                   </div>
 
                   <span className="font-[family-name:var(--font-cormorant)] text-base font-semibold text-[#111111]">
@@ -226,25 +226,25 @@ export default function OrderSuccessPage() {
             </div>
 
             {/* Financials */}
-            <div className="border-t border-[#e5e5e3] pt-4 mt-4 space-y-2 text-[11px] uppercase tracking-[0.14em]">
-              <div className="flex justify-between text-[#747878]">
+            <div className="border-t border-[#e5e5e3] pt-4 mt-4 space-y-2 text-xs uppercase tracking-[0.14em]">
+              <div className="flex justify-between text-[#595D5D]">
                 <span>Subtotal</span>
                 <span className="text-[#111111]">${order?.subtotal?.toLocaleString()}</span>
               </div>
-              <div className="flex justify-between text-[#747878]">
+              <div className="flex justify-between text-[#595D5D]">
                 <span>Delivery</span>
                 <span className="text-[#111111]">
                   {order?.shippingCost === 0 ? 'Complimentary' : `$${order?.shippingCost} USD`}
                 </span>
               </div>
               {Boolean(order?.taxEstimate && order.taxEstimate > 0) && (
-                <div className="flex justify-between text-[#747878]">
+                <div className="flex justify-between text-[#595D5D]">
                   <span>Tax</span>
                   <span className="text-[#111111]">${order?.taxEstimate?.toLocaleString()}</span>
                 </div>
               )}
               <div className="pt-3 border-t border-[#e5e5e3] flex justify-between items-baseline text-[#111111] font-semibold">
-                <span className="text-[12px]">Total Balance</span>
+                <span className="text-xs">Total Balance</span>
                 <span className="font-[family-name:var(--font-cormorant)] text-xl font-bold">
                   ${order?.total?.toLocaleString()} USD
                 </span>
@@ -255,12 +255,12 @@ export default function OrderSuccessPage() {
           {/* Delivery Coordinates */}
           <div className="md:col-span-5 space-y-6">
             <div className="bg-[#ffffff] border border-[#e5e5e3] p-6 sm:p-8">
-              <h3 className="text-[10px] uppercase tracking-[0.2em] font-semibold text-[#747878] mb-4 flex items-center space-x-2">
+              <h3 className="text-xs uppercase tracking-[0.2em] font-semibold text-[#595D5D] mb-4 flex items-center space-x-2">
                 <MapPin className="w-3.5 h-3.5 text-[#c5a059]" />
                 <span>Delivery Address</span>
               </h3>
 
-              <div className="text-[12px] text-[#111111] space-y-1">
+              <div className="text-xs text-[#111111] space-y-1">
                 <div className="font-semibold text-sm">
                   {order?.shippingAddress?.fullName || order?.customer?.fullName}
                 </div>
@@ -271,17 +271,17 @@ export default function OrderSuccessPage() {
                   {order?.shippingAddress?.postalCode}
                 </div>
                 <div>{order?.shippingAddress?.country}</div>
-                <div className="pt-2 text-[#747878]">{order?.shippingAddress?.phone}</div>
+                <div className="pt-2 text-[#595D5D]">{order?.shippingAddress?.phone}</div>
               </div>
 
               <div className="mt-6 pt-6 border-t border-[#f0f0ee]">
-                <h4 className="text-[10px] uppercase tracking-[0.2em] font-semibold text-[#747878] mb-2 flex items-center space-x-2">
+                <h4 className="text-xs uppercase tracking-[0.2em] font-semibold text-[#595D5D] mb-2 flex items-center space-x-2">
                   <Mail className="w-3.5 h-3.5 text-[#c5a059]" />
                   <span>Telemetry Updates</span>
                 </h4>
-                <p className="text-[12px] text-[#111111]">{order?.customer?.email}</p>
+                <p className="text-xs text-[#111111]">{order?.customer?.email}</p>
                 {isPaid && (
-                  <p className="text-[11px] text-[#555555] mt-1">
+                  <p className="text-xs text-[#555555] mt-1">
                     A confirmation email has been dispatched to your inbox.
                   </p>
                 )}
@@ -289,11 +289,11 @@ export default function OrderSuccessPage() {
 
               {/* Trust Seals */}
               <div className="mt-6 pt-6 border-t border-[#f0f0ee] space-y-2">
-                <div className="flex items-center space-x-2 text-[9px] uppercase tracking-[0.15em] text-[#c0c0c0]">
+                <div className="flex items-center space-x-2 text-xs uppercase tracking-[0.15em] text-[#595D5D]">
                   <ShieldCheck className="w-3.5 h-3.5" />
                   <span>Secured by Cashfree Payments</span>
                 </div>
-                <div className="flex items-center space-x-2 text-[9px] uppercase tracking-[0.15em] text-[#c0c0c0]">
+                <div className="flex items-center space-x-2 text-xs uppercase tracking-[0.15em] text-[#595D5D]">
                   <Package className="w-3.5 h-3.5" />
                   <span>Insured Direct Courier Hand-Delivery</span>
                 </div>
@@ -304,7 +304,7 @@ export default function OrderSuccessPage() {
             <div className="bg-[#ffffff] border border-[#e5e5e3] p-6 text-center space-y-4">
               <Link
                 href="/account"
-                className="w-full py-3.5 bg-[#111111] text-[#f9f9f7] hover:bg-[#2b2b2b] text-[10px] uppercase tracking-[0.2em] font-semibold flex items-center justify-center space-x-2 transition-all border border-[#111111]"
+                className="w-full py-3.5 bg-[#111111] text-[#f9f9f7] hover:bg-[#2b2b2b] text-xs uppercase tracking-[0.2em] font-semibold flex items-center justify-center space-x-2 transition-all border border-[#111111]"
               >
                 <span>View in Customer Portal</span>
                 <ArrowRight className="w-3.5 h-3.5 text-[#c5a059]" />
@@ -312,7 +312,7 @@ export default function OrderSuccessPage() {
 
               <Link
                 href="/"
-                className="block text-[10px] uppercase tracking-[0.16em] text-[#747878] hover:text-[#111111] transition-colors"
+                className="block text-xs uppercase tracking-[0.16em] text-[#595D5D] hover:text-[#111111] transition-colors"
               >
                 Return to Storefront
               </Link>

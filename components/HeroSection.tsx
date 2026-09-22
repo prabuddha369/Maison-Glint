@@ -87,7 +87,7 @@ export default function HeroSection({
     : [
         {
           id: 'slide-default-1',
-          imageUrl: '/images/fig-01-table.png',
+          imageUrl: '/images/fig-01-table.webp',
           alt: `${activeProduct?.name || 'Object'} perspective 1`,
           category: 'Table Setting',
           title: 'A considered presence at the table',
@@ -158,7 +158,7 @@ export default function HeroSection({
   if (loading || !activeProduct || !editorial) {
     return (
       <section ref={sectionRef} id="hero-section" className="min-h-[60vh] border-b border-[#e5e5e3] flex items-center justify-center">
-        <div className="text-[11px] uppercase tracking-[0.2em] text-[#747878] animate-pulse font-mono">
+        <div className="text-xs uppercase tracking-[0.2em] text-[#595D5D] animate-pulse font-mono">
           Loading Atelier Edition...
         </div>
       </section>
@@ -220,6 +220,7 @@ export default function HeroSection({
                   alt={persp.alt}
                   fill
                   priority={idx === 0}
+                  sizes="100vw"
                   referrerPolicy="no-referrer"
                   className="object-cover object-center"
                 />
@@ -241,7 +242,7 @@ export default function HeroSection({
         {/* Top-Right: Perspective Switcher Tabs & Infinite Loop Control with Parallax */}
         <motion.div
           style={{ y: topControlsY, opacity: topControlsOpacity }}
-          className="absolute top-4 left-4 right-4 sm:left-auto sm:right-6 lg:right-12 sm:top-6 z-30 flex items-center justify-between sm:justify-start gap-1.5 sm:gap-2 bg-white/10 backdrop-blur-md border border-white/30 px-3 py-1.5 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.5),0_8px_24px_rgba(0,0,0,0.25)] text-[9px] sm:text-[10px] uppercase tracking-[0.16em]"
+          className="absolute top-4 left-4 right-4 sm:left-auto sm:right-6 lg:right-12 sm:top-6 z-30 flex items-center justify-between sm:justify-start gap-1.5 sm:gap-2 bg-white/10 backdrop-blur-md border border-white/30 px-3 py-1.5 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.5),0_8px_24px_rgba(0,0,0,0.25)] text-xs uppercase tracking-[0.16em]"
         >
           <div className="flex items-center space-x-2 min-w-0">
             <span className="font-medium text-white truncate max-w-[120px] sm:max-w-none">{activeProduct.name}</span>
@@ -252,7 +253,8 @@ export default function HeroSection({
             <button
               id="hero-loop-toggle-btn"
               onClick={() => setIsPaused(!isPaused)}
-              className="inline-flex items-center space-x-1.5 text-[9px] uppercase tracking-[0.16em] text-[#e5e5e3]/90 hover:text-white transition-colors cursor-pointer"
+              aria-label={isPaused ? 'Resume automated cycle' : 'Pause automated cycle'}
+              className="inline-flex items-center space-x-1.5 text-xs uppercase tracking-[0.16em] text-[#e5e5e3]/90 hover:text-white transition-colors cursor-pointer"
               title={isPaused ? 'Resume automated cycle' : 'Pause automated cycle'}
             >
               {isPaused ? (
@@ -279,7 +281,8 @@ export default function HeroSection({
                     key={`${activeProduct.id}-perspective-tab-${idx}`}
                     id={`hero-perspective-${persp.id || idx}-btn`}
                     onClick={() => handleSelectPerspective(idx)}
-                    className={`relative px-2 py-0.5 text-[9px] transition-all cursor-pointer overflow-hidden ${isActive
+                    aria-label={`View perspective ${persp.tabLabel}`}
+                    className={`relative px-2 py-0.5 text-xs transition-all cursor-pointer overflow-hidden ${isActive
                       ? 'bg-white text-[#111111] font-medium'
                       : 'bg-transparent text-[#e5e5e3]/80 hover:text-white'
                       }`}
@@ -311,7 +314,8 @@ export default function HeroSection({
           <button
             id="hero-discover-btn"
             onClick={onDiscoverClick}
-            className="group inline-flex items-center justify-center space-x-1.5 sm:space-x-2 bg-[#111111]/90 backdrop-blur-md text-[#f9f9f7] px-2.5 sm:px-4 py-2 sm:py-1.5 text-[9px] sm:text-[10px] uppercase tracking-[0.14em] sm:tracking-[0.18em] font-medium hover:bg-white hover:text-[#111111] hover:border-white transition-all cursor-pointer border border-white/35 shadow-[0_4px_16px_rgba(0,0,0,0.25)] text-center"
+            aria-label={editorial.hero.discoverLabel || 'Discover Object'}
+            className="group inline-flex items-center justify-center space-x-1.5 sm:space-x-2 bg-[#111111]/90 backdrop-blur-md text-[#f9f9f7] px-2.5 sm:px-4 py-2 sm:py-1.5 text-xs uppercase tracking-[0.14em] sm:tracking-[0.18em] font-medium hover:bg-white hover:text-[#111111] hover:border-white transition-all cursor-pointer border border-white/35 shadow-[0_4px_16px_rgba(0,0,0,0.25)] text-center"
           >
             <span>{editorial.hero.discoverLabel}</span>
             <ArrowUpRight className="w-3.5 h-3.5 text-[#c5a059] group-hover:text-[#111111] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform shrink-0" />
@@ -320,7 +324,8 @@ export default function HeroSection({
           <button
             id="hero-reserve-btn"
             onClick={onReserveClick}
-            className="inline-flex items-center justify-center bg-white/10 backdrop-blur-md text-white px-2.5 sm:px-4 py-2 sm:py-1.5 text-[9px] sm:text-[10px] uppercase tracking-[0.14em] sm:tracking-[0.18em] font-medium hover:bg-white hover:text-[#111111] transition-all cursor-pointer border border-white/30 shadow-[inset_0_1px_0_rgba(255,255,255,0.4)] text-center"
+            aria-label={editorial.hero.reserveLabel || 'Request Priority Access'}
+            className="inline-flex items-center justify-center bg-white/10 backdrop-blur-md text-white px-2.5 sm:px-4 py-2 sm:py-1.5 text-xs uppercase tracking-[0.14em] sm:tracking-[0.18em] font-medium hover:bg-white hover:text-[#111111] transition-all cursor-pointer border border-white/30 shadow-[inset_0_1px_0_rgba(255,255,255,0.4)] text-center"
           >
             <span className="sm:hidden">Request Access</span>
             <span className="hidden sm:inline">{editorial.hero.reserveLabel || 'Request Priority Access'}</span>
@@ -343,11 +348,11 @@ export default function HeroSection({
             <div className="relative z-10">
               -- Eyebrow and Edition Tag --
               <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
-                <span className="text-[9px] sm:text-[10px] md:text-[11px] uppercase tracking-[0.18em] sm:tracking-[0.2em] font-medium text-[#e5e5e3]/90 drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">
+                <span className="text-xs uppercase tracking-[0.18em] sm:tracking-[0.2em] font-medium text-[#e5e5e3]/90 drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">
                   {editorial.hero.eyebrow}
                 </span>
                 <span className="w-6 sm:w-8 h-[1px] bg-[#c5a059]" />
-                <span className="text-[9px] sm:text-[10px] md:text-[11px] uppercase tracking-[0.16em] sm:tracking-[0.18em] font-semibold text-[#d4af37] drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">
+                <span className="text-xs uppercase tracking-[0.16em] sm:tracking-[0.18em] font-semibold text-[#d4af37] drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">
                   {editorial.hero.editionLabel}
                 </span>
               </div>
@@ -367,7 +372,7 @@ export default function HeroSection({
                 <button
                   id="hero-discover-btn-archived"
                   onClick={onDiscoverClick}
-                  className="w-full sm:w-auto group inline-flex items-center justify-center space-x-3 bg-[#111111]/90 backdrop-blur-md text-[#f9f9f7] px-6 sm:px-7 py-3.5 text-[11px] uppercase tracking-[0.18em] font-medium hover:bg-white hover:text-[#111111] hover:border-white transition-all cursor-pointer border border-white/35 shadow-lg"
+                  className="w-full sm:w-auto group inline-flex items-center justify-center space-x-3 bg-[#111111]/90 backdrop-blur-md text-[#f9f9f7] px-6 sm:px-7 py-3.5 text-xs uppercase tracking-[0.18em] font-medium hover:bg-white hover:text-[#111111] hover:border-white transition-all cursor-pointer border border-white/35 shadow-lg"
                 >
                   <span>{editorial.hero.discoverLabel}</span>
                   <ArrowUpRight className="w-4 h-4 text-[#c5a059] group-hover:text-[#111111] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
@@ -376,7 +381,7 @@ export default function HeroSection({
                 <button
                   id="hero-reserve-btn-archived"
                   onClick={onReserveClick}
-                  className="w-full sm:w-auto inline-flex items-center justify-center bg-white/10 backdrop-blur-md text-white px-6 sm:px-7 py-3.5 text-[11px] uppercase tracking-[0.18em] font-medium hover:bg-white hover:text-[#111111] transition-all cursor-pointer border border-white/30 shadow-[inset_0_1px_0_rgba(255,255,255,0.4)]"
+                  className="w-full sm:w-auto inline-flex items-center justify-center bg-white/10 backdrop-blur-md text-white px-6 sm:px-7 py-3.5 text-xs uppercase tracking-[0.18em] font-medium hover:bg-white hover:text-[#111111] transition-all cursor-pointer border border-white/30 shadow-[inset_0_1px_0_rgba(255,255,255,0.4)]"
                 >
                   <span>{editorial.hero.reserveLabel}</span>
                 </button>
@@ -385,26 +390,26 @@ export default function HeroSection({
               -- Metadata Specs Strip --
               <div className="pt-5 border-t border-white/20 grid grid-cols-3 gap-2 sm:gap-4">
                 <div>
-                  <div className="text-[9px] uppercase tracking-[0.18em] font-medium text-[#b0b0ad] mb-1">
+                  <div className="text-xs uppercase tracking-[0.18em] font-medium text-[#b0b0ad] mb-1">
                     {editorial.hero.materialLabel}
                   </div>
-                  <div className="text-[11px] sm:text-[13px] font-medium text-[#f9f9f7] tracking-tight">
+                  <div className="text-xs sm:text-[13px] font-medium text-[#f9f9f7] tracking-tight">
                     {editorial.hero.materialValue}
                   </div>
                 </div>
                 <div>
-                  <div className="text-[9px] uppercase tracking-[0.18em] font-medium text-[#b0b0ad] mb-1">
+                  <div className="text-xs uppercase tracking-[0.18em] font-medium text-[#b0b0ad] mb-1">
                     {editorial.hero.craftLabel}
                   </div>
-                  <div className="text-[11px] sm:text-[13px] font-medium text-[#f9f9f7] tracking-tight">
+                  <div className="text-xs sm:text-[13px] font-medium text-[#f9f9f7] tracking-tight">
                     {editorial.hero.craftValue}
                   </div>
                 </div>
                 <div>
-                  <div className="text-[9px] uppercase tracking-[0.18em] font-medium text-[#b0b0ad] mb-1">
+                  <div className="text-xs uppercase tracking-[0.18em] font-medium text-[#b0b0ad] mb-1">
                     {editorial.hero.editionLabelMeta}
                   </div>
-                  <div className="text-[11px] sm:text-[13px] font-medium text-[#f9f9f7] tracking-tight">
+                  <div className="text-xs sm:text-[13px] font-medium text-[#f9f9f7] tracking-tight">
                     {editorial.hero.editionValue}
                   </div>
                 </div>
@@ -428,7 +433,7 @@ export default function HeroSection({
               transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
               className="bg-black/55 backdrop-blur-md px-4 py-2 border border-white/15 text-[#f9f9f7]"
             >
-              <div className="text-[8px] uppercase tracking-[0.22em] font-medium text-[#c5a059] mb-0.5">
+              <div className="text-xs uppercase tracking-[0.22em] font-medium text-[#c5a059] mb-0.5">
                 {currentMain.category} · {currentMain.figureLabel}
               </div>
               <div className="font-[family-name:var(--font-cormorant)] text-[16px] italic font-light text-white">
@@ -478,6 +483,7 @@ export default function HeroSection({
                     src={resolveImageUrl(persp.imageUrl)}
                     alt={persp.alt}
                     fill
+                    sizes="(max-width: 640px) 140px, 160px"
                     referrerPolicy="no-referrer"
                     className="object-cover object-center group-hover:scale-105 transition-transform duration-500 ease-out"
                   />
@@ -490,7 +496,7 @@ export default function HeroSection({
 
             {/* Top Corner Pill Indicator */}
             <div className="absolute top-2 left-2 right-2 flex items-center justify-between pointer-events-none z-20">
-              <span className="text-[7px] sm:text-[8px] uppercase tracking-[0.18em] font-medium bg-black/60 backdrop-blur-xs text-[#f9f9f7] px-1.5 py-0.5 border border-white/15">
+              <span className="text-xs uppercase tracking-[0.18em] font-medium bg-black/60 backdrop-blur-xs text-[#f9f9f7] px-1.5 py-0.5 border border-white/15">
                 {currentSide.badge}
               </span>
               <div className="w-4.5 h-4.5 sm:w-5 sm:h-5 rounded-full bg-white/20 backdrop-blur-xs flex items-center justify-center text-white group-hover:bg-white group-hover:text-[#111111] transition-colors">
@@ -508,15 +514,15 @@ export default function HeroSection({
                   exit={{ opacity: 0, y: -4 }}
                   transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
                 >
-                  <div className="text-[7px] uppercase tracking-[0.2em] font-medium text-[#c5a059] mb-0.5">
+                  <div className="text-xs uppercase tracking-[0.2em] font-medium text-[#c5a059] mb-0.5">
                     {currentSide.figureLabel}
                   </div>
-                  <div className="font-[family-name:var(--font-cormorant)] text-[11px] sm:text-[13px] italic leading-tight text-white line-clamp-1">
+                  <div className="font-[family-name:var(--font-cormorant)] text-xs sm:text-[13px] italic leading-tight text-white line-clamp-1">
                     {currentSide.title}
                   </div>
                 </motion.div>
               </AnimatePresence>
-              <div className="mt-1 flex items-center space-x-1 text-[7px] uppercase tracking-[0.16em] text-[#e5e2e1]/80">
+              <div className="mt-1 flex items-center space-x-1 text-xs uppercase tracking-[0.16em] text-[#e5e2e1]/80">
                 <ZoomIn className="w-2.5 h-2.5" />
                 <span>Click to Swap</span>
               </div>

@@ -37,14 +37,14 @@ export default function CatalogGrid({
           className="flex flex-col md:flex-row md:items-end justify-between mb-12 sm:mb-16 border-b border-[#e5e5e3] pb-8"
         >
           <div>
-            <div className="text-[10px] md:text-[11px] uppercase tracking-[0.22em] font-medium text-[#c5a059] mb-3">
+            <div className="text-xs uppercase tracking-[0.22em] font-medium text-[#c5a059] mb-3">
               The Complete Atelier Collection
             </div>
             <h2 className="font-[family-name:var(--font-cormorant)] text-[32px] sm:text-[42px] font-light text-[#111111] leading-tight">
               Curated Objects for Modern Gastronomy
             </h2>
           </div>
-          <p className="font-[family-name:var(--font-inter)] text-[13px] sm:text-[14px] text-[#747878] font-light max-w-md mt-4 md:mt-0 leading-relaxed">
+          <p className="font-[family-name:var(--font-inter)] text-[13px] sm:text-[14px] text-[#595D5D] font-light max-w-md mt-4 md:mt-0 leading-relaxed">
             Every object is cataloged directly from our verified atelier ledger,
             each serialized with laser-engraved hallmarks.
           </p>
@@ -79,7 +79,7 @@ export default function CatalogGrid({
                       referrerPolicy="no-referrer"
                       className="object-cover object-center group-hover:scale-105 transition-transform duration-1000 ease-out"
                     />
-                    <div className="absolute top-3 left-3 bg-[#f9f9f7]/95 backdrop-blur-sm border border-[#e5e5e3] px-2 py-0.5 text-[8px] uppercase tracking-[0.18em] font-medium text-[#111111]">
+                    <div className="absolute top-3 left-3 bg-[#f9f9f7]/95 backdrop-blur-sm border border-[#e5e5e3] px-2 py-0.5 text-xs uppercase tracking-[0.18em] font-medium text-[#111111]">
                       {product.editionRemaining !== undefined
                         ? `${product.editionRemaining} left of ${product.editionTotal || 250}`
                         : 'Atelier Batch'}
@@ -88,27 +88,27 @@ export default function CatalogGrid({
 
                   {/* Card Content */}
                   <div className="p-5">
-                    <div className="text-[9px] uppercase tracking-[0.22em] text-[#c5a059] font-medium mb-1">
+                    <div className="text-xs uppercase tracking-[0.22em] text-[#c5a059] font-medium mb-1">
                       {objectCode.split(' ').slice(0, 2).join(' ')}
                     </div>
                     <h3 className="font-[family-name:var(--font-cormorant)] text-[22px] font-light text-[#111111] mb-2 group-hover:text-[#c5a059] transition-colors line-clamp-1">
                       {product.name}
                     </h3>
-                    <p className="text-[12px] text-[#444748] font-light leading-relaxed line-clamp-2 mb-4">
+                    <p className="text-xs text-[#444748] font-light leading-relaxed line-clamp-2 mb-4">
                       {product.description}
                     </p>
 
                     {/* Specification Badges */}
-                    <div className="space-y-1 text-[11px] text-[#747878] border-t border-[#e5e5e3] pt-3 mb-2 font-mono">
+                    <div className="space-y-1 text-xs text-[#595D5D] border-t border-[#e5e5e3] pt-3 mb-2 font-mono">
                       {product.specifications?.diameter && (
                         <div className="flex justify-between">
-                          <span className="text-[#8c8c8c] font-sans text-[10px] uppercase">Size</span>
+                          <span className="text-[#595D5D] font-sans text-xs uppercase">Size</span>
                           <span>{product.specifications.diameter}</span>
                         </div>
                       )}
                       {product.specifications?.finish && (
                         <div className="flex justify-between">
-                          <span className="text-[#8c8c8c] font-sans text-[10px] uppercase">Finish</span>
+                          <span className="text-[#595D5D] font-sans text-xs uppercase">Finish</span>
                           <span className="truncate max-w-[140px]">{product.specifications.finish}</span>
                         </div>
                       )}
@@ -120,11 +120,12 @@ export default function CatalogGrid({
                 <div className="p-5 pt-0 border-t border-[#e5e5e3] mt-2">
                   <div className="flex items-center justify-between py-3">
                     <span className="font-mono text-[16px] text-[#111111] font-medium">
-                      ${product.price} <span className="text-[10px] text-[#747878]">{product.currency || 'USD'}</span>
+                      ${product.price} <span className="text-xs text-[#595D5D]">{product.currency || 'USD'}</span>
                     </span>
                     <Link
                       href={`/product/${product.id}`}
-                      className="text-[10px] uppercase tracking-[0.16em] text-[#747878] hover:text-[#111111] flex items-center space-x-1"
+                      aria-label={`View technical monograph for ${product.name}`}
+                      className="text-xs uppercase tracking-[0.16em] text-[#595D5D] hover:text-[#111111] flex items-center space-x-1"
                     >
                       <span>Monograph</span>
                       <ArrowUpRight className="w-3 h-3" />
@@ -133,7 +134,8 @@ export default function CatalogGrid({
 
                   <button
                     onClick={() => addItem(product, 1, product.specifications)}
-                    className="w-full py-2.5 bg-[#111111] text-[#f9f9f7] hover:bg-[#2b2b2b] text-[9px] uppercase tracking-[0.2em] font-medium transition-colors flex items-center justify-center space-x-1.5 cursor-pointer"
+                    aria-label={`Acquire edition of ${product.name}`}
+                    className="w-full py-2.5 bg-[#111111] text-[#f9f9f7] hover:bg-[#2b2b2b] text-xs uppercase tracking-[0.2em] font-medium transition-colors flex items-center justify-center space-x-1.5 cursor-pointer"
                   >
                     <ShoppingBag className="w-3 h-3 text-[#c5a059]" />
                     <span>Acquire Edition</span>

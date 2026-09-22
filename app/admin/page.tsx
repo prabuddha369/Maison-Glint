@@ -56,7 +56,7 @@ export default function AdminPage() {
     description: '',
     price: 450,
     currency: 'USD',
-    images: ['/images/fig-01-table.png'],
+    images: ['/images/fig-01-table.webp'],
     specifications: {
       gauge: '18-Gauge Surgical 316L Core',
       diameter: '280 mm',
@@ -583,7 +583,7 @@ export default function AdminPage() {
                       description: '',
                       price: 550,
                       currency: 'USD',
-                      images: ['/images/fig-01-table.png'],
+                      images: ['/images/fig-01-table.webp'],
                       specifications: { gauge: '18-Gauge Surgical 316L Core' },
                       inStock: true,
                       editionTotal: 100,

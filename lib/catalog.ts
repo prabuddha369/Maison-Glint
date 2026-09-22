@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { getProducts, getProductById } from './products';
+import { getProducts, getProductById, INITIAL_PRODUCTS } from './products';
 import type { Product } from '../types/store';
 
 /**
@@ -13,7 +13,7 @@ export async function fetchActiveProducts(): Promise<Product[]> {
     return filtered.length > 0 ? filtered : allProducts;
   } catch (error) {
     console.warn('[Maison Glint Catalog] Secure active products query fallback:', error);
-    return [];
+    return INITIAL_PRODUCTS;
   }
 }
 
@@ -33,15 +33,15 @@ export async function fetchProductByIdOrPrefix(idOrPrefix: string): Promise<Prod
 
   if (matched) return matched;
 
-  return all[0] || null;
+  return all[0] || INITIAL_PRODUCTS[0] || null;
 }
 
 /**
  * React hook to access dynamic active products with state and refetch
  */
 export function useCatalog() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [version, setVersion] = useState<number>(0);
 
@@ -55,7 +55,9 @@ export function useCatalog() {
     fetchActiveProducts()
       .then((activeList) => {
         if (active) {
-          setProducts(activeList);
+          if (activeList.length > 0) {
+            setProducts(activeList);
+          }
           setError(null);
           setLoading(false);
         }
@@ -63,7 +65,6 @@ export function useCatalog() {
       .catch((err: unknown) => {
         if (active) {
           setError(err instanceof Error ? err.message : 'Failed to load catalog');
-          setProducts([]);
           setLoading(false);
         }
       });
@@ -79,8 +80,12 @@ export function useCatalog() {
  * React hook to access a single product by ID or prefix
  */
 export function useProduct(idOrPrefix: string = 'object-01') {
-  const [product, setProduct] = useState<Product | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const initial = INITIAL_PRODUCTS.find(
+    (p) => p.id === idOrPrefix || p.id.startsWith(idOrPrefix) || p.name.toLowerCase().includes(idOrPrefix.toLowerCase())
+  ) || INITIAL_PRODUCTS[0] || null;
+
+  const [product, setProduct] = useState<Product | null>(initial);
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [version, setVersion] = useState<number>(0);
 
@@ -94,7 +99,9 @@ export function useProduct(idOrPrefix: string = 'object-01') {
     fetchProductByIdOrPrefix(idOrPrefix)
       .then((found) => {
         if (active) {
-          setProduct(found || null);
+          if (found) {
+            setProduct(found);
+          }
           setError(null);
           setLoading(false);
         }
@@ -102,7 +109,6 @@ export function useProduct(idOrPrefix: string = 'object-01') {
       .catch((err: unknown) => {
         if (active) {
           setError(err instanceof Error ? err.message : 'Product load error');
-          setProduct(null);
           setLoading(false);
         }
       });

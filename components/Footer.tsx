@@ -53,7 +53,7 @@ export default function Footer() {
             </div>
 
             <div className="pt-4 border-t border-[#e5e5e3]">
-              <div className="text-[8px] sm:text-[9px] uppercase tracking-[0.25em] font-medium text-[#747878] mb-1">
+              <div className="text-xs uppercase tracking-[0.25em] font-medium text-[#595D5D] mb-1">
                 Archive Note
               </div>
               <div className="font-[family-name:var(--font-cormorant)] text-[14px] sm:text-[15px] italic text-[#111111] font-light">
@@ -64,10 +64,10 @@ export default function Footer() {
 
           {/* Column 2: Navigation Links */}
           <div className="md:col-span-3">
-            <div className="text-[9px] sm:text-[10px] uppercase tracking-[0.22em] font-semibold text-[#111111] mb-4 sm:mb-6">
+            <div className="text-xs uppercase tracking-[0.22em] font-semibold text-[#111111] mb-4 sm:mb-6">
               Navigation
             </div>
-            <ul className="space-y-3 sm:space-y-4 text-[10px] sm:text-[11px] uppercase tracking-[0.18em] font-medium text-[#444748]">
+            <ul className="space-y-3 sm:space-y-4 text-xs uppercase tracking-[0.18em] font-medium text-[#444748]">
               <li>
                 <a
                   href="#the-plate"
@@ -117,21 +117,21 @@ export default function Footer() {
 
           {/* Column 3: Connect & Socials */}
           <div className="md:col-span-4">
-            <div className="text-[9px] sm:text-[10px] uppercase tracking-[0.22em] font-semibold text-[#111111] mb-2 sm:mb-4">
+            <div className="text-xs uppercase tracking-[0.22em] font-semibold text-[#111111] mb-2 sm:mb-4">
               Connect & Socials
             </div>
             <p className="text-[12px] sm:text-[13px] text-[#444748] font-light leading-[1.6] mb-5 sm:mb-6">
               Direct inquiries, visual archives, and atelier correspondence across our channels.
             </p>
 
-            <ul className="space-y-3 text-[10px] sm:text-[11px] uppercase tracking-[0.16em] font-medium text-[#444748]">
+            <ul className="space-y-3 text-xs uppercase tracking-[0.16em] font-medium text-[#444748]">
               <li>
                 <a
                   href="mailto:founder@maisonglint.com"
                   className="flex items-center justify-between group hover:text-[#111111] transition-colors py-1 border-b border-[#e5e5e3]/60"
                 >
                   <span className="flex items-center space-x-2.5">
-                    <Mail className="w-3.5 h-3.5 text-[#747878] group-hover:text-[#111111] transition-colors" />
+                    <Mail className="w-3.5 h-3.5 text-[#595D5D] group-hover:text-[#111111] transition-colors" />
                     <span>Email · founder@maisonglint.com</span>
                   </span>
                   <ArrowUpRight className="w-3.5 h-3.5 text-[#8c8c8c] group-hover:text-[#111111] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
@@ -145,7 +145,7 @@ export default function Footer() {
                   className="flex items-center justify-between group hover:text-[#111111] transition-colors py-1 border-b border-[#e5e5e3]/60"
                 >
                   <span className="flex items-center space-x-2.5">
-                    <Instagram className="w-3.5 h-3.5 text-[#747878] group-hover:text-[#111111] transition-colors" />
+                    <Instagram className="w-3.5 h-3.5 text-[#595D5D] group-hover:text-[#111111] transition-colors" />
                     <span>Instagram</span>
                   </span>
                   <ArrowUpRight className="w-3.5 h-3.5 text-[#8c8c8c] group-hover:text-[#111111] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
@@ -156,10 +156,11 @@ export default function Footer() {
                   href="https://www.facebook.com/profile.php?id=61594635562041"
                   target="_blank"
                   rel="noopener noreferrer"
+                  aria-label="Follow Maison Glint on Facebook"
                   className="flex items-center justify-between group hover:text-[#111111] transition-colors py-1 border-b border-[#e5e5e3]/60"
                 >
                   <span className="flex items-center space-x-2.5">
-                    <Facebook className="w-3.5 h-3.5 text-[#747878] group-hover:text-[#111111] transition-colors" />
+                    <Facebook className="w-3.5 h-3.5 text-[#595D5D] group-hover:text-[#111111] transition-colors" />
                     <span>Facebook</span>
                   </span>
                   <ArrowUpRight className="w-3.5 h-3.5 text-[#8c8c8c] group-hover:text-[#111111] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
@@ -170,10 +171,11 @@ export default function Footer() {
                   href="https://www.pinterest.com/founder1568/_profile/"
                   target="_blank"
                   rel="noopener noreferrer"
+                  aria-label="Follow Maison Glint on Pinterest"
                   className="flex items-center justify-between group hover:text-[#111111] transition-colors py-1 border-b border-[#e5e5e3]/60"
                 >
                   <span className="flex items-center space-x-2.5">
-                    <PinterestIcon className="w-3.5 h-3.5 text-[#747878] group-hover:text-[#111111] transition-colors" />
+                    <PinterestIcon className="w-3.5 h-3.5 text-[#595D5D] group-hover:text-[#111111] transition-colors" />
                     <span>Pinterest</span>
                   </span>
                   <ArrowUpRight className="w-3.5 h-3.5 text-[#8c8c8c] group-hover:text-[#111111] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
@@ -184,10 +186,11 @@ export default function Footer() {
                   href="https://www.youtube.com/@maisonglint"
                   target="_blank"
                   rel="noopener noreferrer"
+                  aria-label="Follow Maison Glint on YouTube"
                   className="flex items-center justify-between group hover:text-[#111111] transition-colors py-1 border-b border-[#e5e5e3]/60"
                 >
                   <span className="flex items-center space-x-2.5">
-                    <Youtube className="w-3.5 h-3.5 text-[#747878] group-hover:text-[#111111] transition-colors" />
+                    <Youtube className="w-3.5 h-3.5 text-[#595D5D] group-hover:text-[#111111] transition-colors" />
                     <span>YouTube</span>
                   </span>
                   <ArrowUpRight className="w-3.5 h-3.5 text-[#8c8c8c] group-hover:text-[#111111] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
@@ -200,7 +203,7 @@ export default function Footer() {
 
       {/* Bottom Legal & Craft Strip */}
       <div className="border-t border-[#e5e5e3] py-5 sm:py-6 px-4 sm:px-6 lg:px-12">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3 sm:gap-4 text-[8px] sm:text-[9px] md:text-[10px] uppercase tracking-[0.16em] sm:tracking-[0.18em] text-[#747878] text-center md:text-left">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3 sm:gap-4 text-xs uppercase tracking-[0.16em] sm:tracking-[0.18em] text-[#595D5D] text-center md:text-left">
           <div>© 2026 Maison Glint. All Rights Reserved.</div>
 
           <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 md:gap-6 text-center">

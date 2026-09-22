@@ -109,7 +109,7 @@ export default function OrderFailedPage() {
           </Link>
           <Link
             href="/account"
-            className="text-[10px] uppercase tracking-[0.16em] text-[#747878] hover:text-[#111111] transition-colors"
+            className="text-xs uppercase tracking-[0.16em] text-[#595D5D] hover:text-[#111111] transition-colors"
           >
             Collector Account
           </Link>
@@ -126,10 +126,10 @@ export default function OrderFailedPage() {
 
             <div className="flex-1">
               <div className="flex flex-wrap items-center gap-3 mb-2">
-                <span className="text-[10px] uppercase tracking-[0.24em] font-semibold text-[#747878]">
+                <span className="text-xs uppercase tracking-[0.24em] font-semibold text-[#595D5D]">
                   Payment Declined
                 </span>
-                <span className="inline-flex items-center px-2.5 py-1 bg-[#fff8f8] border border-[#f5c6cb] text-[#721c24] text-[10px] uppercase tracking-[0.15em] font-medium">
+                <span className="inline-flex items-center px-2.5 py-1 bg-[#fff8f8] border border-[#f5c6cb] text-[#721c24] text-xs uppercase tracking-[0.15em] font-medium">
                   Gateway Returned Failure
                 </span>
               </div>
@@ -138,7 +138,7 @@ export default function OrderFailedPage() {
                 Payment Could Not Be Processed
               </h1>
 
-              <p className="text-[13px] text-[#747878] font-light leading-relaxed">
+              <p className="text-[13px] text-[#595D5D] font-light leading-relaxed">
                 Your order <span className="font-mono font-semibold text-[#111111]">{orderId}</span> has been preserved in our system. No charge was made. You may retry with the same or a different card.
               </p>
             </div>
@@ -148,7 +148,7 @@ export default function OrderFailedPage() {
         {/* Test Card Info (dev only) */}
         {isDev && (
           <div className="bg-[#f0f4ff] border border-[#c7d7ff] p-6">
-            <p className="text-[10px] uppercase tracking-[0.2em] font-semibold text-[#3b5bdb] mb-3">
+            <p className="text-xs uppercase tracking-[0.2em] font-semibold text-[#3b5bdb] mb-3">
               Development Mode — Cashfree Sandbox Test Cards
             </p>
             <div className="space-y-2 text-xs font-mono text-[#333]">
@@ -168,10 +168,10 @@ export default function OrderFailedPage() {
                 <span className="text-[#3b5bdb] font-semibold">USD Card (Intl)</span>
                 <span>4266 9020 7958 3702 · Exp 09/28 · CVV 681</span>
               </div>
-              <div className="mt-2 text-[#666] text-[11px]">
+              <div className="mt-2 text-[#666] text-xs">
                 Test OTP: <span className="font-bold text-[#111111]">111000</span> (Name: <span className="font-bold text-[#111111]">Test</span>)
               </div>
-              <div className="text-[10px] text-[#6b7280] italic">
+              <div className="text-xs text-[#595D5D] italic">
                 Note: USD cards require &ldquo;International Payments&rdquo; activated in Cashfree Merchant Dashboard.
               </div>
             </div>
@@ -180,7 +180,7 @@ export default function OrderFailedPage() {
 
         {/* Common Reasons */}
         <div className="bg-[#ffffff] border border-[#e5e5e3] p-6">
-          <p className="text-[10px] uppercase tracking-[0.2em] font-semibold text-[#8c8c8c] mb-4">
+          <p className="text-xs uppercase tracking-[0.2em] font-semibold text-[#595D5D] mb-4">
             Common Reasons for Decline
           </p>
           <ul className="space-y-2 text-xs text-[#555555]">
@@ -201,7 +201,7 @@ export default function OrderFailedPage() {
               <span>Transaction flagged by your bank's fraud prevention system</span>
             </li>
           </ul>
-          <p className="mt-4 text-xs text-[#8c8c8c]">
+          <p className="mt-4 text-xs text-[#595D5D]">
             We recommend trying a different card or contacting your bank before retrying.
           </p>
         </div>
@@ -246,10 +246,10 @@ export default function OrderFailedPage() {
 
         {/* Order Reference */}
         <div className="text-center space-y-2">
-          <p className="text-[10px] uppercase tracking-[0.2em] text-[#8c8c8c]">
+          <p className="text-xs uppercase tracking-[0.2em] text-[#595D5D]">
             Order Reference: <span className="font-mono text-[#111111] font-semibold">{orderId}</span>
           </p>
-          <p className="text-[11px] text-[#8c8c8c]">
+          <p className="text-xs text-[#595D5D]">
             For support, contact{' '}
             <a
               href="mailto:founder@maisonglint.com"
@@ -259,7 +259,7 @@ export default function OrderFailedPage() {
             </a>{' '}
             with your order reference.
           </p>
-          <div className="flex items-center justify-center space-x-2 text-[9px] uppercase tracking-[0.15em] text-[#c0c0c0] pt-2">
+          <div className="flex items-center justify-center space-x-2 text-xs uppercase tracking-[0.15em] text-[#595D5D] pt-2">
             <Lock className="w-3 h-3" />
             <span>Secured by Cashfree Payments · PCI DSS Compliant</span>
           </div>

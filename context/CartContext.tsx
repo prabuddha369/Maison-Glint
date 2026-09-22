@@ -118,7 +118,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         price: product.price,
         currency: product.currency || 'USD',
         quantity: clampedQty,
-        image: product.images[0] || '/images/fig-01-table.png',
+        image: product.images[0] || '/images/fig-01-table.webp',
         specifications: specifications || product.specifications,
       };
       return [...prev, newItem];

@@ -37,7 +37,7 @@ const LIGHTING_STUDIES: Record<string, LightingStudy> = {
     key: 'morning',
     label: 'Morning Sun',
     angle: 45,
-    image: '/images/morning-light-study.jpg',
+    image: '/images/products/finish-study-morning.webp',
     imageAlt: 'Maison Glint Object 01 catching crisp morning sunlight across raw linen and travertine',
     opticalDescriptor: '45° Incident Sunlight · Clean Specular Bloom',
     colorTemp: '4500K Natural Daylight',
@@ -50,7 +50,7 @@ const LIGHTING_STUDIES: Record<string, LightingStudy> = {
     key: 'candlelight',
     label: 'Candlelight Grazing',
     angle: 22,
-    image: '/images/candlelight-study.jpg',
+    image: '/images/products/finish-study-candlelight.webp',
     imageAlt: 'Maison Glint Object 01 reflecting intimate evening candlelight on rustic oak',
     opticalDescriptor: '22° Low Grazing Flame · Deep Amber Radiance',
     colorTemp: '2200K Intimate Candlelight',
@@ -63,7 +63,7 @@ const LIGHTING_STUDIES: Record<string, LightingStudy> = {
     key: 'zenith',
     label: 'Overhead Ambient',
     angle: 70,
-    image: '/images/overhead-ambient-study.jpg',
+    image: '/images/products/finish-study-zenith.webp',
     imageAlt: 'Maison Glint Object 01 under soft diffuse overhead dining ambient light',
     opticalDescriptor: '70° Diffuse Ceiling Illumination · Soft Field',
     colorTemp: '3200K Soft Warm Ambient',
@@ -113,7 +113,7 @@ export default function FinishPhilosophy({
   if (loading || !activeProduct) {
     return (
       <section id="the-finish" className="min-h-[50vh] border-b border-[#e5e5e3] flex items-center justify-center">
-        <div className="text-[11px] uppercase tracking-[0.2em] text-[#747878] animate-pulse font-mono">
+        <div className="text-xs uppercase tracking-[0.2em] text-[#595D5D] animate-pulse font-mono">
           Loading Surface Optics...
         </div>
       </section>
@@ -142,7 +142,7 @@ export default function FinishPhilosophy({
           >
             {/* Eyebrow & Optional Carousel Switcher */}
             <div className="flex items-center justify-between mb-3 sm:mb-4">
-              <div className="text-[10px] md:text-[11px] uppercase tracking-[0.2em] font-medium text-[#747878]">
+              <div className="text-xs uppercase tracking-[0.2em] font-medium text-[#595D5D]">
                 {editorial?.sectionLabel || '02 / The Finish & Philosophy'}
               </div>
               {products && products.length > 1 && (
@@ -150,17 +150,17 @@ export default function FinishPhilosophy({
                   <button
                     aria-label="Previous product"
                     onClick={previous}
-                    className="p-1 text-[#747878] hover:text-[#111111] transition-colors cursor-pointer"
+                    className="p-1 text-[#595D5D] hover:text-[#111111] transition-colors cursor-pointer"
                   >
                     <ArrowLeft className="w-3.5 h-3.5" />
                   </button>
-                  <span className="font-mono text-[9px] text-[#747878]">
+                  <span className="font-mono text-xs text-[#595D5D]">
                     {String(activeIndex + 1).padStart(2, '0')} / {String(products.length).padStart(2, '0')}
                   </span>
                   <button
                     aria-label="Next product"
                     onClick={next}
-                    className="p-1 text-[#747878] hover:text-[#111111] transition-colors cursor-pointer"
+                    className="p-1 text-[#595D5D] hover:text-[#111111] transition-colors cursor-pointer"
                   >
                     <ArrowRight className="w-3.5 h-3.5" />
                   </button>
@@ -169,34 +169,23 @@ export default function FinishPhilosophy({
             </div>
 
             <h2 className="font-[family-name:var(--font-cormorant)] text-[32px] sm:text-[44px] md:text-[54px] font-light leading-[1.12] text-[#111111] mb-6 sm:mb-8">
-              {editorial?.title || 'Made of steel.'} <br />
-              <span className="italic font-normal">{editorial?.titleEmphasis || 'Alive with light.'}</span>
+              {editorial?.title || 'Form Follows Reflection.'}
             </h2>
 
             <div className="space-y-4 sm:space-y-6 text-[14px] sm:text-[16px] text-[#444748] font-light leading-[1.75] max-w-xl">
-              {editorial?.paragraphs && editorial.paragraphs.length > 0 ? (
-                editorial.paragraphs.map((paragraph, index) => (
-                  <p key={index}>{paragraph}</p>
-                ))
-              ) : (
-                <>
-                  <p>
-                    A curve. A glint. The room, reflected. A surface that becomes
-                    part of the setting.
-                  </p>
-                  <p>
-                    Unlike static tableware, mirror-finished steel continuously
-                    mirrors the season, the lighting, the faces of guests, and the
-                    architecture of the space. It is not merely an object; it is an
-                    optical memory of the gathering.
-                  </p>
-                </>
-              )}
+              <p>
+                {editorial?.paragraphs?.[0] ||
+                  'The Glint Plate is executed in cold-forged 316 surgical stainless steel, subjected to a seven-stage mechanical buffing ritual culminating in an unblemished 8K specular chrome mirror finish.'}
+              </p>
+              <p>
+                {editorial?.paragraphs?.[1] ||
+                  'Rather than demanding attention with ornament, it yields to its surroundings. At dawn it absorbs the sharp blue light of first service; by candlelit midnight it pools deep ambers and shifting silhouettes across its rim.'}
+              </p>
             </div>
 
             {/* Interactive preset selector */}
             <div className="pt-8 sm:pt-10 mt-6 border-t border-[#e5e5e3]">
-              <div className="text-[10px] uppercase tracking-[0.2em] font-semibold text-[#747878] mb-3">
+              <div className="text-xs uppercase tracking-[0.2em] font-semibold text-[#595D5D] mb-3">
                 {editorial?.presetLabel || 'Select Optical Light State'}
               </div>
               <div className="flex flex-wrap gap-2">
@@ -214,7 +203,7 @@ export default function FinishPhilosophy({
                           setSelectedKey(preset.key);
                           setImageError(false);
                         }}
-                        className={`px-3 sm:px-3.5 py-1.5 sm:py-2 text-[9px] sm:text-[10px] uppercase tracking-[0.16em] font-medium transition-all border cursor-pointer ${
+                        className={`px-3 sm:px-3.5 py-1.5 sm:py-2 text-xs uppercase tracking-[0.16em] font-medium transition-all border cursor-pointer ${
                           isActive
                             ? 'bg-[#111111] text-[#f9f9f7] border-[#111111]'
                             : 'bg-[#f4f4f2] text-[#444748] border-[#e5e5e3] hover:border-[#111111]'
@@ -225,7 +214,7 @@ export default function FinishPhilosophy({
                     );
                   })
                 ) : (
-                  <span className="px-3 py-1.5 text-[9px] uppercase tracking-[0.16em] bg-[#f4f4f2] text-[#747878] border border-[#e5e5e3] font-mono">
+                  <span className="px-3 py-1.5 text-xs uppercase tracking-[0.16em] bg-[#f4f4f2] text-[#595D5D] border border-[#e5e5e3] font-mono">
                     8K Mirror Polish Specular Optics
                   </span>
                 )}
@@ -250,11 +239,11 @@ export default function FinishPhilosophy({
               <div className="flex items-center justify-between border-b border-[#e5e5e3] pb-4 mb-5">
                 <div className="flex items-center space-x-2.5">
                   <span className="w-2 h-2 rounded-none bg-[#c5a059]" />
-                  <span className="text-[10px] uppercase tracking-[0.22em] font-semibold text-[#111111]">
+                  <span className="text-xs uppercase tracking-[0.22em] font-semibold text-[#111111]">
                     THE ART OF LIGHT
                   </span>
                 </div>
-                <span className="text-[9px] uppercase tracking-[0.2em] font-mono text-[#747878] font-medium">
+                <span className="text-xs uppercase tracking-[0.2em] font-mono text-[#595D5D] font-medium">
                   ARCHIVE STUDY FIG. 02
                 </span>
               </div>
@@ -276,7 +265,7 @@ export default function FinishPhilosophy({
                       fill
                       sizes="(max-width: 1024px) 100vw, 50vw"
                       className="object-cover"
-                      priority
+                      loading="lazy"
                       referrerPolicy="no-referrer"
                       onError={() => setImageError(true)}
                     />
@@ -286,13 +275,13 @@ export default function FinishPhilosophy({
                     {/* Floating Optical Metric Badge */}
                     <div className="absolute top-3 left-3 bg-[#111111]/85 backdrop-blur-md px-3 py-1.5 border border-white/20 text-[#f9f9f7] flex items-center space-x-2">
                       <span className="w-1.5 h-1.5 rounded-full bg-[#c5a059] animate-pulse" />
-                      <span className="text-[9px] uppercase tracking-[0.18em] font-mono font-medium">
+                      <span className="text-xs uppercase tracking-[0.18em] font-mono font-medium">
                         {study.opticalDescriptor}
                       </span>
                     </div>
 
                     {/* Floating Bottom Telemetry Overlay */}
-                    <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-[#f9f9f7] text-[10px] font-mono tracking-wider drop-shadow-md">
+                    <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-[#f9f9f7] text-xs font-mono tracking-wider drop-shadow-md">
                       <span className="bg-black/60 px-2.5 py-1 backdrop-blur-sm">
                         ANGLE: {study.angle}°
                       </span>
@@ -305,48 +294,48 @@ export default function FinishPhilosophy({
               </div>
 
               {/* Evocative Narrative Observation */}
-              <p className="text-[12px] text-[#59554F] font-light italic mt-4 leading-relaxed min-h-[36px]">
+              <p className="text-xs text-[#59554F] font-light italic mt-4 leading-relaxed min-h-[36px]">
                 "{study.narrativeCaption}"
               </p>
 
               {/* Bottom Atmospheric Telemetry Grid (4 columns) */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-5 mt-4 border-t border-[#f0f0ee] text-center">
                 <div className="bg-[#f9f9f7] p-3 border border-[#e5e5e3]">
-                  <div className="text-[8px] sm:text-[9px] uppercase tracking-[0.2em] font-medium text-[#747878] mb-1">
+                  <div className="text-xs uppercase tracking-[0.2em] font-medium text-[#595D5D] mb-1">
                     Color Temp
                   </div>
-                  <div className="text-[11px] sm:text-[12px] font-semibold text-[#111111] truncate">
+                  <div className="text-xs sm:text-[12px] font-semibold text-[#111111] truncate">
                     {study.colorTemp.split(' ')[0]}
                   </div>
                 </div>
                 <div className="bg-[#f9f9f7] p-3 border border-[#e5e5e3]">
-                  <div className="text-[8px] sm:text-[9px] uppercase tracking-[0.2em] font-medium text-[#747878] mb-1">
+                  <div className="text-xs uppercase tracking-[0.2em] font-medium text-[#595D5D] mb-1">
                     Surface State
                   </div>
                   <div
-                    className="text-[11px] sm:text-[12px] font-semibold text-[#111111] truncate"
+                    className="text-xs sm:text-[12px] font-semibold text-[#111111] truncate"
                     title={study.surfaceBehavior}
                   >
                     {study.surfaceBehavior}
                   </div>
                 </div>
                 <div className="bg-[#f9f9f7] p-3 border border-[#e5e5e3]">
-                  <div className="text-[8px] sm:text-[9px] uppercase tracking-[0.2em] font-medium text-[#747878] mb-1">
+                  <div className="text-xs uppercase tracking-[0.2em] font-medium text-[#595D5D] mb-1">
                     Atmosphere
                   </div>
                   <div
-                    className="text-[11px] sm:text-[12px] font-semibold text-[#111111] truncate"
+                    className="text-xs sm:text-[12px] font-semibold text-[#111111] truncate"
                     title={study.hostingAtmosphere}
                   >
                     {study.hostingAtmosphere}
                   </div>
                 </div>
                 <div className="bg-[#f9f9f7] p-3 border border-[#e5e5e3]">
-                  <div className="text-[8px] sm:text-[9px] uppercase tracking-[0.2em] font-medium text-[#747878] mb-1">
+                  <div className="text-xs uppercase tracking-[0.2em] font-medium text-[#595D5D] mb-1">
                     Material Harmony
                   </div>
                   <div
-                    className="text-[11px] sm:text-[12px] font-semibold text-[#111111] truncate"
+                    className="text-xs sm:text-[12px] font-semibold text-[#111111] truncate"
                     title={study.materialHarmony}
                   >
                     {study.materialHarmony}

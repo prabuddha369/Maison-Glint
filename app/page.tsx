@@ -1,210 +1,74 @@
-'use client';
+import HomeClient from '@/components/HomeClient';
 
-import { useState } from 'react';
-import { useCart } from '@/hooks/useCart';
-import { useCatalog } from '@/lib/catalog';
-import type { Product } from '@/types/store';
-import TopAnnouncement from '@/components/TopAnnouncement';
-import Navbar from '@/components/Navbar';
-import HeroSection from '@/components/HeroSection';
-import ObjectShowcase from '@/components/ObjectShowcase';
-import FinishPhilosophy from '@/components/FinishPhilosophy';
-import Specifications from '@/components/Specifications';
-import CatalogGrid from '@/components/CatalogGrid';
-import AtTheTable from '@/components/AtTheTable';
-import AcquisitionSection from '@/components/AcquisitionSection';
-import Footer from '@/components/Footer';
-import PriorityAccessModal from '@/components/PriorityAccessModal';
-import AcquisitionBagDrawer from '@/components/AcquisitionBagDrawer';
-import RitualModal from '@/components/RitualModal';
+// JSON-LD Structured Data for SEO
+const organizationSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'Maison Glint',
+  url: 'https://www.maisonglint.com',
+  logo: 'https://www.maisonglint.com/primary_logo_light.svg',
+  description: 'Modernist chromeware and editorial tableware. Considered table settings around reflective steel, tactile materials, and the pleasure of gathering.',
+  sameAs: [],
+};
+
+const websiteSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'Maison Glint',
+  url: 'https://www.maisonglint.com',
+};
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: 'Home',
+      item: 'https://www.maisonglint.com',
+    },
+  ],
+};
+
+const productSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Product',
+  name: 'Object 01 — The Glint Plate',
+  description: 'A considered table setting in mirror-polished stainless steel. Hand-finished, serialized atelier edition.',
+  image: 'https://www.maisonglint.com/images/products/object-01-the-glint-plate-hero-fig01.webp',
+  brand: {
+    '@type': 'Brand',
+    name: 'Maison Glint',
+  },
+  material: 'Grade 316 Stainless Steel',
+  offers: {
+    '@type': 'Offer',
+    availability: 'https://schema.org/LimitedAvailability',
+    priceCurrency: 'USD',
+  },
+};
 
 export default function Home() {
-  const { openCart, itemCount } = useCart();
-  const { products, loading: productsLoading } = useCatalog();
-  const [activeProductIndex, setActiveProductIndex] = useState(0);
-  const [isManualPause, setIsManualPause] = useState(false);
-  const [priorityModalOpen, setPriorityModalOpen] = useState(false);
-  const [bagDrawerOpen, setBagDrawerOpen] = useState(false);
-  const [bagCount, setBagCount] = useState(1);
-  const [selectedRitual, setSelectedRitual] = useState<{
-    title: string;
-    subtitle: string;
-    image: string;
-    description: string;
-    curation: string[];
-  } | null>(null);
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
-
-  const activeProduct = products[activeProductIndex] || products[0];
-
-  const handleNextProduct = () => {
-    setIsManualPause(true);
-    setActiveProductIndex((prev) => (products.length ? (prev + 1) % products.length : 0));
-  };
-
-  const handlePreviousProduct = () => {
-    setIsManualPause(true);
-    setActiveProductIndex((prev) => (products.length ? (prev - 1 + products.length) % products.length : 0));
-  };
-
-  const handleSelectProduct = (index: number) => {
-    setIsManualPause(true);
-    setActiveProductIndex(index % (products.length || 1));
-  };
-
-  const handleHeroProductChange = (product: Product, index: number) => {
-    if (!isManualPause) {
-      setActiveProductIndex(index);
-    }
-  };
-
-  const showToast = (msg: string) => {
-    setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 3500);
-  };
-
-  const handleSuccessfulAllocation = (email: string, serial: string) => {
-    showToast(`Serial reservation ${serial} registered for ${email}`);
-  };
-
-  const handleProceedCheckout = () => {
-    setBagDrawerOpen(false);
-    setPriorityModalOpen(true);
-  };
-
-  const scrollToPlate = () => {
-    const target = document.querySelector('#the-plate');
-    if (target) {
-      target.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
   return (
-    <main className="min-h-screen bg-[#f9f9f7] text-[#111111] flex flex-col selection:bg-[#111111] selection:text-[#f9f9f7]">
-      {/* Toast Notification */}
-      {toastMessage && (
-        <div className="fixed top-20 right-6 z-50 bg-[#111111] text-[#f9f9f7] px-5 py-3 text-[11px] uppercase tracking-[0.18em] shadow-xl border border-[#c5a059] animate-fadeIn flex items-center space-x-2">
-          <span className="w-1.5 h-1.5 bg-[#c5a059]" />
-          <span>{toastMessage}</span>
-        </div>
-      )}
-
-      {/* Top Banner Notice */}
-      <TopAnnouncement onOpenAllocation={() => setPriorityModalOpen(true)} />
-
-      {/* Main Luxury Navigation */}
-      <Navbar
-        onOpenBag={openCart}
-        onOpenAllocation={() => setPriorityModalOpen(true)}
-        bagCount={itemCount}
-        activeProduct={activeProduct}
-        productName={activeProduct?.name}
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
       />
-
-      {/* Hero Section */}
-      <HeroSection
-        products={products}
-        loading={productsLoading}
-        activeProductIndex={activeProductIndex}
-        onReserveClick={() => setPriorityModalOpen(true)}
-        onDiscoverClick={scrollToPlate}
-        onActiveProductChange={handleHeroProductChange}
-        onSelectProductIndex={(idx) => {
-          if (!isManualPause) {
-            setActiveProductIndex(idx);
-          }
-        }}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
       />
-
-      {/* 01 / The Glint Plate Showcase */}
-      <ObjectShowcase
-        products={products}
-        loading={productsLoading}
-        activeProduct={activeProduct}
-        activeIndex={activeProductIndex}
-        onNext={handleNextProduct}
-        onPrevious={handlePreviousProduct}
-        onRequestPriorityAccess={() => setPriorityModalOpen(true)}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
-
-      {/* 02 / The Finish & Philosophy */}
-      <FinishPhilosophy
-        products={products}
-        loading={productsLoading}
-        activeProduct={activeProduct}
-        activeIndex={activeProductIndex}
-        onNext={handleNextProduct}
-        onPrevious={handlePreviousProduct}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
       />
-
-      {/* 03 / Specifications */}
-      <Specifications
-        products={products}
-        loading={productsLoading}
-        activeProduct={activeProduct}
-        activeIndex={activeProductIndex}
-        onNext={handleNextProduct}
-        onPrevious={handlePreviousProduct}
-      />
-
-      {/* 04 / The Atelier Collection (Dynamic Multi-Object Catalog) */}
-      <CatalogGrid
-        products={products}
-        loading={productsLoading}
-        onSelectProduct={(prod, idx) => {
-          handleSelectProduct(idx);
-          scrollToPlate();
-        }}
-      />
-
-      {/* 05 / At The Table */}
-      <AtTheTable
-        products={products}
-        loading={productsLoading}
-        activeProduct={activeProduct}
-        activeIndex={activeProductIndex}
-        onNext={handleNextProduct}
-        onPrevious={handlePreviousProduct}
-        onSelectRitual={(ritual) => setSelectedRitual(ritual)}
-      />
-
-      {/* Newsletter Subscription */}
-      <AcquisitionSection
-        product={activeProduct || products[0]}
-        onSubscribe={(email) => showToast(`Newsletter subscription registered for ${email}`)}
-      />
-
-      {/* Atelier Footer */}
-      <Footer />
-
-      {/* Priority Access / Allocation Modal */}
-      <PriorityAccessModal
-        isOpen={priorityModalOpen}
-        onClose={() => setPriorityModalOpen(false)}
-        onSuccess={handleSuccessfulAllocation}
-        products={products}
-        selectedProductId={activeProduct?.id}
-      />
-
-      {/* Acquisition Bag Drawer */}
-      <AcquisitionBagDrawer
-        isOpen={bagDrawerOpen}
-        onClose={() => setBagDrawerOpen(false)}
-        quantity={bagCount}
-        onUpdateQuantity={(q) => {
-          setBagCount(q);
-          if (q > 0) showToast(`Acquisition drawer updated: ${q} exemplar(s)`);
-        }}
-        onProceedCheckout={handleProceedCheckout}
-        product={activeProduct || products[0]}
-      />
-
-      {/* Ritual Lightbox Inspector Modal */}
-      <RitualModal
-        ritual={selectedRitual}
-        onClose={() => setSelectedRitual(null)}
-        onRequestAccess={() => setPriorityModalOpen(true)}
-      />
-    </main>
+      <HomeClient />
+    </>
   );
 }

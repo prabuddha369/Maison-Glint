@@ -46,7 +46,7 @@ export default function AtTheTable({
   if (loading || !activeProduct || !editorial || editorial.rituals.length === 0) {
     return (
       <section id="at-the-table" className="min-h-[40vh] border-b border-[#e5e5e3] flex items-center justify-center">
-        <div className="text-[11px] uppercase tracking-[0.2em] text-[#747878] animate-pulse font-mono">
+        <div className="text-xs uppercase tracking-[0.2em] text-[#595D5D] animate-pulse font-mono">
           Loading Rituals of the Table...
         </div>
       </section>
@@ -59,7 +59,7 @@ export default function AtTheTable({
         <div className="border-b border-[#e5e5e3] pb-8">
           {/* Eyebrow & Carousel Switcher */}
           <div className="flex items-center justify-between mb-3 sm:mb-4">
-            <div className="text-[10px] md:text-[11px] uppercase tracking-[0.2em] font-medium text-[#747878]">
+            <div className="text-xs uppercase tracking-[0.2em] font-medium text-[#595D5D]">
               {editorial.sectionLabel}
             </div>
             {products && products.length > 1 && (
@@ -67,17 +67,17 @@ export default function AtTheTable({
                 <button
                   aria-label="Previous product"
                   onClick={previous}
-                  className="p-1 text-[#747878] hover:text-[#111111] transition-colors cursor-pointer"
+                  className="p-1 text-[#595D5D] hover:text-[#111111] transition-colors cursor-pointer"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />
                 </button>
-                <span className="font-mono text-[9px] text-[#747878] whitespace-nowrap">
+                <span className="font-mono text-xs text-[#595D5D] whitespace-nowrap">
                   {String(activeIndex + 1).padStart(2, '0')} / {String(products.length).padStart(2, '0')}
                 </span>
                 <button
                   aria-label="Next product"
                   onClick={next}
-                  className="p-1 text-[#747878] hover:text-[#111111] transition-colors cursor-pointer"
+                  className="p-1 text-[#595D5D] hover:text-[#111111] transition-colors cursor-pointer"
                 >
                   <ArrowRight className="w-3.5 h-3.5" />
                 </button>
@@ -98,6 +98,7 @@ export default function AtTheTable({
             return (
               <button
                 key={ritual.id || ritual.title}
+                aria-label={`Inspect ritual: ${ritual.title} - ${ritual.subtitle}`}
                 onClick={() =>
                   onSelectRitual({
                     title: ritual.title,
@@ -119,9 +120,9 @@ export default function AtTheTable({
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
                 <div className="absolute inset-x-0 bottom-0 p-5 text-white">
-                  <div className="text-[9px] uppercase tracking-[0.2em] text-[#e5c98b] mb-2">{ritual.title}</div>
+                  <div className="text-xs uppercase tracking-[0.2em] text-[#e5c98b] mb-2">{ritual.title}</div>
                   <div className="font-[family-name:var(--font-cormorant)] text-[22px] italic">{ritual.subtitle}</div>
-                  <div className="mt-3 inline-flex items-center gap-2 text-[9px] uppercase tracking-[0.16em]">
+                  <div className="mt-3 inline-flex items-center gap-2 text-xs uppercase tracking-[0.16em]">
                     <ZoomIn className="w-3 h-3" /> {activeProduct.name}
                   </div>
                 </div>

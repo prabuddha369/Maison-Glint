@@ -105,7 +105,7 @@ export default function Navbar({
   return (
     <>
       {confirmationNotice && (
-        <div className="fixed top-20 right-4 sm:right-6 z-50 max-w-sm bg-[#f0f9f0] border border-[#cceccc] text-[#166534] px-4 py-3 shadow-lg text-[11px] leading-relaxed">
+        <div className="fixed top-20 right-4 sm:right-6 z-50 max-w-sm bg-[#f0f9f0] border border-[#cceccc] text-[#166534] px-4 py-3 shadow-lg text-xs leading-relaxed">
           {confirmationNotice}
         </div>
       )}
@@ -139,7 +139,7 @@ export default function Navbar({
               id="mobile-menu-toggle"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label="Toggle navigation menu"
-              className="md:hidden flex items-center space-x-2 text-[10px] sm:text-[11px] uppercase tracking-[0.18em] font-medium text-[#111111] p-1.5 hover:text-[#c5a059] transition-colors cursor-pointer"
+              className="md:hidden flex items-center space-x-2 text-xs uppercase tracking-[0.18em] font-medium text-[#111111] p-1.5 hover:text-[#c5a059] transition-colors cursor-pointer"
             >
               {mobileMenuOpen ? (
                 <X className="w-4 h-4 stroke-[1.5]" />
@@ -162,7 +162,7 @@ export default function Navbar({
                   key={link.label}
                   href={link.href}
                   onClick={(e) => handleScrollTo(e, link.href)}
-                  className="text-[11px] uppercase tracking-[0.18em] font-medium text-[#444748] hover:text-[#111111] relative py-1 transition-colors whitespace-nowrap after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1px] after:bg-[#111111] hover:after:w-full after:transition-all after:duration-300"
+                  className="text-xs uppercase tracking-[0.18em] font-medium text-[#444748] hover:text-[#111111] relative py-1 transition-colors whitespace-nowrap after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1px] after:bg-[#111111] hover:after:w-full after:transition-all after:duration-300"
                 >
                   {link.label}
                 </a>
@@ -175,7 +175,7 @@ export default function Navbar({
                 id="nav-explore-btn"
                 onClick={handleAcquire}
                 title={resolvedProductName}
-                className="hidden lg:inline-flex items-center space-x-2 bg-[#111111] text-[#f9f9f7] px-3.5 py-2 text-[10px] uppercase tracking-[0.16em] font-medium hover:bg-[#2b2b2b] transition-all cursor-pointer border border-[#111111] shrink-0"
+                className="hidden lg:inline-flex items-center space-x-2 bg-[#111111] text-[#f9f9f7] px-3.5 py-2 text-xs uppercase tracking-[0.16em] font-medium hover:bg-[#2b2b2b] transition-all cursor-pointer border border-[#111111] shrink-0"
               >
                 <AnimatePresence mode="wait" initial={false}>
                   <motion.span
@@ -201,7 +201,7 @@ export default function Navbar({
               >
                 <ShoppingBag className="w-4 h-4 stroke-[1.5]" />
                 {mounted && displayBagCount > 0 && (
-                  <span className="absolute top-1 right-0.5 w-4 h-4 bg-[#111111] text-[#f9f9f7] text-[9px] font-medium flex items-center justify-center border border-[#f9f9f7]">
+                  <span className="absolute top-0.5 -right-0.5 min-w-4 h-4 px-1 bg-[#111111] text-[#f9f9f7] text-xs font-medium flex items-center justify-center border border-[#f9f9f7] leading-none">
                     {displayBagCount}
                   </span>
                 )}
@@ -258,7 +258,7 @@ export default function Navbar({
                     setMobileMenuOpen(false);
                     handleAcquire();
                   }}
-                  className="w-full py-3.5 bg-[#111111] text-[#f9f9f7] text-[10px] uppercase tracking-[0.18em] font-medium flex items-center justify-center space-x-2 border border-[#111111]"
+                  className="w-full py-3.5 bg-[#111111] text-[#f9f9f7] text-xs uppercase tracking-[0.18em] font-medium flex items-center justify-center space-x-2 border border-[#111111]"
                 >
                   <AnimatePresence mode="wait" initial={false}>
                     <motion.span

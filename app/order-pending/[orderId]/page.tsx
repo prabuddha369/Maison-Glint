@@ -92,7 +92,7 @@ export default function OrderPendingPage() {
           >
             Maison Glint
           </Link>
-          <span className="text-[10px] uppercase tracking-[0.16em] text-[#747878]">
+          <span className="text-xs uppercase tracking-[0.16em] text-[#595D5D]">
             Payment Verification
           </span>
         </div>
@@ -119,7 +119,7 @@ export default function OrderPendingPage() {
 
         {/* Status Text */}
         <div className="space-y-3">
-          <p className="text-[10px] uppercase tracking-[0.3em] text-[#8c8c8c]">
+          <p className="text-xs uppercase tracking-[0.3em] text-[#595D5D]">
             {timedOut ? 'Verification Taking Longer Than Expected' : 'Awaiting Payment Confirmation'}
           </p>
           <h1 className="font-[family-name:var(--font-cormorant)] text-3xl sm:text-4xl font-light text-[#111111]">
@@ -129,7 +129,7 @@ export default function OrderPendingPage() {
                 ? 'Payment Confirmed'
                 : `Your Payment Is Being Verified${dots}`}
           </h1>
-          <p className="text-[13px] text-[#747878] font-light leading-relaxed max-w-md mx-auto">
+          <p className="text-[13px] text-[#595D5D] font-light leading-relaxed max-w-md mx-auto">
             {timedOut
               ? 'The payment gateway has not returned a final status within the expected window. Your order has been preserved. Check your order status in your account.'
               : pollError
@@ -147,7 +147,7 @@ export default function OrderPendingPage() {
                 style={{ width: `${progressPercent}%` }}
               />
             </div>
-            <p className="text-[10px] text-[#8c8c8c] mt-2 tracking-wider">
+            <p className="text-xs text-[#595D5D] mt-2 tracking-wider">
               Verifying{' '}
               {elapsedSeconds < 60
                 ? `${elapsedSeconds}s / 60s`
@@ -159,9 +159,9 @@ export default function OrderPendingPage() {
 
         {/* Order Reference */}
         <div className="bg-[#ffffff] border border-[#e5e5e3] p-6 text-left space-y-3">
-          <p className="text-[10px] uppercase tracking-[0.2em] text-[#8c8c8c]">Order Reference</p>
+          <p className="text-xs uppercase tracking-[0.2em] text-[#595D5D]">Order Reference</p>
           <p className="font-mono text-base font-semibold text-[#111111]">{orderId}</p>
-          <p className="text-xs text-[#8c8c8c]">
+          <p className="text-xs text-[#595D5D]">
             Your acquisition is recorded in our ledger. If payment is confirmed by your bank, it will be reflected here automatically.
           </p>
         </div>
@@ -175,7 +175,7 @@ export default function OrderPendingPage() {
             >
               <span>Check Order Status in Account</span>
             </Link>
-            <p className="text-xs text-[#8c8c8c]">
+            <p className="text-xs text-[#595D5D]">
               If payment was charged but not confirmed, contact{' '}
               <a
                 href="mailto:founder@maisonglint.com"
@@ -189,7 +189,7 @@ export default function OrderPendingPage() {
         )}
 
         {!timedOut && (
-          <p className="text-[11px] text-[#8c8c8c]">
+          <p className="text-xs text-[#595D5D]">
             Do not close this window or press Back. You will be redirected automatically.
           </p>
         )}

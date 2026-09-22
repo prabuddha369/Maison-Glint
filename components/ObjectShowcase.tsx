@@ -65,7 +65,7 @@ export default function ObjectShowcase({
   if (loading || !product || !editorial) {
     return (
       <section ref={sectionRef} id="the-plate" className="min-h-[50vh] border-b border-[#e5e5e3] flex items-center justify-center">
-        <div className="text-[11px] uppercase tracking-[0.2em] text-[#747878] animate-pulse font-mono">
+        <div className="text-xs uppercase tracking-[0.2em] text-[#595D5D] animate-pulse font-mono">
           Loading Object Monograph...
         </div>
       </section>
@@ -90,7 +90,7 @@ export default function ObjectShowcase({
         >
           <div className="lg:col-span-7">
             <div className="flex items-center justify-between mb-3 sm:mb-4">
-              <div className="text-[10px] md:text-[11px] uppercase tracking-[0.2em] font-medium text-[#747878]">
+              <div className="text-xs uppercase tracking-[0.2em] font-medium text-[#595D5D]">
                 {editorial.showcase.sectionLabel}
               </div>
               {products && products.length > 1 && (
@@ -98,17 +98,17 @@ export default function ObjectShowcase({
                   <button
                     aria-label="Previous product"
                     onClick={previous}
-                    className="p-1 text-[#747878] hover:text-[#111111] transition-colors cursor-pointer"
+                    className="p-1 text-[#595D5D] hover:text-[#111111] transition-colors cursor-pointer"
                   >
                     <ArrowLeft className="w-3.5 h-3.5" />
                   </button>
-                  <span className="font-mono text-[9px] text-[#747878] whitespace-nowrap">
+                  <span className="font-mono text-xs text-[#595D5D] whitespace-nowrap">
                     {String(activeIndex + 1).padStart(2, '0')} / {String(products.length).padStart(2, '0')}
                   </span>
                   <button
                     aria-label="Next product"
                     onClick={next}
-                    className="p-1 text-[#747878] hover:text-[#111111] transition-colors cursor-pointer"
+                    className="p-1 text-[#595D5D] hover:text-[#111111] transition-colors cursor-pointer"
                   >
                     <ArrowRight className="w-3.5 h-3.5" />
                   </button>
@@ -155,7 +155,7 @@ export default function ObjectShowcase({
               </motion.div>
 
               {/* Top-left Pill Badge */}
-              <div className="absolute top-3 left-3 sm:top-5 sm:left-5 z-20 bg-[#f9f9f7]/95 backdrop-blur-sm border border-[#e5e5e3] px-2.5 sm:px-3.5 py-1 sm:py-1.5 text-[8px] sm:text-[9px] uppercase tracking-[0.18em] sm:tracking-[0.2em] font-medium text-[#111111] shadow-xs">
+              <div className="absolute top-3 left-3 sm:top-5 sm:left-5 z-20 bg-[#f9f9f7]/95 backdrop-blur-sm border border-[#e5e5e3] px-2.5 sm:px-3.5 py-1 sm:py-1.5 text-xs uppercase tracking-[0.18em] sm:tracking-[0.2em] font-medium text-[#111111] shadow-xs">
                 {editorial.showcase.finishBadge}
               </div>
 
@@ -167,11 +167,11 @@ export default function ObjectShowcase({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               {editorial.showcase.features.map((feature) => (
                 <div key={feature.id || feature.label} className="bg-[#f4f4f2] p-4 sm:p-6 border border-[#e5e5e3] transition-all hover:border-[#c5a059]/60">
-                  <div className="text-[9px] uppercase tracking-[0.22em] font-semibold text-[#111111] mb-1.5 sm:mb-2 flex items-center justify-between">
+                  <div className="text-xs uppercase tracking-[0.22em] font-semibold text-[#111111] mb-1.5 sm:mb-2 flex items-center justify-between">
                     <span>{feature.label}</span>
                     <span className="w-1.5 h-1.5 bg-[#c5a059]" />
                   </div>
-                  <p className="text-[12px] sm:text-[13px] text-[#444748] font-light leading-[1.6]">
+                  <p className="text-xs sm:text-[13px] text-[#444748] font-light leading-[1.6]">
                     {feature.description}
                   </p>
                 </div>
@@ -188,7 +188,7 @@ export default function ObjectShowcase({
             transition={{ duration: 1.0, ease: luxuryEase, delay: 0.5 }}
             className="lg:col-span-5 flex flex-col"
           >
-            <div className="text-[9px] sm:text-[10px] uppercase tracking-[0.25em] font-medium text-[#c5a059] mb-1.5 sm:mb-2 flex items-center space-x-2">
+            <div className="text-xs uppercase tracking-[0.25em] font-medium text-[#c5a059] mb-1.5 sm:mb-2 flex items-center space-x-2">
               <span>{product.name}</span>
               {loading && <span className="w-1.5 h-1.5 bg-[#c5a059] animate-ping" />}
             </div>
@@ -203,8 +203,8 @@ export default function ObjectShowcase({
 
             {/* Status & Priority Request Card */}
             <div className="bg-[#f4f4f2] border border-[#e5e5e3] p-4 sm:p-6 mb-6 sm:mb-8">
-              <div className="flex flex-wrap items-center justify-between gap-2 mb-3 sm:mb-4 text-[9px] sm:text-[10px] uppercase tracking-[0.16em] sm:tracking-[0.18em]">
-                <span className="font-semibold text-[#747878]">{editorial.showcase.statusLabel}</span>
+              <div className="flex flex-wrap items-center justify-between gap-2 mb-3 sm:mb-4 text-xs uppercase tracking-[0.16em] sm:tracking-[0.18em]">
+                <span className="font-semibold text-[#595D5D]">{editorial.showcase.statusLabel}</span>
                 <span className="bg-[#eeeeec] text-[#111111] px-2 sm:px-2.5 py-1 border border-[#e0e0de] font-medium">
                   {product.editionRemaining !== undefined
                     ? `Edition: ${product.editionRemaining} of ${product.editionTotal || 250} Exemplars`
@@ -212,13 +212,14 @@ export default function ObjectShowcase({
                 </span>
               </div>
 
-              <p className="text-[12px] sm:text-[13px] text-[#444748] font-light leading-[1.6] mb-4 sm:mb-6">{editorial.showcase.statusDescription}</p>
+              <p className="text-xs sm:text-[13px] text-[#444748] font-light leading-[1.6] mb-4 sm:mb-6">{editorial.showcase.statusDescription}</p>
 
               <div className="flex flex-col sm:flex-row gap-3">
                 <button
                   id="acquire-plate-btn"
                   onClick={() => addItem(product, 1, product.specifications)}
-                  className="flex-1 bg-[#111111] text-[#f9f9f7] py-3.5 px-4 text-[10px] sm:text-[11px] uppercase tracking-[0.18em] sm:tracking-[0.2em] font-medium hover:bg-[#2b2b2b] transition-all cursor-pointer text-center border border-[#111111] flex items-center justify-center space-x-2"
+                  aria-label={`Acquire ${product.name}`}
+                  className="flex-1 bg-[#111111] text-[#f9f9f7] py-3.5 px-4 text-xs uppercase tracking-[0.18em] sm:tracking-[0.2em] font-medium hover:bg-[#2b2b2b] transition-all cursor-pointer text-center border border-[#111111] flex items-center justify-center space-x-2"
                 >
                   <ShoppingBag className="w-3.5 h-3.5 text-[#c5a059]" />
                   <span>{editorial.showcase.acquireLabel} · {priceDisplay}</span>
@@ -226,16 +227,18 @@ export default function ObjectShowcase({
                 <button
                   id="request-priority-access-btn"
                   onClick={onRequestPriorityAccess}
-                  className="bg-transparent text-[#111111] py-3.5 px-4 text-[10px] sm:text-[11px] uppercase tracking-[0.18em] font-medium hover:bg-[#ecece9] transition-all cursor-pointer text-center border border-[#111111]"
+                  aria-label="Request priority access allocation"
+                  className="bg-transparent text-[#111111] py-3.5 px-4 text-xs uppercase tracking-[0.18em] font-medium hover:bg-[#ecece9] transition-all cursor-pointer text-center border border-[#111111]"
                 >
                   {editorial.showcase.priorityLabel}
                 </button>
               </div>
 
-              <div className="mt-3 pt-3 border-t border-[#e0e0de] flex items-center justify-between text-[10px] uppercase tracking-[0.16em] text-[#747878]">
+              <div className="mt-3 pt-3 border-t border-[#e0e0de] flex items-center justify-between text-xs uppercase tracking-[0.16em] text-[#595D5D]">
                 <span>{editorial.showcase.provenanceLabel}: {product.specifications?.origin}</span>
                 <Link
                   href={`/product/${product.id}`}
+                  aria-label={`View technical monograph for ${product.name}`}
                   className="inline-flex items-center space-x-1 text-[#111111] hover:text-[#c5a059] transition-colors"
                 >
                   <span>{editorial.showcase.monographLabel}</span>
@@ -249,7 +252,7 @@ export default function ObjectShowcase({
                 <div key={panel.id || panel.title} className="py-4">
                   <button
                     onClick={() => toggleAccordion(panel.id || panel.title)}
-                    className="w-full flex items-center justify-between text-left text-[11px] uppercase tracking-[0.2em] font-medium text-[#111111] hover:text-[#c5a059] transition-colors py-1 cursor-pointer"
+                    className="w-full flex items-center justify-between text-left text-xs uppercase tracking-[0.2em] font-medium text-[#111111] hover:text-[#c5a059] transition-colors py-1 cursor-pointer"
                   >
                     <span>{panel.title}</span>
                     <span className="text-[#111111] ml-4">

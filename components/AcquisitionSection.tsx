@@ -75,14 +75,14 @@ export default function AcquisitionSection({
             alt="Maison Glint"
             width={340}
             height={90}
-            priority
+            loading="lazy"
             referrerPolicy="no-referrer"
             className="h-12 sm:h-16 md:h-20 w-auto object-contain"
           />
         </div>
 
         {/* Tagline Eyebrow */}
-        <div className="text-[10px] md:text-[11px] uppercase tracking-[0.28em] font-medium text-[#c5a059] mb-3 sm:mb-4">
+        <div className="text-xs uppercase tracking-[0.28em] font-medium text-[#c5a059] mb-3 sm:mb-4">
           Modernist Chromeware
         </div>
 
@@ -110,20 +110,22 @@ export default function AcquisitionSection({
                 disabled={loading}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="YOUR.EMAIL@DOMAIN.COM"
+                aria-label="Email address for newsletter subscription"
                 required
-                className="w-full sm:flex-1 bg-[#f9f9f7] text-[#111111] placeholder:text-[#8c8c8c] placeholder:tracking-[0.16em] sm:placeholder:tracking-[0.18em] text-[10px] sm:text-[11px] uppercase tracking-[0.16em] px-4 sm:px-5 py-3.5 sm:py-4 border border-[#e5e5e3] sm:border-r-0 focus:outline-none focus:border-[#111111] transition-colors disabled:opacity-60"
+                className="w-full sm:flex-1 bg-[#f9f9f7] text-[#111111] placeholder:text-[#8c8c8c] placeholder:tracking-[0.16em] sm:placeholder:tracking-[0.18em] text-xs uppercase tracking-[0.16em] px-4 sm:px-5 py-3.5 sm:py-4 border border-[#e5e5e3] sm:border-r-0 focus:outline-none focus:border-[#111111] transition-colors disabled:opacity-60"
               />
               <button
                 id="newsletter-subscribe-btn"
                 type="submit"
                 disabled={loading}
-                className="w-full sm:w-auto bg-[#111111] text-[#f9f9f7] px-6 sm:px-8 py-3.5 sm:py-4 text-[10px] sm:text-[11px] uppercase tracking-[0.2em] font-medium hover:bg-[#2b2b2b] transition-all cursor-pointer whitespace-nowrap border border-[#111111] disabled:opacity-60 flex items-center justify-center space-x-2"
+                aria-label="Subscribe to newsletter"
+                className="w-full sm:w-auto bg-[#111111] text-[#f9f9f7] px-6 sm:px-8 py-3.5 sm:py-4 text-xs uppercase tracking-[0.2em] font-medium hover:bg-[#2b2b2b] transition-all cursor-pointer whitespace-nowrap border border-[#111111] disabled:opacity-60 flex items-center justify-center space-x-2"
               >
                 <span>{loading ? 'Registering...' : 'Subscribe'}</span>
               </button>
             </form>
             {error && (
-              <p className="text-[11px] text-[#b91c1c] text-center mt-2.5">
+              <p className="text-xs text-[#b91c1c] text-center mt-2.5">
                 {error}
               </p>
             )}
@@ -135,7 +137,7 @@ export default function AcquisitionSection({
               <Check className="w-5 h-5 text-[#c5a059]" />
             </div>
 
-            <span className="text-[9px] uppercase tracking-[0.22em] text-[#c5a059] font-medium block mb-1">
+            <span className="text-xs uppercase tracking-[0.22em] text-[#c5a059] font-medium block mb-1">
               Subscription Registered
             </span>
 
@@ -143,7 +145,7 @@ export default function AcquisitionSection({
               Welcome to the Atelier
             </h3>
 
-            <p className="text-[12px] text-[#444748] font-light leading-relaxed mb-5">
+            <p className="text-xs text-[#444748] font-light leading-relaxed mb-5">
               We have noted <span className="font-mono text-[#111111] font-medium">{email}</span>. You will receive our seasonal monographs and unreleased chromeware allocations directly.
             </p>
 
@@ -153,7 +155,7 @@ export default function AcquisitionSection({
                 setSubmitted(false);
                 setEmail('');
               }}
-              className="text-[9px] uppercase tracking-[0.18em] text-[#747878] hover:text-[#111111] transition-colors underline underline-offset-4 cursor-pointer"
+              className="text-xs uppercase tracking-[0.18em] text-[#595D5D] hover:text-[#111111] transition-colors underline underline-offset-4 cursor-pointer"
             >
               Register Another Address
             </button>
