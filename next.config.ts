@@ -56,15 +56,20 @@ const nextConfig: NextConfig = {
     ],
   },
   output: 'standalone',
-  transpilePackages: ['motion'],
-  webpack: (config, {dev}) => {
+  webpack: (config, {dev, webpack}) => {
     // HMR is disabled in AI Studio via DISABLE_HMR env var.
-    // Do not modifyâfile watching is disabled to prevent flickering during agent edits.
+    // Do not modify—file watching is disabled to prevent flickering during agent edits.
     if (dev && process.env.DISABLE_HMR === 'true') {
       config.watchOptions = {
         ignored: /.*/,
       };
     }
+    config.plugins.push(
+      new webpack.NormalModuleReplacementPlugin(
+        /next[\\\/]dist[\\\/]build[\\\/]polyfills[\\\/]polyfill-module/,
+        require('path').resolve(__dirname, 'lib/empty-polyfill.js')
+      )
+    );
     return config;
   },
 };

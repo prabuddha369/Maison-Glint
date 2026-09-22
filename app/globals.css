@@ -141,4 +141,18 @@
   animation: ambientSpin 2.0s linear infinite;
 }
 
+/* ── Hero Carousel Progress Hairline (Synchronized Loop) ── */
+@keyframes heroProgress {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+.animate-hero-progress {
+  animation: heroProgress 3.5s linear forwards;
+}
+
 

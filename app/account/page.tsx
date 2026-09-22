@@ -211,7 +211,7 @@ export default function AccountPage() {
             <h1 className="font-[family-name:var(--font-cormorant)] text-3xl font-light text-[#111111] mb-2">
               Collector Portal
             </h1>
-            <p className="text-[12px] text-[#747878] font-light leading-relaxed mb-6">
+            <p className="text-[12px] text-[#595D5D] font-light leading-relaxed mb-6">
               Authenticate your identity to inspect active serial reservations, previous acquisition invoices, and designated transit coordinates.
             </p>
             {confirmationNotice && (
@@ -256,7 +256,7 @@ export default function AccountPage() {
           <div className="flex items-center space-x-6">
             <Link
               href="/"
-              className="text-[10px] uppercase tracking-[0.16em] text-[#747878] hover:text-[#111111] transition-colors"
+              className="text-[10px] uppercase tracking-[0.16em] text-[#595D5D] hover:text-[#111111] transition-colors"
             >
               Storefront
             </Link>
@@ -276,13 +276,13 @@ export default function AccountPage() {
         {/* Profile Card */}
         <div className="bg-[#ffffff] border border-[#e5e5e3] p-8 mb-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
-            <span className="text-[9px] uppercase tracking-[0.24em] font-medium text-[#747878]">
+            <span className="text-[9px] uppercase tracking-[0.24em] font-medium text-[#595D5D]">
               Authenticated Collector
             </span>
             <h1 className="font-[family-name:var(--font-cormorant)] text-3xl sm:text-4xl font-light text-[#111111] mt-1">
               {profile?.displayName || user.displayName || 'Atelier Patron'}
             </h1>
-            <p className="text-[12px] text-[#747878] mt-1 font-mono">
+            <p className="text-[12px] text-[#595D5D] mt-1 font-mono">
               {user.email} · ID: {user.uid.slice(0, 12)}...
             </p>
           </div>
@@ -295,7 +295,7 @@ export default function AccountPage() {
             className={`pb-4 px-6 text-[11px] uppercase tracking-[0.18em] font-medium border-b-2 transition-all cursor-pointer ${
               activeTab === 'orders'
                 ? 'border-[#111111] text-[#111111]'
-                : 'border-transparent text-[#747878] hover:text-[#111111]'
+                : 'border-transparent text-[#595D5D] hover:text-[#111111]'
             }`}
           >
             Acquisition History ({orders.length})
@@ -305,7 +305,7 @@ export default function AccountPage() {
             className={`pb-4 px-6 text-[11px] uppercase tracking-[0.18em] font-medium border-b-2 transition-all cursor-pointer flex items-center space-x-2 ${
               activeTab === 'allocations'
                 ? 'border-[#111111] text-[#111111]'
-                : 'border-transparent text-[#747878] hover:text-[#111111]'
+                : 'border-transparent text-[#595D5D] hover:text-[#111111]'
             }`}
           >
             <span>Priority Allocations ({reservations.length})</span>
@@ -318,7 +318,7 @@ export default function AccountPage() {
             className={`pb-4 px-6 text-[11px] uppercase tracking-[0.18em] font-medium border-b-2 transition-all cursor-pointer ${
               activeTab === 'addresses'
                 ? 'border-[#111111] text-[#111111]'
-                : 'border-transparent text-[#747878] hover:text-[#111111]'
+                : 'border-transparent text-[#595D5D] hover:text-[#111111]'
             }`}
           >
             Saved Coordinates ({profile?.savedAddresses?.length || 0})
@@ -329,7 +329,7 @@ export default function AccountPage() {
         {activeTab === 'orders' && (
           <div>
             {ordersLoading ? (
-              <div className="p-12 text-center text-[#747878] text-[12px]">
+              <div className="p-12 text-center text-[#595D5D] text-[12px]">
                 Querying secure order records...
               </div>
             ) : orders.length === 0 ? (
@@ -338,7 +338,7 @@ export default function AccountPage() {
                 <h3 className="font-[family-name:var(--font-cormorant)] text-xl text-[#111111] mb-2">
                   No Acquisitions Recorded Yet
                 </h3>
-                <p className="text-[12px] text-[#747878] font-light max-w-sm mx-auto mb-6">
+                <p className="text-[12px] text-[#595D5D] font-light max-w-sm mx-auto mb-6">
                   Objects acquired through the storefront will display here with live telemetry and invoice data.
                 </p>
                 <Link
@@ -367,13 +367,13 @@ export default function AccountPage() {
                                 ? 'bg-[#fff8e7] border-[#e8d5aa] text-[#8a681c]'
                                 : order.status === 'paid' || order.status === 'processing'
                                 ? 'bg-[#eef8ee] border-[#bfe4bf] text-[#1c731c]'
-                                : 'bg-[#f0f0ee] border-[#d6d6d4] text-[#747878]'
+                                : 'bg-[#f0f0ee] border-[#d6d6d4] text-[#595D5D]'
                             }`}
                           >
                             {order.status.replace('_', ' ')}
                           </span>
                         </div>
-                        <span className="text-[11px] text-[#747878] mt-1 block font-light">
+                        <span className="text-[11px] text-[#595D5D] mt-1 block font-light">
                           Created {new Date(order.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
                         </span>
                       </div>
@@ -428,17 +428,17 @@ export default function AccountPage() {
                       {order.items.map((item, i) => (
                         <div key={i} className="flex justify-between items-center text-[12px] py-1">
                           <div className="flex items-center space-x-2">
-                            <span className="text-[#747878]">[{item.quantity}x]</span>
+                            <span className="text-[#595D5D]">[{item.quantity}x]</span>
                             <span className="font-medium text-[#111111]">{item.name}</span>
                           </div>
-                          <span className="font-mono text-[#747878]">
+                          <span className="font-mono text-[#595D5D]">
                             ${(item.price * item.quantity).toLocaleString()}
                           </span>
                         </div>
                       ))}
                     </div>
 
-                    <div className="mt-4 pt-4 border-t border-[#f0f0ee] text-[11px] text-[#747878] flex flex-wrap justify-between gap-2">
+                    <div className="mt-4 pt-4 border-t border-[#f0f0ee] text-[11px] text-[#595D5D] flex flex-wrap justify-between gap-2">
                       <span>Delivery: {order.shippingAddress.line1}, {order.shippingAddress.city}</span>
                       <span>Transit Tier: {order.shippingMethod?.title}</span>
                     </div>
@@ -453,7 +453,7 @@ export default function AccountPage() {
         {activeTab === 'allocations' && (
           <div>
             {reservationsLoading ? (
-              <div className="p-12 text-center text-[#747878] text-[12px]">
+              <div className="p-12 text-center text-[#595D5D] text-[12px]">
                 Querying priority allocation records...
               </div>
             ) : reservations.length === 0 ? (
@@ -462,7 +462,7 @@ export default function AccountPage() {
                 <h3 className="font-[family-name:var(--font-cormorant)] text-xl text-[#111111] mb-2">
                   No Priority Allocations Registered
                 </h3>
-                <p className="text-[12px] text-[#747878] font-light max-w-sm mx-auto mb-6">
+                <p className="text-[12px] text-[#595D5D] font-light max-w-sm mx-auto mb-6">
                   Serialized priority reservations requested through the collection catalogue will display here with their archive credentials.
                 </p>
                 <Link
@@ -506,7 +506,7 @@ export default function AccountPage() {
                                   : res.status === 'allocated'
                                   ? 'bg-[#f7f5ef] border-[#e2d5bc] text-[#8a681c]'
                                   : res.status === 'waitlist'
-                                  ? 'bg-[#f4f4f2] border-[#d6d6d4] text-[#747878]'
+                                  ? 'bg-[#f4f4f2] border-[#d6d6d4] text-[#595D5D]'
                                   : 'bg-[#fff8e7] border-[#e8d5aa] text-[#8a681c]'
                               }`}
                             >
@@ -521,7 +521,7 @@ export default function AccountPage() {
                                 : res.status.replace('_', ' ')}
                             </span>
                           </div>
-                          <span className="text-[11px] text-[#747878] mt-1 block font-light">
+                          <span className="text-[11px] text-[#595D5D] mt-1 block font-light">
                             Registered in Zurich Archive ·{' '}
                             {new Date(res.createdAt).toLocaleDateString(undefined, {
                               year: 'numeric',
@@ -543,7 +543,7 @@ export default function AccountPage() {
                               </>
                             ) : (
                               <>
-                                <Copy className="w-3 h-3 text-[#747878]" />
+                                <Copy className="w-3 h-3 text-[#595D5D]" />
                                 <span>Copy Ref</span>
                               </>
                             )}
@@ -561,7 +561,7 @@ export default function AccountPage() {
 
                           <Link
                             href="/"
-                            className="px-3 py-1.5 border border-[#e5e5e3] hover:border-[#111111] text-[10px] uppercase tracking-[0.15em] font-medium text-[#747878] hover:text-[#111111] transition-colors"
+                            className="px-3 py-1.5 border border-[#e5e5e3] hover:border-[#111111] text-[10px] uppercase tracking-[0.15em] font-medium text-[#595D5D] hover:text-[#111111] transition-colors"
                           >
                             View Object
                           </Link>
@@ -571,7 +571,7 @@ export default function AccountPage() {
                       {/* Reservation Specs */}
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-[12px] py-2">
                         <div>
-                          <span className="block text-[9px] uppercase tracking-[0.18em] text-[#747878] mb-1">
+                          <span className="block text-[9px] uppercase tracking-[0.18em] text-[#595D5D] mb-1">
                             Reserved Object
                           </span>
                           <span className="font-medium text-[#111111]">
@@ -583,20 +583,20 @@ export default function AccountPage() {
                           </span>
                         </div>
                         <div>
-                          <span className="block text-[9px] uppercase tracking-[0.18em] text-[#747878] mb-1">
+                          <span className="block text-[9px] uppercase tracking-[0.18em] text-[#595D5D] mb-1">
                             Application Ritual
                           </span>
                           <span className="text-[#444748]">{res.ritual}</span>
                         </div>
                         <div>
-                          <span className="block text-[9px] uppercase tracking-[0.18em] text-[#747878] mb-1">
+                          <span className="block text-[9px] uppercase tracking-[0.18em] text-[#595D5D] mb-1">
                             Destination
                           </span>
                           <span className="text-[#444748]">{res.destination}</span>
                         </div>
                       </div>
 
-                      <div className="mt-4 pt-3 border-t border-[#f0f0ee] text-[11px] text-[#747878] flex flex-wrap justify-between items-center gap-2">
+                      <div className="mt-4 pt-3 border-t border-[#f0f0ee] text-[11px] text-[#595D5D] flex flex-wrap justify-between items-center gap-2">
                         <span>Concierge Reference: MG-ALLOC-{res.serialIndex}</span>
                         {isConverted ? (
                           <span className="text-[#1b6e3b] font-medium flex items-center space-x-1">
@@ -657,7 +657,7 @@ export default function AccountPage() {
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="sm:col-span-2">
-                    <label className="block text-[10px] uppercase tracking-[0.16em] text-[#747878] mb-1">
+                    <label className="block text-[10px] uppercase tracking-[0.16em] text-[#595D5D] mb-1">
                       Recipient Full Name
                     </label>
                     <input
@@ -669,7 +669,7 @@ export default function AccountPage() {
                     />
                   </div>
                   <div className="sm:col-span-2">
-                    <label className="block text-[10px] uppercase tracking-[0.16em] text-[#747878] mb-1">
+                    <label className="block text-[10px] uppercase tracking-[0.16em] text-[#595D5D] mb-1">
                       Street Address
                     </label>
                     <input
@@ -681,7 +681,7 @@ export default function AccountPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] uppercase tracking-[0.16em] text-[#747878] mb-1">
+                    <label className="block text-[10px] uppercase tracking-[0.16em] text-[#595D5D] mb-1">
                       City
                     </label>
                     <input
@@ -693,7 +693,7 @@ export default function AccountPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] uppercase tracking-[0.16em] text-[#747878] mb-1">
+                    <label className="block text-[10px] uppercase tracking-[0.16em] text-[#595D5D] mb-1">
                       Postal Code / ZIP
                     </label>
                     <input
@@ -705,7 +705,7 @@ export default function AccountPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] uppercase tracking-[0.16em] text-[#747878] mb-1">
+                    <label className="block text-[10px] uppercase tracking-[0.16em] text-[#595D5D] mb-1">
                       Country
                     </label>
                     <input
@@ -717,7 +717,7 @@ export default function AccountPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] uppercase tracking-[0.16em] text-[#747878] mb-1">
+                    <label className="block text-[10px] uppercase tracking-[0.16em] text-[#595D5D] mb-1">
                       Phone Number
                     </label>
                     <input
@@ -757,7 +757,7 @@ export default function AccountPage() {
                   >
                     <div className="flex items-center justify-between">
                       <span className="font-semibold text-sm text-[#111111]">{addr.fullName}</span>
-                      <span className="text-[9px] uppercase tracking-[0.14em] text-[#c5a059] font-medium">
+                      <span className="text-xs uppercase tracking-[0.14em] text-[#846115] font-semibold">
                         Saved
                       </span>
                     </div>
@@ -767,11 +767,11 @@ export default function AccountPage() {
                       {addr.city}, {addr.state} {addr.postalCode}
                     </div>
                     <div className="text-[#444748] font-medium">{addr.country}</div>
-                    <div className="pt-2 text-[#747878] font-mono">{addr.phone}</div>
+                    <div className="pt-2 text-[#595D5D] font-mono">{addr.phone}</div>
                   </div>
                 ))
               ) : (
-                <div className="col-span-2 bg-[#ffffff] border border-[#e5e5e3] p-8 text-center text-[#747878] text-[12px]">
+                <div className="col-span-2 bg-[#ffffff] border border-[#e5e5e3] p-8 text-center text-[#595D5D] text-[12px]">
                   No saved destinations yet. Addresses saved during checkout or above will appear here.
                 </div>
               )}

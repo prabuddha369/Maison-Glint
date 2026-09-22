@@ -82,7 +82,7 @@ export default function AcquisitionSection({
         </div>
 
         {/* Tagline Eyebrow */}
-        <div className="text-xs uppercase tracking-[0.28em] font-medium text-[#c5a059] mb-3 sm:mb-4">
+        <div className="text-xs uppercase tracking-[0.28em] font-medium text-[#846115] mb-3 sm:mb-4">
           Modernist Chromeware
         </div>
 
@@ -133,11 +133,11 @@ export default function AcquisitionSection({
         ) : (
           /* Confirmed Subscription Card */
           <div className="bg-[#f9f9f7] border border-[#e5e5e3] p-6 sm:p-8 max-w-md mx-auto text-center shadow-xs animate-fadeIn">
-            <div className="w-10 h-10 border border-[#c5a059] mx-auto mb-4 flex items-center justify-center">
-              <Check className="w-5 h-5 text-[#c5a059]" />
+            <div className="w-10 h-10 border border-[#846115] mx-auto mb-4 flex items-center justify-center">
+              <Check className="w-5 h-5 text-[#846115]" />
             </div>
 
-            <span className="text-xs uppercase tracking-[0.22em] text-[#c5a059] font-medium block mb-1">
+            <span className="text-xs uppercase tracking-[0.22em] text-[#846115] font-semibold block mb-1">
               Subscription Registered
             </span>
 

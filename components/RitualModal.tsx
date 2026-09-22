@@ -41,7 +41,7 @@ export default function RitualModal({
 
         <div>
           {/* Header */}
-          <div className="text-xs uppercase tracking-[0.25em] font-medium text-[#c5a059] mb-1.5 sm:mb-2">
+          <div className="text-xs uppercase tracking-[0.25em] font-medium text-[#846115] mb-1.5 sm:mb-2">
             Maison Glint / Dining Ritual Series
           </div>
           <h3 className="font-[family-name:var(--font-cormorant)] text-[26px] sm:text-[34px] md:text-[40px] font-light text-[#111111] leading-tight mb-1">
@@ -81,7 +81,7 @@ export default function RitualModal({
               <ul className="space-y-1.5 sm:space-y-2 text-xs text-[#444748] font-light">
                 {ritual.curation.map((item, idx) => (
                   <li key={idx} className="flex items-start space-x-2">
-                    <span className="w-1 h-1 bg-[#c5a059] mt-1.5 sm:mt-2 shrink-0" />
+                    <span className="w-1 h-1 bg-[#846115] mt-1.5 sm:mt-2 shrink-0" />
                     <span>{item}</span>
                   </li>
                 ))}

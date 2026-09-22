@@ -189,9 +189,9 @@ export default function ProductDetailPage() {
           {/* Right Column: Information, Pricing, Specs, Actions */}
           <div className="lg:col-span-5 flex flex-col space-y-8">
             <div>
-              <div className="text-xs uppercase tracking-[0.25em] font-medium text-[#c5a059] mb-2 flex items-center space-x-2">
+              <div className="text-xs uppercase tracking-[0.25em] font-medium text-[#846115] mb-2 flex items-center space-x-2">
                 <span>Atelier Serial Monograph</span>
-                {loading && <span className="w-1.5 h-1.5 bg-[#c5a059] animate-ping" />}
+                {loading && <span className="w-1.5 h-1.5 bg-[#846115] animate-ping" />}
               </div>
               <h1 className="font-[family-name:var(--font-cormorant)] text-[36px] sm:text-[44px] font-light text-[#111111] leading-[1.1] mb-3">
                 {product.name}
@@ -292,11 +292,11 @@ export default function ProductDetailPage() {
 
               <div className="grid grid-cols-2 gap-3 text-xs uppercase tracking-[0.16em] text-[#595D5D] pt-2">
                 <div className="flex items-center space-x-1.5">
-                  <Shield className="w-3.5 h-3.5 text-[#c5a059]" />
+                  <Shield className="w-3.5 h-3.5 text-[#846115]" />
                   <span>Complimentary Courier</span>
                 </div>
                 <div className="flex items-center space-x-1.5">
-                  <Compass className="w-3.5 h-3.5 text-[#c5a059]" />
+                  <Compass className="w-3.5 h-3.5 text-[#846115]" />
                   <span>Insured Global Transit</span>
                 </div>
               </div>
@@ -357,7 +357,7 @@ export default function ProductDetailPage() {
               </div>
               <Link
                 href="/"
-                className="text-xs uppercase tracking-[0.18em] text-[#111111] hover:text-[#c5a059] flex items-center space-x-1"
+                className="text-xs uppercase tracking-[0.18em] text-[#111111] hover:text-[#846115] flex items-center space-x-1"
               >
                 <span>View All Objects</span>
                 <ArrowUpRight className="w-3.5 h-3.5" />
@@ -382,10 +382,10 @@ export default function ProductDetailPage() {
                     />
                   </div>
                   <div>
-                    <div className="text-xs uppercase tracking-[0.2em] text-[#c5a059] font-medium mb-1">
+                    <div className="text-xs uppercase tracking-[0.2em] text-[#846115] font-semibold mb-1">
                       {item.id.replace(/-/g, ' ').toUpperCase()}
                     </div>
-                    <h3 className="font-[family-name:var(--font-cormorant)] text-xl font-light text-[#111111] mb-2 group-hover:text-[#c5a059] transition-colors">
+                    <h3 className="font-[family-name:var(--font-cormorant)] text-xl font-light text-[#111111] mb-2 group-hover:text-[#846115] transition-colors">
                       {item.name}
                     </h3>
                     <p className="text-xs text-[#595D5D] font-light line-clamp-2 mb-4">

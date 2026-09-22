@@ -5,11 +5,12 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ShoppingBag, User, ArrowUpRight, Menu, X } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
+import dynamic from 'next/dynamic';
 import { useCart } from '../hooks/useCart';
 import { useAuth } from '../context/AuthContext';
-import AuthModal from './AuthModal';
 import type { Product } from '../types/store';
+
+const AuthModal = dynamic(() => import('./AuthModal'), { ssr: false });
 
 interface NavbarProps {
   onOpenBag?: () => void;
@@ -139,7 +140,7 @@ export default function Navbar({
               id="mobile-menu-toggle"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label="Toggle navigation menu"
-              className="md:hidden flex items-center space-x-2 text-xs uppercase tracking-[0.18em] font-medium text-[#111111] p-1.5 hover:text-[#c5a059] transition-colors cursor-pointer"
+              className="md:hidden flex items-center space-x-2 text-xs uppercase tracking-[0.18em] font-medium text-[#111111] p-1.5 hover:text-[#846115] transition-colors cursor-pointer"
             >
               {mobileMenuOpen ? (
                 <X className="w-4 h-4 stroke-[1.5]" />
@@ -177,18 +178,12 @@ export default function Navbar({
                 title={resolvedProductName}
                 className="hidden lg:inline-flex items-center space-x-2 bg-[#111111] text-[#f9f9f7] px-3.5 py-2 text-xs uppercase tracking-[0.16em] font-medium hover:bg-[#2b2b2b] transition-all cursor-pointer border border-[#111111] shrink-0"
               >
-                <AnimatePresence mode="wait" initial={false}>
-                  <motion.span
-                    key={objectLabel}
-                    initial={{ opacity: 0, y: 3 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -3 }}
-                    transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                    className="inline-block whitespace-nowrap"
-                  >
-                    Acquire {objectLabel}
-                  </motion.span>
-                </AnimatePresence>
+                <span
+                  key={objectLabel}
+                  className="inline-block whitespace-nowrap transition-opacity duration-300 ease-out"
+                >
+                  Acquire {objectLabel}
+                </span>
                 <ArrowUpRight className="w-3.5 h-3.5 text-[#c5a059]" />
               </button>
 
@@ -197,7 +192,7 @@ export default function Navbar({
                 id="nav-bag-btn"
                 onClick={handleBagClick}
                 aria-label="View Acquisition Bag"
-                className="relative p-2 text-[#111111] hover:text-[#c5a059] transition-colors cursor-pointer shrink-0"
+                className="relative p-2 text-[#111111] hover:text-[#846115] transition-colors cursor-pointer shrink-0"
               >
                 <ShoppingBag className="w-4 h-4 stroke-[1.5]" />
                 {mounted && displayBagCount > 0 && (
@@ -213,7 +208,7 @@ export default function Navbar({
                 onClick={handleUserClick}
                 aria-label={mounted && user ? 'Collector Portal' : 'Collector Sign In'}
                 title={mounted && user ? `Signed in as ${user.email}` : 'Collector Sign In'}
-                className="p-2 text-[#111111] hover:text-[#c5a059] transition-colors cursor-pointer relative shrink-0"
+                className="p-2 text-[#111111] hover:text-[#846115] transition-colors cursor-pointer relative shrink-0"
               >
                 <User className="w-4 h-4 stroke-[1.5]" />
                 {mounted && user && (
@@ -236,7 +231,7 @@ export default function Navbar({
                   key={link.label}
                   href={link.href}
                   onClick={(e) => handleScrollTo(e, link.href)}
-                  className="py-3 text-[12px] uppercase tracking-[0.2em] font-medium text-[#111111] hover:text-[#c5a059] transition-colors border-b border-[#e5e5e3]/60 flex items-center justify-between"
+                  className="py-3 text-[12px] uppercase tracking-[0.2em] font-medium text-[#111111] hover:text-[#846115] transition-colors border-b border-[#e5e5e3]/60 flex items-center justify-between"
                 >
                   <span>{link.label}</span>
                   <ArrowUpRight className="w-3.5 h-3.5 text-[#8c8c8c]" />
@@ -246,7 +241,7 @@ export default function Navbar({
               <Link
                 href="/account"
                 onClick={() => setMobileMenuOpen(false)}
-                className="py-3 text-[12px] uppercase tracking-[0.2em] font-medium text-[#111111] hover:text-[#c5a059] transition-colors border-b border-[#e5e5e3]/60 flex items-center justify-between"
+                className="py-3 text-[12px] uppercase tracking-[0.2em] font-medium text-[#111111] hover:text-[#846115] transition-colors border-b border-[#e5e5e3]/60 flex items-center justify-between"
               >
                 <span>Collector Portal</span>
                 <User className="w-3.5 h-3.5 text-[#8c8c8c]" />
@@ -260,18 +255,12 @@ export default function Navbar({
                   }}
                   className="w-full py-3.5 bg-[#111111] text-[#f9f9f7] text-xs uppercase tracking-[0.18em] font-medium flex items-center justify-center space-x-2 border border-[#111111]"
                 >
-                  <AnimatePresence mode="wait" initial={false}>
-                    <motion.span
-                      key={resolvedProductName}
-                      initial={{ opacity: 0, y: 3 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -3 }}
-                      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                      className="inline-block"
-                    >
-                      Acquire {resolvedProductName}
-                    </motion.span>
-                  </AnimatePresence>
+                  <span
+                    key={resolvedProductName}
+                    className="inline-block transition-opacity duration-300 ease-out"
+                  >
+                    Acquire {resolvedProductName}
+                  </span>
                   <ArrowUpRight className="w-3.5 h-3.5 text-[#c5a059]" />
                 </button>
               </div>

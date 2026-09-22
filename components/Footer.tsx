@@ -208,9 +208,9 @@ export default function Footer() {
 
           <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 md:gap-6 text-center">
             <span>Grade 316 Stainless Steel</span>
-            <span className="text-[#c5a059]">·</span>
+            <span className="text-[#846115]">·</span>
             <span>Micro-Buff Mirror Polish</span>
-            <span className="text-[#c5a059]">·</span>
+            <span className="text-[#846115]">·</span>
             <span>Edition Authenticity Secured</span>
           </div>
         </div>

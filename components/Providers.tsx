@@ -1,12 +1,13 @@
 'use client';
 
-import React from 'react';
+import dynamic from 'next/dynamic';
 import { AuthProvider } from '../context/AuthContext';
 import { CartProvider } from '../context/CartContext';
 import { AudioProvider } from '../context/AudioContext';
-import CartDrawer from './CartDrawer';
 import EntranceCurtain from './EntranceCurtain';
-import AudioControl from './AudioControl';
+
+const CartDrawer = dynamic(() => import('./CartDrawer'), { ssr: false });
+const AudioControl = dynamic(() => import('./AudioControl'), { ssr: false });
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (

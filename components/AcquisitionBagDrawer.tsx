@@ -40,7 +40,7 @@ export default function AcquisitionBagDrawer({
         <div>
           <div className="flex items-center justify-between border-b border-[#e5e5e3] pb-5 mb-6">
             <div>
-              <div className="text-xs uppercase tracking-[0.25em] font-medium text-[#c5a059] mb-1">
+              <div className="text-xs uppercase tracking-[0.25em] font-medium text-[#846115] mb-1">
                 Acquisition Drawer
               </div>
               <h3 className="font-[family-name:var(--font-cormorant)] text-[26px] font-light text-[#111111] leading-none">
@@ -73,7 +73,7 @@ export default function AcquisitionBagDrawer({
 
                 <div className="flex-1 flex flex-col justify-between min-w-0">
                   <div>
-                    <div className="text-xs uppercase tracking-[0.22em] text-[#c5a059] font-medium">
+                    <div className="text-xs uppercase tracking-[0.22em] text-[#846115] font-semibold">
                       {product?.id || 'Selected edition'}
                     </div>
                     <h4 className="font-[family-name:var(--font-cormorant)] text-[16px] sm:text-[18px] font-light text-[#111111] leading-tight truncate sm:whitespace-normal">
@@ -158,7 +158,7 @@ export default function AcquisitionBagDrawer({
 
               {/* Security & Provenance Bullet */}
               <div className="p-3 bg-[#f4f4f2] border border-[#e5e5e3] flex items-center space-x-2.5 text-xs text-[#444748]">
-                <ShieldCheck className="w-4 h-4 text-[#c5a059] shrink-0" />
+                <ShieldCheck className="w-4 h-4 text-[#846115] shrink-0" />
                 <span>Individually laser-inscribed with serial stamp upon casting.</span>
               </div>
             </div>

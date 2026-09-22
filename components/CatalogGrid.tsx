@@ -37,7 +37,7 @@ export default function CatalogGrid({
           className="flex flex-col md:flex-row md:items-end justify-between mb-12 sm:mb-16 border-b border-[#e5e5e3] pb-8"
         >
           <div>
-            <div className="text-xs uppercase tracking-[0.22em] font-medium text-[#c5a059] mb-3">
+            <div className="text-xs uppercase tracking-[0.22em] font-medium text-[#846115] mb-3">
               The Complete Atelier Collection
             </div>
             <h2 className="font-[family-name:var(--font-cormorant)] text-[32px] sm:text-[42px] font-light text-[#111111] leading-tight">
@@ -88,10 +88,10 @@ export default function CatalogGrid({
 
                   {/* Card Content */}
                   <div className="p-5">
-                    <div className="text-xs uppercase tracking-[0.22em] text-[#c5a059] font-medium mb-1">
+                    <div className="text-xs uppercase tracking-[0.22em] text-[#846115] font-semibold mb-1">
                       {objectCode.split(' ').slice(0, 2).join(' ')}
                     </div>
-                    <h3 className="font-[family-name:var(--font-cormorant)] text-[22px] font-light text-[#111111] mb-2 group-hover:text-[#c5a059] transition-colors line-clamp-1">
+                    <h3 className="font-[family-name:var(--font-cormorant)] text-[22px] font-light text-[#111111] mb-2 group-hover:text-[#846115] transition-colors line-clamp-1">
                       {product.name}
                     </h3>
                     <p className="text-xs text-[#444748] font-light leading-relaxed line-clamp-2 mb-4">

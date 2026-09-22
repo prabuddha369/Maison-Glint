@@ -169,7 +169,7 @@ export default function ObjectShowcase({
                 <div key={feature.id || feature.label} className="bg-[#f4f4f2] p-4 sm:p-6 border border-[#e5e5e3] transition-all hover:border-[#c5a059]/60">
                   <div className="text-xs uppercase tracking-[0.22em] font-semibold text-[#111111] mb-1.5 sm:mb-2 flex items-center justify-between">
                     <span>{feature.label}</span>
-                    <span className="w-1.5 h-1.5 bg-[#c5a059]" />
+                    <span className="w-1.5 h-1.5 bg-[#846115]" />
                   </div>
                   <p className="text-xs sm:text-[13px] text-[#444748] font-light leading-[1.6]">
                     {feature.description}
@@ -188,9 +188,9 @@ export default function ObjectShowcase({
             transition={{ duration: 1.0, ease: luxuryEase, delay: 0.5 }}
             className="lg:col-span-5 flex flex-col"
           >
-            <div className="text-xs uppercase tracking-[0.25em] font-medium text-[#c5a059] mb-1.5 sm:mb-2 flex items-center space-x-2">
+            <div className="text-xs uppercase tracking-[0.25em] font-medium text-[#846115] mb-1.5 sm:mb-2 flex items-center space-x-2">
               <span>{product.name}</span>
-              {loading && <span className="w-1.5 h-1.5 bg-[#c5a059] animate-ping" />}
+              {loading && <span className="w-1.5 h-1.5 bg-[#846115] animate-ping" />}
             </div>
 
             <h3 className="font-[family-name:var(--font-cormorant)] text-[32px] sm:text-[40px] md:text-[44px] font-light text-[#111111] leading-tight mb-2 sm:mb-3">
@@ -239,7 +239,7 @@ export default function ObjectShowcase({
                 <Link
                   href={`/product/${product.id}`}
                   aria-label={`View technical monograph for ${product.name}`}
-                  className="inline-flex items-center space-x-1 text-[#111111] hover:text-[#c5a059] transition-colors"
+                  className="inline-flex items-center space-x-1 text-[#111111] hover:text-[#846115] transition-colors"
                 >
                   <span>{editorial.showcase.monographLabel}</span>
                   <ArrowUpRight className="w-3 h-3" />
@@ -252,7 +252,7 @@ export default function ObjectShowcase({
                 <div key={panel.id || panel.title} className="py-4">
                   <button
                     onClick={() => toggleAccordion(panel.id || panel.title)}
-                    className="w-full flex items-center justify-between text-left text-xs uppercase tracking-[0.2em] font-medium text-[#111111] hover:text-[#c5a059] transition-colors py-1 cursor-pointer"
+                    className="w-full flex items-center justify-between text-left text-xs uppercase tracking-[0.2em] font-medium text-[#111111] hover:text-[#846115] transition-colors py-1 cursor-pointer"
                   >
                     <span>{panel.title}</span>
                     <span className="text-[#111111] ml-4">

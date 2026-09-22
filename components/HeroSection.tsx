@@ -3,7 +3,6 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import Image from 'next/image';
 import { ArrowUpRight, ZoomIn, RefreshCw, Play, Pause } from 'lucide-react';
-import { motion, AnimatePresence, useScroll, useTransform } from 'motion/react';
 import type { Product } from '../types/store';
 import { resolveImageUrl } from '../lib/products';
 
@@ -47,27 +46,42 @@ export default function HeroSection({
     }
   }, [propActiveProductIndex]);
 
-  // Parallax Scroll Tracking for Hero -> Object Showcase transition
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ['start start', 'end start'],
-  });
+  // Reflow-free passive scroll parallax tracking (0ms initial mount measurement, zero forced reflow)
+  const [scrollProgress, setScrollProgress] = useState(0);
 
-  // Parallax Motion Values
-  const backgroundY = useTransform(scrollYProgress, [0, 1], ['0%', '22%']);
-  const backgroundScale = useTransform(scrollYProgress, [0, 1], [1, 1.08]);
-  const heroDimOpacity = useTransform(scrollYProgress, [0, 0.75, 1], [0, 0.25, 0.55]);
-  const topControlsY = useTransform(scrollYProgress, [0, 0.6], ['0px', '-35px']);
-  const topControlsOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
-  const sideCardY = useTransform(scrollYProgress, [0, 1], ['0px', '70px']);
-  const sideCardOpacity = useTransform(scrollYProgress, [0, 0.75], [1, 0]);
-  const bottomCaptionY = useTransform(scrollYProgress, [0, 1], ['0px', '40px']);
-  const bottomCaptionOpacity = useTransform(scrollYProgress, [0, 0.65], [1, 0]);
+  useEffect(() => {
+    let ticking = false;
+    const handleScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          const sy = window.scrollY;
+          if (sy <= 0) {
+            setScrollProgress(0);
+          } else {
+            setScrollProgress(Math.min(1, sy / 800));
+          }
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
 
-  const transitionConfig = {
-    duration: 1.0,
-    ease: [0.22, 1, 0.36, 1] as const,
-  };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Parallax transform calculations
+  const backgroundY = (scrollProgress * 22).toFixed(2) + '%';
+  const backgroundScale = (1 + scrollProgress * 0.08).toFixed(3);
+  const heroDimOpacity = scrollProgress > 0.75
+    ? (0.25 + ((scrollProgress - 0.75) / 0.25) * 0.3).toFixed(2)
+    : ((scrollProgress / 0.75) * 0.25).toFixed(2);
+  const topControlsY = scrollProgress <= 0.6 ? `-${((scrollProgress / 0.6) * 35).toFixed(1)}px` : '-35px';
+  const topControlsOpacity = Math.max(0, 1 - scrollProgress / 0.5).toFixed(2);
+  const sideCardY = (scrollProgress * 70).toFixed(1) + 'px';
+  const sideCardOpacity = scrollProgress <= 0.75 ? Math.max(0, 1 - scrollProgress / 0.75).toFixed(2) : '0';
+  const bottomCaptionY = (scrollProgress * 40).toFixed(1) + 'px';
+  const bottomCaptionOpacity = scrollProgress <= 0.65 ? Math.max(0, 1 - scrollProgress / 0.65).toFixed(2) : '0';
 
   const safeProductIndex = products.length ? carouselState.productIndex % products.length : 0;
   const activeProduct = products[safeProductIndex] || products[0];
@@ -194,24 +208,24 @@ export default function HeroSection({
     >
       {/* Full-Bleed Cinematic Hero Stage - Images cover the entire hero section space */}
       <div className="relative w-full min-h-[640px] sm:min-h-[720px] md:min-h-[780px] lg:min-h-[820px] flex items-center overflow-hidden">
-        {/* Photographic Background Canvas with Parallax Scroll */}
-        <motion.div
-          style={{ y: backgroundY, scale: backgroundScale }}
+        {/* Photographic Background Canvas with Reflow-Free Parallax */}
+        <div
+          style={{
+            transform: `translateY(${backgroundY}) scale(${backgroundScale})`,
+            willChange: scrollProgress > 0 ? 'transform' : 'auto',
+          }}
           className="absolute -top-[12%] left-0 w-full h-[124%] select-none overflow-hidden"
         >
           {perspectives.map((persp, idx) => {
             const isActive = safePerspectiveIndex === idx;
             return (
-              <motion.div
+              <div
                 key={`${activeProduct.id}-perspective-${idx}`}
-                initial={false}
-                animate={{
+                style={{
                   opacity: isActive ? 1 : 0,
-                  scale: isActive ? 1.0 : 1.03,
-                }}
-                transition={{
-                  opacity: { duration: 1.3, ease: [0.16, 1, 0.3, 1] },
-                  scale: { duration: 1.8, ease: [0.16, 1, 0.3, 1] },
+                  transform: isActive ? 'scale(1.0)' : 'scale(1.03)',
+                  transition: 'opacity 1.3s cubic-bezier(0.16, 1, 0.3, 1), transform 1.8s cubic-bezier(0.16, 1, 0.3, 1)',
+                  willChange: 'opacity, transform',
                 }}
                 className={`absolute inset-0 w-full h-full ${isActive ? 'z-10' : 'z-0 pointer-events-none'}`}
               >
@@ -220,28 +234,33 @@ export default function HeroSection({
                   alt={persp.alt}
                   fill
                   priority={idx === 0}
+                  unoptimized={idx === 0}
+                  fetchPriority={idx === 0 ? 'high' : 'auto'}
                   sizes="100vw"
                   referrerPolicy="no-referrer"
                   className="object-cover object-center"
                 />
-              </motion.div>
+              </div>
             );
           })}
 
           {/* Luxury ambient vignette overlay for depth & readability */}
           <div className="absolute inset-0 bg-gradient-to-r from-black/45 via-black/20 to-transparent lg:from-black/35 pointer-events-none z-10" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20 pointer-events-none z-10" />
-        </motion.div>
+        </div>
 
         {/* Parallax Ambient Dimming Layer as user scrolls down towards Object Showcase */}
-        <motion.div
-          style={{ opacity: heroDimOpacity }}
-          className="absolute inset-0 bg-black pointer-events-none z-15"
+        <div
+          style={{ opacity: Number(heroDimOpacity) }}
+          className="absolute inset-0 bg-black pointer-events-none z-15 transition-opacity duration-150"
         />
 
         {/* Top-Right: Perspective Switcher Tabs & Infinite Loop Control with Parallax */}
-        <motion.div
-          style={{ y: topControlsY, opacity: topControlsOpacity }}
+        <div
+          style={{
+            transform: `translateY(${topControlsY})`,
+            opacity: Number(topControlsOpacity),
+          }}
           className="absolute top-4 left-4 right-4 sm:left-auto sm:right-6 lg:right-12 sm:top-6 z-30 flex items-center justify-between sm:justify-start gap-1.5 sm:gap-2 bg-white/10 backdrop-blur-md border border-white/30 px-3 py-1.5 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.5),0_8px_24px_rgba(0,0,0,0.25)] text-xs uppercase tracking-[0.16em]"
         >
           <div className="flex items-center space-x-2 min-w-0">
@@ -291,12 +310,9 @@ export default function HeroSection({
 
                     {/* Infinite Progress Hairline on Active Tab */}
                     {isActive && !isPaused && (
-                      <motion.span
+                      <span
                         key={`progress-${safeProductIndex}-${safePerspectiveIndex}-${cycleResetKey}`}
-                        initial={{ width: '0%' }}
-                        animate={{ width: '100%' }}
-                        transition={{ duration: 3.5, ease: 'linear' }}
-                        className="absolute bottom-0 left-0 h-[2px] bg-[#c5a059] z-20"
+                        className="absolute bottom-0 left-0 h-[2px] bg-[#c5a059] z-20 animate-hero-progress"
                       />
                     )}
                   </button>
@@ -304,11 +320,14 @@ export default function HeroSection({
               })}
             </div>
           </div>
-        </motion.div>
+        </div>
 
         {/* Action Buttons: 2-Column Row on Mobile, Top-Left on Desktop */}
-        <motion.div
-          style={{ y: topControlsY, opacity: topControlsOpacity }}
+        <div
+          style={{
+            transform: `translateY(${topControlsY})`,
+            opacity: Number(topControlsOpacity),
+          }}
           className="absolute top-[3.75rem] left-4 right-4 sm:top-6 sm:left-6 lg:left-12 sm:right-auto z-30 grid grid-cols-2 gap-2 sm:flex sm:items-center sm:gap-3"
         >
           <button
@@ -330,125 +349,35 @@ export default function HeroSection({
             <span className="sm:hidden">Request Access</span>
             <span className="hidden sm:inline">{editorial.hero.reserveLabel || 'Request Priority Access'}</span>
           </button>
-        </motion.div>
-
-        {/* 
-          Floating Editorial Pavilion Card (Commented out per user request - preserved for later experimentation)
-        <div className="relative z-20 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-12 py-16 sm:py-20 flex items-center">
-          <motion.div
-            initial={{ opacity: 0, y: 28 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ ...transitionConfig, delay: 0.15 }}
-            className="relative w-full max-w-xl lg:max-w-lg xl:max-w-xl bg-white/[0.08] backdrop-blur-[6px] border border-white/35 p-6 sm:p-8 md:p-10 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.7),inset_0_-1px_1px_0_rgba(255,255,255,0.1),0_24px_60px_rgba(0,0,0,0.35)] overflow-hidden"
-          >
-            -- Architectural Window Glass Light Reflections --
-            <div className="absolute inset-0 bg-gradient-to-tr from-white/[0.12] via-transparent to-white/[0.03] pointer-events-none" />
-            <div className="absolute -top-24 -left-24 w-48 h-48 bg-white/10 rounded-full blur-2xl pointer-events-none" />
-
-            <div className="relative z-10">
-              -- Eyebrow and Edition Tag --
-              <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
-                <span className="text-xs uppercase tracking-[0.18em] sm:tracking-[0.2em] font-medium text-[#e5e5e3]/90 drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">
-                  {editorial.hero.eyebrow}
-                </span>
-                <span className="w-6 sm:w-8 h-[1px] bg-[#c5a059]" />
-                <span className="text-xs uppercase tracking-[0.16em] sm:tracking-[0.18em] font-semibold text-[#d4af37] drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">
-                  {editorial.hero.editionLabel}
-                </span>
-              </div>
-
-              -- Display Headline --
-              <h1 className="font-[family-name:var(--font-cormorant)] text-[32px] sm:text-[44px] md:text-[50px] lg:text-[56px] font-light leading-[1.06] tracking-[-0.02em] text-[#f9f9f7] drop-shadow-[0_2px_12px_rgba(0,0,0,0.6)] mb-4 sm:mb-5">
-                {activeProduct.name}
-              </h1>
-
-              -- Body Description --
-              <p className="font-[family-name:var(--font-inter)] text-[13px] sm:text-[15px] text-[#e5e2e1]/95 font-normal leading-[1.7] drop-shadow-[0_1px_4px_rgba(0,0,0,0.5)] mb-6 sm:mb-8">
-                {editorial.hero.description}
-              </p>
-
-              -- CTAs --
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 mb-6 sm:mb-8">
-                <button
-                  id="hero-discover-btn-archived"
-                  onClick={onDiscoverClick}
-                  className="w-full sm:w-auto group inline-flex items-center justify-center space-x-3 bg-[#111111]/90 backdrop-blur-md text-[#f9f9f7] px-6 sm:px-7 py-3.5 text-xs uppercase tracking-[0.18em] font-medium hover:bg-white hover:text-[#111111] hover:border-white transition-all cursor-pointer border border-white/35 shadow-lg"
-                >
-                  <span>{editorial.hero.discoverLabel}</span>
-                  <ArrowUpRight className="w-4 h-4 text-[#c5a059] group-hover:text-[#111111] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                </button>
-
-                <button
-                  id="hero-reserve-btn-archived"
-                  onClick={onReserveClick}
-                  className="w-full sm:w-auto inline-flex items-center justify-center bg-white/10 backdrop-blur-md text-white px-6 sm:px-7 py-3.5 text-xs uppercase tracking-[0.18em] font-medium hover:bg-white hover:text-[#111111] transition-all cursor-pointer border border-white/30 shadow-[inset_0_1px_0_rgba(255,255,255,0.4)]"
-                >
-                  <span>{editorial.hero.reserveLabel}</span>
-                </button>
-              </div>
-
-              -- Metadata Specs Strip --
-              <div className="pt-5 border-t border-white/20 grid grid-cols-3 gap-2 sm:gap-4">
-                <div>
-                  <div className="text-xs uppercase tracking-[0.18em] font-medium text-[#b0b0ad] mb-1">
-                    {editorial.hero.materialLabel}
-                  </div>
-                  <div className="text-xs sm:text-[13px] font-medium text-[#f9f9f7] tracking-tight">
-                    {editorial.hero.materialValue}
-                  </div>
-                </div>
-                <div>
-                  <div className="text-xs uppercase tracking-[0.18em] font-medium text-[#b0b0ad] mb-1">
-                    {editorial.hero.craftLabel}
-                  </div>
-                  <div className="text-xs sm:text-[13px] font-medium text-[#f9f9f7] tracking-tight">
-                    {editorial.hero.craftValue}
-                  </div>
-                </div>
-                <div>
-                  <div className="text-xs uppercase tracking-[0.18em] font-medium text-[#b0b0ad] mb-1">
-                    {editorial.hero.editionLabelMeta}
-                  </div>
-                  <div className="text-xs sm:text-[13px] font-medium text-[#f9f9f7] tracking-tight">
-                    {editorial.hero.editionValue}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </motion.div>
         </div>
-        */}
 
         {/* Bottom Caption Overlay for Active Perspective with Parallax */}
-        <motion.div
-          style={{ y: bottomCaptionY, opacity: bottomCaptionOpacity }}
+        <div
+          style={{
+            transform: `translateY(${bottomCaptionY})`,
+            opacity: Number(bottomCaptionOpacity),
+          }}
           className="absolute bottom-4 sm:bottom-6 left-4 sm:left-6 lg:left-auto lg:right-64 xl:right-72 z-20 pointer-events-none hidden md:block"
         >
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={`${activeProduct.id}-main-caption-${safePerspectiveIndex}`}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
-              className="bg-black/55 backdrop-blur-md px-4 py-2 border border-white/15 text-[#f9f9f7]"
-            >
-              <div className="text-xs uppercase tracking-[0.22em] font-medium text-[#c5a059] mb-0.5">
-                {currentMain.category} · {currentMain.figureLabel}
-              </div>
-              <div className="font-[family-name:var(--font-cormorant)] text-[16px] italic font-light text-white">
-                {currentMain.title}
-              </div>
-            </motion.div>
-          </AnimatePresence>
-        </motion.div>
+          <div
+            key={`${activeProduct.id}-main-caption-${safePerspectiveIndex}`}
+            className="bg-black/55 backdrop-blur-md px-4 py-2 border border-white/15 text-[#f9f9f7] transition-all duration-500 ease-out"
+          >
+            <div className="text-xs uppercase tracking-[0.22em] font-medium text-[#c5a059] mb-0.5">
+              {currentMain.category} · {currentMain.figureLabel}
+            </div>
+            <div className="font-[family-name:var(--font-cormorant)] text-[16px] italic font-light text-white">
+              {currentMain.title}
+            </div>
+          </div>
+        </div>
 
         {/* Companion Side Hero Image Card (Bottom-Right Floating Alternate Perspective Preview with Parallax) */}
-        <motion.div
-          style={{ y: sideCardY, opacity: sideCardOpacity }}
-          initial={{ scale: 0.95 }}
-          animate={{ scale: 1 }}
-          transition={{ duration: 0.95, ease: [0.16, 1, 0.3, 1], delay: 0.45 }}
+        <div
+          style={{
+            transform: `translateY(${sideCardY})`,
+            opacity: Number(sideCardOpacity),
+          }}
           id="hero-side-image-card"
           onClick={toggleSwap}
           className="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 lg:bottom-8 lg:right-12 w-28 sm:w-36 md:w-48 lg:w-52 aspect-[3/4] bg-white/10 backdrop-blur-md p-1.5 sm:p-2 border border-white/40 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.6),0_20px_45px_rgba(0,0,0,0.35)] z-30 group cursor-pointer transition-transform duration-300 hover:-translate-y-1 hover:shadow-[0_24px_50px_rgba(0,0,0,0.4)] select-none hidden xs:block"
@@ -466,16 +395,13 @@ export default function HeroSection({
             {perspectives.map((persp, idx) => {
               const isSideActive = safePerspectiveIndex !== idx;
               return (
-                <motion.div
+                <div
                   key={`${activeProduct.id}-side-perspective-${idx}`}
-                  initial={false}
-                  animate={{
+                  style={{
                     opacity: isSideActive ? 1 : 0,
-                    scale: isSideActive ? 1.0 : 1.05,
-                  }}
-                  transition={{
-                    opacity: { duration: 1.3, ease: [0.16, 1, 0.3, 1] },
-                    scale: { duration: 1.8, ease: [0.16, 1, 0.3, 1] },
+                    transform: isSideActive ? 'scale(1.0)' : 'scale(1.05)',
+                    transition: 'opacity 1.3s cubic-bezier(0.16, 1, 0.3, 1), transform 1.8s cubic-bezier(0.16, 1, 0.3, 1)',
+                    willChange: 'opacity, transform',
                   }}
                   className={`absolute inset-0 ${isSideActive ? 'z-10' : 'z-0 pointer-events-none'}`}
                 >
@@ -487,7 +413,7 @@ export default function HeroSection({
                     referrerPolicy="no-referrer"
                     className="object-cover object-center group-hover:scale-105 transition-transform duration-500 ease-out"
                   />
-                </motion.div>
+                </div>
               );
             })}
 
@@ -506,31 +432,25 @@ export default function HeroSection({
 
             {/* Bottom Caption Overlay on Side Image with smooth crossfade */}
             <div className="absolute bottom-0 left-0 right-0 p-2 sm:p-2.5 text-[#f9f9f7] pointer-events-none z-20">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={`${activeProduct.id}-side-caption-${perspectives.length > 1 ? (safePerspectiveIndex + 1) % perspectives.length : safePerspectiveIndex}`}
-                  initial={{ opacity: 0, y: 4 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -4 }}
-                  transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-                >
-                  <div className="text-xs uppercase tracking-[0.2em] font-medium text-[#c5a059] mb-0.5">
-                    {currentSide.figureLabel}
-                  </div>
-                  <div className="font-[family-name:var(--font-cormorant)] text-xs sm:text-[13px] italic leading-tight text-white line-clamp-1">
-                    {currentSide.title}
-                  </div>
-                </motion.div>
-              </AnimatePresence>
+              <div
+                key={`${activeProduct.id}-side-caption-${perspectives.length > 1 ? (safePerspectiveIndex + 1) % perspectives.length : safePerspectiveIndex}`}
+                className="transition-all duration-300 ease-out"
+              >
+                <div className="text-xs uppercase tracking-[0.2em] font-medium text-[#c5a059] mb-0.5">
+                  {currentSide.figureLabel}
+                </div>
+                <div className="font-[family-name:var(--font-cormorant)] text-xs sm:text-[13px] italic leading-tight text-white line-clamp-1">
+                  {currentSide.title}
+                </div>
+              </div>
               <div className="mt-1 flex items-center space-x-1 text-xs uppercase tracking-[0.16em] text-[#e5e2e1]/80">
                 <ZoomIn className="w-2.5 h-2.5" />
                 <span>Click to Swap</span>
               </div>
             </div>
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   );
 }
-

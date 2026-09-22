@@ -64,7 +64,7 @@ export default function CartDrawer() {
             <button
               onClick={closeCart}
               aria-label="Close acquisition drawer"
-              className="p-2 text-[#111111] hover:text-[#c5a059] transition-colors border border-transparent hover:border-[#e5e5e3] cursor-pointer"
+              className="p-2 text-[#111111] hover:text-[#846115] transition-colors border border-transparent hover:border-[#e5e5e3] cursor-pointer"
             >
               <X className="w-5 h-5 stroke-[1.5]" />
             </button>
@@ -227,7 +227,7 @@ export default function CartDrawer() {
               </div>
 
               <div className="flex items-center justify-center space-x-2 text-xs uppercase tracking-[0.15em] text-[#595D5D] pt-1">
-                <ShieldCheck className="w-3.5 h-3.5 text-[#c5a059]" />
+                <ShieldCheck className="w-3.5 h-3.5 text-[#846115]" />
                 <span>Encrypted Vault Checkout · Serial Number Authenticated</span>
               </div>
             </div>

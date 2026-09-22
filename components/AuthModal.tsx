@@ -90,7 +90,7 @@ export default function AuthModal({ isOpen, onClose, onConfirmationPending, defa
             {mode === 'register' && 'Request Collector Portal'}
             {mode === 'forgot' && 'Account Recovery'}
           </h2>
-          <div className="w-8 h-[1px] bg-[#c5a059] mx-auto mt-3" />
+          <div className="w-8 h-[1px] bg-[#846115] mx-auto mt-3" />
         </div>
 
         {confirmationPending ? (
@@ -108,7 +108,7 @@ export default function AuthModal({ isOpen, onClose, onConfirmationPending, defa
             </div>
             <div className="border border-[#e5e5e3] bg-[#ffffff] p-4 text-left space-y-2">
               <div className="flex items-start space-x-2">
-                <Clock className="w-4 h-4 shrink-0 text-[#c5a059] mt-0.5" />
+                <Clock className="w-4 h-4 shrink-0 text-[#846115] mt-0.5" />
                 <p className="text-xs leading-relaxed text-[#444748]">
                   Open your inbox or spam folder, click <strong>Verify Client Profile</strong>, then return here and sign in.
                 </p>
@@ -191,7 +191,7 @@ export default function AuthModal({ isOpen, onClose, onConfirmationPending, defa
                   <button
                     type="button"
                     onClick={() => setMode('forgot')}
-                    className="text-xs uppercase tracking-[0.15em] text-[#c5a059] hover:underline"
+                    className="text-xs uppercase tracking-[0.15em] text-[#846115] font-semibold hover:underline"
                   >
                     Forgot?
                   </button>
@@ -238,7 +238,7 @@ export default function AuthModal({ isOpen, onClose, onConfirmationPending, defa
               <button
                 type="button"
                 onClick={() => setMode('register')}
-                className="text-[#111111] font-semibold underline underline-offset-2 hover:text-[#c5a059]"
+                className="text-[#111111] font-semibold underline underline-offset-2 hover:text-[#846115]"
               >
                 Create an account
               </button>
@@ -251,7 +251,7 @@ export default function AuthModal({ isOpen, onClose, onConfirmationPending, defa
               <button
                 type="button"
                 onClick={() => setMode('login')}
-                className="text-[#111111] font-semibold underline underline-offset-2 hover:text-[#c5a059]"
+                className="text-[#111111] font-semibold underline underline-offset-2 hover:text-[#846115]"
               >
                 Sign in here
               </button>
@@ -264,7 +264,7 @@ export default function AuthModal({ isOpen, onClose, onConfirmationPending, defa
               <button
                 type="button"
                 onClick={() => setMode('login')}
-                className="text-[#111111] font-semibold underline underline-offset-2 hover:text-[#c5a059]"
+                className="text-[#111111] font-semibold underline underline-offset-2 hover:text-[#846115]"
               >
                 Back to Sign In
               </button>
@@ -274,7 +274,7 @@ export default function AuthModal({ isOpen, onClose, onConfirmationPending, defa
 
         {/* Security badge */}
         <div className="mt-4 flex items-center justify-center space-x-1.5 text-xs uppercase tracking-[0.16em] text-[#595D5D]">
-          <Shield className="w-3 h-3 text-[#c5a059]" />
+          <Shield className="w-3 h-3 text-[#846115]" />
           <span>Supabase Identity · 256-Bit SSL Safeguarded</span>
         </div>
         </>}

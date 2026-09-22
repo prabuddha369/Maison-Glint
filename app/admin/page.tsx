@@ -224,13 +224,13 @@ export default function AdminPage() {
             <Lock className="w-5 h-5 text-[#111111]" />
           </div>
 
-          <span className="text-[9px] uppercase tracking-[0.26em] text-[#c5a059] font-medium block">
+          <span className="text-xs uppercase tracking-[0.26em] text-[#846115] font-semibold block">
             Atelier Security Gate
           </span>
           <h1 className="font-[family-name:var(--font-cormorant)] text-3xl font-light mt-1 mb-2 text-[#111111]">
             Management Console
           </h1>
-          <p className="text-[12px] text-[#747878] font-light leading-relaxed mb-6">
+          <p className="text-[12px] text-[#595D5D] font-light leading-relaxed mb-6">
             Strict role-based access. Access is restricted exclusively to verified administrator accounts
             registered in the Atelier ledger.
           </p>
@@ -243,7 +243,7 @@ export default function AdminPage() {
 
           {user ? (
             <div className="space-y-4 text-left border border-[#e5e5e3] p-4 bg-[#f9f9f7] mb-6">
-              <div className="text-[10px] uppercase tracking-[0.16em] text-[#747878] font-medium">
+              <div className="text-[10px] uppercase tracking-[0.16em] text-[#595D5D] font-medium">
                 Active Session
               </div>
               <div className="font-mono text-[12px] text-[#111111] break-all">
@@ -252,7 +252,7 @@ export default function AdminPage() {
               <div className="text-[11px] text-[#b91c1c] flex items-center space-x-1.5 pt-1">
                 <span>✕ Account not verified for administrative elevation</span>
               </div>
-              <p className="text-[11px] text-[#747878] leading-relaxed pt-1">
+              <p className="text-[11px] text-[#595D5D] leading-relaxed pt-1">
                 Authorized administrator emails: <br />
                 <span className="font-mono text-[10px] text-[#111111]">chatterjee.prabuddha.work@gmail.com</span>,{' '}
                 <span className="font-mono text-[10px] text-[#111111]">founder@maisonglint.com</span>
@@ -268,7 +268,7 @@ export default function AdminPage() {
             </div>
           ) : (
             <form onSubmit={handleAdminSignIn} className="space-y-4 mb-6 text-left">
-              <label className="block text-[10px] uppercase tracking-[0.16em] text-[#747878] font-medium">
+              <label className="block text-[10px] uppercase tracking-[0.16em] text-[#595D5D] font-medium">
                 Administrator Email
                 <div className="relative mt-1.5">
                   <Mail className="absolute left-3 top-3 w-4 h-4 text-[#8c8c8c]" />
@@ -283,7 +283,7 @@ export default function AdminPage() {
                 </div>
               </label>
 
-              <label className="block text-[10px] uppercase tracking-[0.16em] text-[#747878] font-medium">
+              <label className="block text-[10px] uppercase tracking-[0.16em] text-[#595D5D] font-medium">
                 Administrator Password
                 <div className="relative mt-1.5">
                   <KeyRound className="absolute left-3 top-3 w-4 h-4 text-[#8c8c8c]" />
@@ -311,7 +311,7 @@ export default function AdminPage() {
                 )}
                 <span>{isSigningIn ? 'Verifying...' : 'Sign In as Administrator'}</span>
               </button>
-              <p className="text-[10px] text-[#747878] leading-relaxed">
+              <p className="text-[10px] text-[#595D5D] leading-relaxed">
                 Uses secure server email/password authentication with an HttpOnly session.
               </p>
             </form>
@@ -320,7 +320,7 @@ export default function AdminPage() {
           <div className="pt-2 border-t border-[#e5e5e3]">
             <Link
               href="/"
-              className="inline-flex items-center space-x-1.5 text-[10px] uppercase tracking-[0.16em] text-[#747878] hover:text-[#111111] transition-colors"
+              className="inline-flex items-center space-x-1.5 text-[10px] uppercase tracking-[0.16em] text-[#595D5D] hover:text-[#111111] transition-colors"
             >
               <ArrowLeft className="w-3 h-3" />
               <span>Return to Maison Glint Storefront</span>
@@ -344,7 +344,7 @@ export default function AdminPage() {
               <span className="font-[family-name:var(--font-cormorant)] text-2xl tracking-[0.16em] uppercase text-[#111111] font-light">
                 Maison Glint
               </span>
-              <span className="text-[10px] uppercase tracking-[0.18em] text-[#c5a059] ml-3 font-mono font-medium">
+              <span className="text-xs uppercase tracking-[0.18em] text-[#846115] ml-3 font-mono font-semibold">
                 Admin Console
               </span>
             </div>
@@ -354,9 +354,9 @@ export default function AdminPage() {
             <button
               onClick={handleSeedCatalog}
               title="Re-seed initial catalog items to Supabase"
-              className="px-3 py-1.5 border border-[#d6d6d4] hover:border-[#111111] text-[10px] uppercase tracking-[0.14em] text-[#747878] hover:text-[#111111] flex items-center space-x-1.5"
+              className="px-3 py-1.5 border border-[#d6d6d4] hover:border-[#111111] text-[10px] uppercase tracking-[0.14em] text-[#595D5D] hover:text-[#111111] flex items-center space-x-1.5"
             >
-              <Database className="w-3 h-3 text-[#c5a059]" />
+              <Database className="w-3 h-3 text-[#846115]" />
               <span>Seed Catalog</span>
             </button>
             <button
@@ -382,7 +382,7 @@ export default function AdminPage() {
         {/* Overview Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
           <div className="bg-[#ffffff] border border-[#e5e5e3] p-5">
-            <span className="text-[9px] uppercase tracking-[0.18em] text-[#747878] block">
+            <span className="text-[9px] uppercase tracking-[0.18em] text-[#595D5D] block">
               Total Orders Captured
             </span>
             <span className="font-[family-name:var(--font-cormorant)] text-3xl font-semibold text-[#111111]">
@@ -391,16 +391,16 @@ export default function AdminPage() {
           </div>
 
           <div className="bg-[#ffffff] border border-[#e5e5e3] p-5">
-            <span className="text-[9px] uppercase tracking-[0.18em] text-[#747878] block">
+            <span className="text-[9px] uppercase tracking-[0.18em] text-[#595D5D] block">
               Pending Gateway Handoff
             </span>
-            <span className="font-[family-name:var(--font-cormorant)] text-3xl font-semibold text-[#c5a059]">
+            <span className="font-[family-name:var(--font-cormorant)] text-3xl font-semibold text-[#846115]">
               {orders.filter((o) => o.status === 'pending_payment').length}
             </span>
           </div>
 
           <div className="bg-[#ffffff] border border-[#e5e5e3] p-5">
-            <span className="text-[9px] uppercase tracking-[0.18em] text-[#747878] block">
+            <span className="text-[9px] uppercase tracking-[0.18em] text-[#595D5D] block">
               Catalog Editions
             </span>
             <span className="font-[family-name:var(--font-cormorant)] text-3xl font-semibold text-[#111111]">
@@ -409,7 +409,7 @@ export default function AdminPage() {
           </div>
 
           <div className="bg-[#ffffff] border border-[#e5e5e3] p-5">
-            <span className="text-[9px] uppercase tracking-[0.18em] text-[#747878] block">
+            <span className="text-[9px] uppercase tracking-[0.18em] text-[#595D5D] block">
               Active Subscribers
             </span>
             <span className="font-[family-name:var(--font-cormorant)] text-3xl font-semibold text-[#111111]">
@@ -418,7 +418,7 @@ export default function AdminPage() {
           </div>
 
           <div className="bg-[#ffffff] border border-[#e5e5e3] p-5">
-            <span className="text-[9px] uppercase tracking-[0.18em] text-[#747878] block">
+            <span className="text-[9px] uppercase tracking-[0.18em] text-[#595D5D] block">
               Gross Order Value
             </span>
             <span className="font-[family-name:var(--font-cormorant)] text-3xl font-semibold text-[#111111]">
@@ -434,7 +434,7 @@ export default function AdminPage() {
             className={`pb-4 px-6 text-[11px] uppercase tracking-[0.18em] font-medium border-b-2 cursor-pointer ${
               activeTab === 'orders'
                 ? 'border-[#111111] text-[#111111]'
-                : 'border-transparent text-[#747878] hover:text-[#111111]'
+                : 'border-transparent text-[#595D5D] hover:text-[#111111]'
             }`}
           >
             Customer Orders ({orders.length})
@@ -444,7 +444,7 @@ export default function AdminPage() {
             className={`pb-4 px-6 text-[11px] uppercase tracking-[0.18em] font-medium border-b-2 cursor-pointer ${
               activeTab === 'products'
                 ? 'border-[#111111] text-[#111111]'
-                : 'border-transparent text-[#747878] hover:text-[#111111]'
+                : 'border-transparent text-[#595D5D] hover:text-[#111111]'
             }`}
           >
             Product Catalog ({products.length})
@@ -454,7 +454,7 @@ export default function AdminPage() {
             className={`pb-4 px-6 text-[11px] uppercase tracking-[0.18em] font-medium border-b-2 cursor-pointer ${
               activeTab === 'newsletter'
                 ? 'border-[#111111] text-[#111111]'
-                : 'border-transparent text-[#747878] hover:text-[#111111]'
+                : 'border-transparent text-[#595D5D] hover:text-[#111111]'
             }`}
           >
             Newsletter Subscribers ({subscribers.length})
@@ -465,7 +465,7 @@ export default function AdminPage() {
         {activeTab === 'orders' && (
           <div className="space-y-4">
             {orders.length === 0 ? (
-              <div className="bg-[#ffffff] border border-[#e5e5e3] p-12 text-center text-[#747878] text-[12px]">
+              <div className="bg-[#ffffff] border border-[#e5e5e3] p-12 text-center text-[#595D5D] text-[12px]">
                 No orders captured yet. Test placing an order through the storefront checkout!
               </div>
             ) : (
@@ -480,7 +480,7 @@ export default function AdminPage() {
                         <span className="font-mono text-base font-bold text-[#111111]">
                           {order.orderId}
                         </span>
-                        <span className="text-[11px] text-[#747878]">
+                        <span className="text-[11px] text-[#595D5D]">
                           {order.customer.email} · {order.customer.fullName}
                         </span>
                       </div>
@@ -513,7 +513,7 @@ export default function AdminPage() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-[12px]">
                     <div>
-                      <span className="text-[10px] uppercase tracking-[0.16em] text-[#747878] block mb-2 font-medium">
+                      <span className="text-[10px] uppercase tracking-[0.16em] text-[#595D5D] block mb-2 font-medium">
                         Items Purchased ({order.items.length})
                       </span>
                       <div className="space-y-1.5">
@@ -531,7 +531,7 @@ export default function AdminPage() {
                     </div>
 
                     <div>
-                      <span className="text-[10px] uppercase tracking-[0.16em] text-[#747878] block mb-2 font-medium">
+                      <span className="text-[10px] uppercase tracking-[0.16em] text-[#595D5D] block mb-2 font-medium">
                         Shipping Destination
                       </span>
                       <div className="text-[#444748] space-y-0.5">
@@ -572,7 +572,7 @@ export default function AdminPage() {
                   className="px-3.5 py-2.5 border border-[#d6d6d4] text-[#111111] text-[10px] uppercase tracking-[0.18em] font-medium flex items-center space-x-2 hover:border-[#111111] transition-colors disabled:opacity-50"
                   title="Sync default atelier products and reflection presets to Supabase"
                 >
-                  <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin text-[#c5a059]' : 'text-[#747878]'}`} />
+                  <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin text-[#c5a059]' : 'text-[#595D5D]'}`} />
                   <span>Sync Catalog & Presets</span>
                 </button>
                 <button
@@ -614,7 +614,7 @@ export default function AdminPage() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-[10px] uppercase tracking-[0.16em] text-[#747878] mb-1">
+                    <label className="block text-[10px] uppercase tracking-[0.16em] text-[#595D5D] mb-1">
                       Object Name *
                     </label>
                     <input
@@ -628,7 +628,7 @@ export default function AdminPage() {
                   </div>
 
                   <div>
-                    <label className="block text-[10px] uppercase tracking-[0.16em] text-[#747878] mb-1">
+                    <label className="block text-[10px] uppercase tracking-[0.16em] text-[#595D5D] mb-1">
                       Price (USD) *
                     </label>
                     <input
@@ -644,7 +644,7 @@ export default function AdminPage() {
                   </div>
 
                   <div className="sm:col-span-2">
-                    <label className="block text-[10px] uppercase tracking-[0.16em] text-[#747878] mb-1">
+                    <label className="block text-[10px] uppercase tracking-[0.16em] text-[#595D5D] mb-1">
                       Architectural Description
                     </label>
                     <textarea
@@ -659,7 +659,7 @@ export default function AdminPage() {
                   </div>
 
                   <div className="sm:col-span-2">
-                    <label className="block text-[10px] uppercase tracking-[0.16em] text-[#747878] mb-1">
+                    <label className="block text-[10px] uppercase tracking-[0.16em] text-[#595D5D] mb-1">
                       Image URLs (one per line)
                     </label>
                     <textarea
@@ -678,7 +678,7 @@ export default function AdminPage() {
 
                   <div className="sm:col-span-2">
                     <div className="flex items-center justify-between mb-1">
-                      <label className="block text-[10px] uppercase tracking-[0.16em] text-[#747878]">
+                      <label className="block text-[10px] uppercase tracking-[0.16em] text-[#595D5D]">
                         Section Content JSON
                       </label>
                       {jsonError ? (
@@ -711,7 +711,7 @@ export default function AdminPage() {
                   </div>
 
                   <div>
-                    <label className="block text-[10px] uppercase tracking-[0.16em] text-[#747878] mb-1">
+                    <label className="block text-[10px] uppercase tracking-[0.16em] text-[#595D5D] mb-1">
                       Material Specification
                     </label>
                     <input
@@ -732,7 +732,7 @@ export default function AdminPage() {
                   </div>
 
                   <div>
-                    <label className="block text-[10px] uppercase tracking-[0.16em] text-[#747878] mb-1">
+                    <label className="block text-[10px] uppercase tracking-[0.16em] text-[#595D5D] mb-1">
                       Stock Status
                     </label>
                     <div className="flex items-center space-x-4 pt-2">
@@ -806,7 +806,7 @@ export default function AdminPage() {
                       </span>
                     </div>
 
-                    <p className="text-[11px] text-[#747878] line-clamp-2 mt-1 font-light">
+                    <p className="text-[11px] text-[#595D5D] line-clamp-2 mt-1 font-light">
                       {p.description}
                     </p>
 
@@ -830,7 +830,7 @@ export default function AdminPage() {
                           setJsonError('');
                           setIsEditingProduct(true);
                         }}
-                        className="text-[10px] uppercase tracking-[0.14em] text-[#111111] hover:text-[#c5a059] flex items-center space-x-1"
+                        className="text-[10px] uppercase tracking-[0.14em] text-[#111111] hover:text-[#846115] flex items-center space-x-1"
                       >
                         <Edit2 className="w-3 h-3" />
                         <span>Edit</span>
@@ -855,13 +855,13 @@ export default function AdminPage() {
           <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#ffffff] border border-[#e5e5e3] p-6">
               <div>
-                <span className="text-[9px] uppercase tracking-[0.24em] text-[#c5a059] font-medium block">
+                <span className="text-xs uppercase tracking-[0.24em] text-[#846115] font-semibold block">
                   Atelier Correspondence
                 </span>
                 <h2 className="font-[family-name:var(--font-cormorant)] text-2xl text-[#111111] font-light mt-0.5">
                   Private Newsletter Circle
                 </h2>
-                <p className="text-[12px] text-[#747878] font-light mt-1">
+                <p className="text-[12px] text-[#595D5D] font-light mt-1">
                   Patrons and collectors subscribed to release dispatches, private previews, and modernist chromeware essays.
                 </p>
               </div>
@@ -870,14 +870,14 @@ export default function AdminPage() {
                 <span className="px-3 py-1.5 bg-[#eef8ee] border border-[#bfe4bf] text-[#1c731c] font-mono font-medium">
                   {subscribers.filter((s) => s.isSubscribed).length} Active
                 </span>
-                <span className="px-3 py-1.5 bg-[#f4f4f2] border border-[#e5e5e3] text-[#747878] font-mono">
+                <span className="px-3 py-1.5 bg-[#f4f4f2] border border-[#e5e5e3] text-[#595D5D] font-mono">
                   {subscribers.filter((s) => !s.isSubscribed).length} Unsubscribed
                 </span>
               </div>
             </div>
 
             {subscribers.length === 0 ? (
-              <div className="bg-[#ffffff] border border-[#e5e5e3] p-12 text-center text-[#747878] text-[12px]">
+              <div className="bg-[#ffffff] border border-[#e5e5e3] p-12 text-center text-[#595D5D] text-[12px]">
                 No subscribers recorded yet. Submissions from the storefront footer will appear here automatically.
               </div>
             ) : (
@@ -885,7 +885,7 @@ export default function AdminPage() {
                 <div className="overflow-x-auto">
                   <table className="w-full text-left border-collapse">
                     <thead>
-                      <tr className="border-b border-[#e5e5e3] bg-[#f9f9f7] text-[10px] uppercase tracking-[0.16em] text-[#747878]">
+                      <tr className="border-b border-[#e5e5e3] bg-[#f9f9f7] text-[10px] uppercase tracking-[0.16em] text-[#595D5D]">
                         <th className="py-3.5 px-6 font-medium">Patron Email</th>
                         <th className="py-3.5 px-6 font-medium">Status</th>
                         <th className="py-3.5 px-6 font-medium">Subscribed Date</th>
@@ -911,7 +911,7 @@ export default function AdminPage() {
                               {subscriber.isSubscribed ? 'Active' : 'Unsubscribed'}
                             </span>
                           </td>
-                          <td className="py-4 px-6 text-[#747878]">
+                          <td className="py-4 px-6 text-[#595D5D]">
                             {subscriber.createdAt
                               ? new Date(subscriber.createdAt).toLocaleDateString('en-US', {
                                   year: 'numeric',
@@ -933,13 +933,13 @@ export default function AdminPage() {
                                 })
                               : '—'}
                           </td>
-                          <td className="py-4 px-6 text-[#747878] font-mono text-[11px]">
+                          <td className="py-4 px-6 text-[#595D5D] font-mono text-[11px]">
                             {subscriber.source || 'storefront'}
                           </td>
                           <td className="py-4 px-6 text-right space-x-3">
                             <button
                               onClick={() => handleToggleSubscriber(subscriber.email, subscriber.isSubscribed)}
-                              className="text-[10px] uppercase tracking-[0.14em] text-[#111111] hover:text-[#c5a059] font-medium cursor-pointer"
+                              className="text-[10px] uppercase tracking-[0.14em] text-[#111111] hover:text-[#846115] font-medium cursor-pointer"
                             >
                               {subscriber.isSubscribed ? 'Unsubscribe' : 'Reactivate'}
                             </button>

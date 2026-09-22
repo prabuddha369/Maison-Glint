@@ -92,16 +92,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return;
     }
     let active = true;
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (active) {
-        void loadUser(session?.user || null).finally(() => setLoading(false));
-      }
-    });
+    const scheduleSessionCheck = () => {
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        if (active) {
+          void loadUser(session?.user || null).finally(() => setLoading(false));
+        }
+      });
+    };
+
+    let cancelTimer: () => void = () => {};
+    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+      const idleId = window.requestIdleCallback(scheduleSessionCheck, { timeout: 1500 });
+      cancelTimer = () => window.cancelIdleCallback(idleId);
+    } else {
+      const timerId = setTimeout(scheduleSessionCheck, 100);
+      cancelTimer = () => clearTimeout(timerId);
+    }
+
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
       if (active) void loadUser(session?.user || null);
     });
     return () => {
       active = false;
+      cancelTimer();
       listener.subscription.unsubscribe();
     };
   }, [supabase]);

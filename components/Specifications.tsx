@@ -91,7 +91,7 @@ export default function Specifications({
             <div className="divide-y divide-[#e5e5e3]">
               {editorial.rows.map((row) => <div key={row.id || row.label} className="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2"><span className="text-xs uppercase tracking-[0.18em] text-[#595D5D]">{row.label}</span><span className="text-[13px] font-medium">{unitSystem === 'metric' ? row.metric : row.imperial}</span></div>)}
             </div>
-            <div className="pt-6 mt-4 border-t border-[#e5e5e3] flex flex-wrap justify-between gap-3 text-xs uppercase tracking-[0.18em] text-[#595D5D]"><span>{editorial.serialStamp}</span><span className="text-[#c5a059]">{editorial.archiveLabel}</span></div>
+            <div className="pt-6 mt-4 border-t border-[#e5e5e3] flex flex-wrap justify-between gap-3 text-xs uppercase tracking-[0.18em] text-[#595D5D]"><span>{editorial.serialStamp}</span><span className="text-[#846115] font-semibold">{editorial.archiveLabel}</span></div>
           </div>
         </motion.div>
       </div>

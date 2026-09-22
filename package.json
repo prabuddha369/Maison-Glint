@@ -9,6 +9,13 @@
     "lint": "eslint .",
     "clean": "next clean"
   },
+  "browserslist": [
+    "last 2 Chrome versions",
+    "last 2 Firefox versions",
+    "last 2 Safari versions",
+    "last 2 Edge versions",
+    "not dead"
+  ],
   "dependencies": {
     "@google/genai": "^2.4.0",
     "@hookform/resolvers": "^5.2.1",

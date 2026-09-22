@@ -181,7 +181,7 @@ export default function PriorityAccessModal({
         {!completedSerial ? (
           <div>
             {/* Header */}
-            <div className="text-xs uppercase tracking-[0.25em] font-medium text-[#c5a059] mb-1.5 sm:mb-2">
+            <div className="text-xs uppercase tracking-[0.25em] font-medium text-[#846115] mb-1.5 sm:mb-2">
               Edition 01 Allocation
             </div>
             <h3 className="font-[family-name:var(--font-cormorant)] text-[26px] sm:text-[34px] md:text-[38px] font-light text-[#111111] leading-tight mb-2 sm:mb-3">
@@ -315,7 +315,7 @@ export default function PriorityAccessModal({
         ) : confirmationPending ? (
           /* Confirmation Dossier Dispatched View (Supabase email gate) */
           <div className="text-left animate-fadeIn">
-            <div className="flex items-center space-x-2 text-xs uppercase tracking-[0.22em] font-semibold text-[#c5a059] mb-2">
+            <div className="flex items-center space-x-2 text-xs uppercase tracking-[0.22em] font-semibold text-[#846115] mb-2">
               <Mail className="w-4 h-4" />
               <span>Verification Dossier Dispatched</span>
             </div>
@@ -357,7 +357,7 @@ export default function PriorityAccessModal({
               </div>
               <div className="flex justify-between">
                 <span className="text-[#595D5D] uppercase tracking-[0.18em]">Status</span>
-                <span className="font-medium text-[#c5a059]">Email Verification Pending</span>
+                <span className="font-semibold text-[#846115]">Email Verification Pending</span>
               </div>
             </div>
 
@@ -384,7 +384,7 @@ export default function PriorityAccessModal({
         ) : (
           /* Instant Authenticated Allocation Reserved Certificate View */
           <div className="text-left animate-fadeIn">
-            <div className="flex items-center space-x-2 text-xs uppercase tracking-[0.22em] font-semibold text-[#c5a059] mb-2">
+            <div className="flex items-center space-x-2 text-xs uppercase tracking-[0.22em] font-semibold text-[#846115] mb-2">
               <ShieldCheck className="w-4 h-4" />
               <span>
                 {isExistingRecord
@@ -430,13 +430,13 @@ export default function PriorityAccessModal({
               </div>
               <div className="flex justify-between border-b border-[#e5e5e3] pb-2">
                 <span className="text-[#595D5D] uppercase tracking-[0.18em]">Validity Window</span>
-                <span className="font-medium text-[#c5a059] text-right">
+                <span className="font-semibold text-[#846115] text-right">
                   48 Hours {reservationExpiresAt ? `(until ${new Date(reservationExpiresAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })})` : ''}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-[#595D5D] uppercase tracking-[0.18em]">Status</span>
-                <span className="font-medium text-[#c5a059] uppercase">
+                <span className="font-semibold text-[#846115] uppercase">
                   {assignedStatus === 'waitlist' ? 'Waitlist (Next In Line)' : 'Allocated Serial Slot'}
                 </span>
               </div>

@@ -110,7 +110,7 @@ export default function OrderSuccessPage() {
                   </span>
                 ) : (
                   <span className="inline-flex items-center space-x-1.5 px-2.5 py-1 bg-[#fff8e7] border border-[#e8d5aa] text-[#8a681c] text-xs uppercase tracking-[0.15em] font-medium">
-                    <Clock className="w-3 h-3 text-[#c5a059]" />
+                    <Clock className="w-3 h-3 text-[#846115]" />
                     <span>Pending Gateway Settlement</span>
                   </span>
                 )}
@@ -151,7 +151,7 @@ export default function OrderSuccessPage() {
                   </>
                 ) : (
                   <>
-                    <CreditCard className="w-3.5 h-3.5 text-[#c5a059]" />
+                    <CreditCard className="w-3.5 h-3.5 text-[#846115]" />
                     <span>Pending Gateway Callback</span>
                   </>
                 )}
@@ -256,7 +256,7 @@ export default function OrderSuccessPage() {
           <div className="md:col-span-5 space-y-6">
             <div className="bg-[#ffffff] border border-[#e5e5e3] p-6 sm:p-8">
               <h3 className="text-xs uppercase tracking-[0.2em] font-semibold text-[#595D5D] mb-4 flex items-center space-x-2">
-                <MapPin className="w-3.5 h-3.5 text-[#c5a059]" />
+                <MapPin className="w-3.5 h-3.5 text-[#846115]" />
                 <span>Delivery Address</span>
               </h3>
 
@@ -276,7 +276,7 @@ export default function OrderSuccessPage() {
 
               <div className="mt-6 pt-6 border-t border-[#f0f0ee]">
                 <h4 className="text-xs uppercase tracking-[0.2em] font-semibold text-[#595D5D] mb-2 flex items-center space-x-2">
-                  <Mail className="w-3.5 h-3.5 text-[#c5a059]" />
+                  <Mail className="w-3.5 h-3.5 text-[#846115]" />
                   <span>Telemetry Updates</span>
                 </h4>
                 <p className="text-xs text-[#111111]">{order?.customer?.email}</p>
