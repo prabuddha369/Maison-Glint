@@ -1,19 +1,79 @@
-# Maison Glint — Modernist Chromeware
+# Maison Glint — Modernist Chromeware & Editorial Tableware
 # Crawler Permissions & Production Robot Directives
-# https://www.maisonglint.com
+# Canonical Host: https://www.maisonglint.com
 
 User-agent: *
 Allow: /
 Allow: /product/
 Allow: /_brand_constituition/
+Allow: /_brand_constitution/
 Allow: /llms.txt
+Allow: /sitemap.xml
+Allow: /images/
 Disallow: /admin
 Disallow: /account
 Disallow: /checkout
-Disallow: /api/
+Disallow: /api/auth/
+Disallow: /api/payment/
+Disallow: /api/phone/
 Disallow: /order-failed/
 Disallow: /order-pending/
 Disallow: /order-success/
+
+# Search Engine Indexing Crawlers (Google, Bing, Apple, DuckDuckGo)
+User-agent: Googlebot
+Allow: /
+Disallow: /admin
+Disallow: /account
+Disallow: /checkout
+Disallow: /api/auth/
+Disallow: /api/payment/
+Disallow: /api/phone/
+
+User-agent: GoogleOther
+Allow: /
+Disallow: /admin
+Disallow: /account
+Disallow: /checkout
+Disallow: /api/auth/
+Disallow: /api/payment/
+Disallow: /api/phone/
+
+User-agent: Google-InspectionTool
+Allow: /
+Disallow: /admin
+Disallow: /account
+Disallow: /checkout
+Disallow: /api/auth/
+Disallow: /api/payment/
+Disallow: /api/phone/
+
+User-agent: Bingbot
+Allow: /
+Disallow: /admin
+Disallow: /account
+Disallow: /checkout
+Disallow: /api/auth/
+Disallow: /api/payment/
+Disallow: /api/phone/
+
+User-agent: Applebot
+Allow: /
+Disallow: /admin
+Disallow: /account
+Disallow: /checkout
+Disallow: /api/auth/
+Disallow: /api/payment/
+Disallow: /api/phone/
+
+User-agent: DuckDuckBot
+Allow: /
+Disallow: /admin
+Disallow: /account
+Disallow: /checkout
+Disallow: /api/auth/
+Disallow: /api/payment/
+Disallow: /api/phone/
 
 # AI Search & Synthesis Engines (Perplexity, OpenAI, Anthropic, Google)
 User-agent: GPTBot
@@ -21,42 +81,108 @@ Allow: /
 Disallow: /admin
 Disallow: /account
 Disallow: /checkout
-Disallow: /api/
+Disallow: /api/auth/
+Disallow: /api/payment/
+Disallow: /api/phone/
 
 User-agent: ChatGPT-User
 Allow: /
 Disallow: /admin
 Disallow: /account
 Disallow: /checkout
-Disallow: /api/
+Disallow: /api/auth/
+Disallow: /api/payment/
+Disallow: /api/phone/
 
 User-agent: ClaudeBot
 Allow: /
 Disallow: /admin
 Disallow: /account
 Disallow: /checkout
-Disallow: /api/
+Disallow: /api/auth/
+Disallow: /api/payment/
+Disallow: /api/phone/
+
+User-agent: Claude-Web
+Allow: /
+Disallow: /admin
+Disallow: /account
+Disallow: /checkout
+Disallow: /api/auth/
+Disallow: /api/payment/
+Disallow: /api/phone/
+
+User-agent: anthropic-ai
+Allow: /
+Disallow: /admin
+Disallow: /account
+Disallow: /checkout
+Disallow: /api/auth/
+Disallow: /api/payment/
+Disallow: /api/phone/
 
 User-agent: PerplexityBot
 Allow: /
 Disallow: /admin
 Disallow: /account
 Disallow: /checkout
-Disallow: /api/
+Disallow: /api/auth/
+Disallow: /api/payment/
+Disallow: /api/phone/
 
 User-agent: Google-Extended
 Allow: /
 Disallow: /admin
 Disallow: /account
 Disallow: /checkout
-Disallow: /api/
+Disallow: /api/auth/
+Disallow: /api/payment/
+Disallow: /api/phone/
 
 User-agent: Applebot-Extended
 Allow: /
 Disallow: /admin
 Disallow: /account
 Disallow: /checkout
-Disallow: /api/
+Disallow: /api/auth/
+Disallow: /api/payment/
+Disallow: /api/phone/
+
+User-agent: Meta-ExternalAgent
+Allow: /
+Disallow: /admin
+Disallow: /account
+Disallow: /checkout
+Disallow: /api/auth/
+Disallow: /api/payment/
+Disallow: /api/phone/
+
+User-agent: FacebookBot
+Allow: /
+Disallow: /admin
+Disallow: /account
+Disallow: /checkout
+Disallow: /api/auth/
+Disallow: /api/payment/
+Disallow: /api/phone/
+
+User-agent: Amazonbot
+Allow: /
+Disallow: /admin
+Disallow: /account
+Disallow: /checkout
+Disallow: /api/auth/
+Disallow: /api/payment/
+Disallow: /api/phone/
+
+User-agent: Cohere-ai
+Allow: /
+Disallow: /admin
+Disallow: /account
+Disallow: /checkout
+Disallow: /api/auth/
+Disallow: /api/payment/
+Disallow: /api/phone/
 
 # Host & Sitemaps
 Host: https://www.maisonglint.com
