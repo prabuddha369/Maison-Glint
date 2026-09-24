@@ -21,22 +21,24 @@ const inter = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.maisonglint.com'),
   title: {
-    default: 'Maison Glint — Modernist Chromeware & Editorial Tableware',
+    default: 'Maison Glint — Modernist Centerpiece Platters & Tablescape Trays',
     template: '%s | Maison Glint',
   },
   description:
-    'Considered table settings around reflective steel, tactile materials, and the pleasure of gathering. Introducing Object 01 in Mirror Polish.',
+    'Sculptural, mirror-polished architectural centerpiece platters and decorative trays. Handcrafted in heavy-gauge stainless steel for seasonal tablescapes, holiday decor, and refined living spaces.',
   keywords: [
     'Maison Glint',
-    'Object 01',
-    'Modernist Chromeware',
-    'Stainless Steel Dinnerware',
-    'Mirror Polish Tableware',
-    'The Host Set',
-    'Warm Minimalism',
-    'Architectural Tableware',
+    'Centerpiece Platter',
+    'Decorative Tray',
+    'Modern Tablescape Tray',
+    'Holiday Centerpiece',
+    'Mirror Chrome Decor',
+    'Architectural Tray',
+    'Coffee Table Catchall',
+    'Seasonal Staging Tray',
+    'Stainless Steel Home Decor',
   ],
-  authors: [{ name: 'Maison Glint' }],
+  authors: [{ name: 'Maison Glint Atelier' }],
   creator: 'Maison Glint',
   publisher: 'Maison Glint',
   formatDetection: {
@@ -45,31 +47,38 @@ export const metadata: Metadata = {
     telephone: false,
   },
   openGraph: {
-    title: 'Maison Glint — Modernist Chromeware & Editorial Tableware',
+    title: 'Maison Glint — Architectural Centerpiece Platters & Tablescape Trays',
     description:
-      'Considered table settings around reflective steel, tactile materials, and the pleasure of gathering. Introducing Object 01 in Mirror Polish.',
+      'Reflective stainless steel centerpiece platters designed for seasonal holiday staging, ambient candle reflection, and curated interior accents.',
     url: 'https://www.maisonglint.com',
     siteName: 'Maison Glint',
     locale: 'en_US',
     type: 'website',
     images: [
       {
+        url: '/images/products/object-01-the-glint-plate-hero-fig01.webp',
+        width: 1000,
+        height: 1500,
+        alt: 'Maison Glint Centerpiece Platter styled with taper candles on raw travertine',
+        type: 'image/webp',
+      },
+      {
         url: '/og-image.jpg',
         width: 1200,
         height: 630,
-        alt: 'Maison Glint — Object 01 Modernist Chromeware on Travertine',
+        alt: 'Maison Glint Modernist Chrome Centerpiece Tray',
         type: 'image/jpeg',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Maison Glint — Modernist Chromeware & Editorial Tableware',
+    title: 'Maison Glint — Modernist Centerpiece Platters & Decor Trays',
     description:
-      'Considered table settings around reflective steel, tactile materials, and the pleasure of gathering. Introducing Object 01 in Mirror Polish.',
+      'Reflective stainless steel centerpiece platters designed for seasonal tablescapes and interior living spaces.',
     site: '@maisonglint',
     creator: '@maisonglint',
-    images: ['/og-image.jpg'],
+    images: ['/images/products/object-01-the-glint-plate-hero-fig01.webp'],
   },
   robots: {
     index: true,
@@ -82,20 +91,9 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
-  icons: {
-    icon: [
-      { url: '/favicon.ico', sizes: 'any' },
-      { url: '/icon.png', type: 'image/png', sizes: '48x48' },
-      { url: '/icon-96.png', type: 'image/png', sizes: '96x96' },
-      { url: '/icon-192.png', type: 'image/png', sizes: '192x192' },
-      { url: '/icon-512.png', type: 'image/png', sizes: '512x512' },
-    ],
-    shortcut: '/favicon.ico',
-    apple: [
-      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
-    ],
+  other: {
+    'pinterest-rich-pin': 'true',
   },
-  manifest: '/site.webmanifest',
 };
 
 export default function RootLayout({children}: {children: React.ReactNode}) {
